@@ -4,3 +4,5 @@ src/.vs/XR_3DA/v16/.suo
 *.db-shm
 *.db-wal
 *.opendb
+*.log
+*.ipch
