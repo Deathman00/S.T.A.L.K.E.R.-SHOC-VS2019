@@ -23,7 +23,6 @@ CHudItem::CHudItem(void)
 	m_dwStateTime		= 0;
 	m_bRenderHud		= true;
 
-	m_bInertionEnable	= true;
 	m_bInertionAllow	= true;
 }
 
@@ -52,7 +51,7 @@ void CHudItem::Load(LPCSTR section)
 	if(*hud_sect){
 		m_pHUD			= xr_new<CWeaponHUD> (this);
 		m_pHUD->Load	(*hud_sect);
-		if(pSettings->line_exist(*hud_sect, "allow_inertion")) 
+		if (pSettings->line_exist(*hud_sect, "allow_inertion"))
 			m_bInertionAllow = !!pSettings->r_bool(*hud_sect, "allow_inertion");
 	}else{
 		m_pHUD = NULL;
@@ -189,24 +188,20 @@ void CHudItem::UpdateHudAdditonal		(Fmatrix& hud_trans)
 {
 }
 
-void CHudItem::StartHudInertion()
-{
-	m_bInertionEnable = true;
-}
-void CHudItem::StopHudInertion()
-{
-	m_bInertionEnable = false;
-}
-
 static const float PITCH_OFFSET_R	= 0.017f;
 static const float PITCH_OFFSET_N	= 0.012f;
 static const float PITCH_OFFSET_D	= 0.02f;
+
+static const float ZOOM_PITCH_OFFSET_R = 0.0000f;
+static const float ZOOM_PITCH_OFFSET_N = 0.00024f;
+static const float ZOOM_PITCH_OFFSET_D = 0.075f;
+
 static const float ORIGIN_OFFSET	= -0.05f;
 static const float TENDTO_SPEED		= 5.f;
 
 void CHudItem::UpdateHudInertion		(Fmatrix& hud_trans)
 {
-	if (m_pHUD && m_bInertionAllow && m_bInertionEnable){
+	if (m_pHUD && m_bInertionAllow){
 		Fmatrix								xform;//,xform_orig; 
 		Fvector& origin						= hud_trans.c; 
 		xform								= hud_trans;
@@ -233,9 +228,19 @@ void CHudItem::UpdateHudInertion		(Fmatrix& hud_trans)
 
 		// pitch compensation
 		float pitch		= angle_normalize_signed(xform.k.getP());
-		origin.mad		(xform.k,	-pitch * PITCH_OFFSET_D);
-		origin.mad		(xform.i,	-pitch * PITCH_OFFSET_R);
-		origin.mad		(xform.j,	-pitch * PITCH_OFFSET_N);
+
+		if (Actor()->IsZoomAimingMode())
+		{
+			origin.mad(xform.k, -pitch * ZOOM_PITCH_OFFSET_D);
+			origin.mad(xform.i, -pitch * ZOOM_PITCH_OFFSET_R);
+			origin.mad(xform.j, -pitch * ZOOM_PITCH_OFFSET_N);
+		}
+		else
+		{
+			origin.mad(xform.k, -pitch * PITCH_OFFSET_D);
+			origin.mad(xform.i, -pitch * PITCH_OFFSET_R);
+			origin.mad(xform.j, -pitch * PITCH_OFFSET_N);
+		}
 
 		// calc moving inertion
 	}
