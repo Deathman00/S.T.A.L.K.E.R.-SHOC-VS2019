@@ -16,7 +16,7 @@
 #include "gamefont.h"
 #include "render.h"
 
-float	psCamInert = 0.7f;
+float	psCamInert = 0.5f;
 float	psCamSlideInert = 0.25f;
 
 SPPInfo		pp_identity;
@@ -200,22 +200,29 @@ void CCameraManager::Update(const CCameraBase* C)
 {
 	Update(C->vPosition, C->vDirection, C->vNormal, C->f_fov, C->f_aspect, g_pGamePersistent->Environment().CurrentEnv.far_plane, C->m_Flags.flags);
 }
+
 void CCameraManager::Update(const Fvector& P, const Fvector& D, const Fvector& N, float fFOV_Dest, float fASPECT_Dest, float fFAR_Dest, u32 flags)
 {
 #ifdef DEBUG
 	VERIFY(dbg_upd_frame != Device.dwFrame);// already updated !!!
 	dbg_upd_frame = Device.dwFrame;
 #endif
+
 	// camera
+	clamp(psCamInert, 0.0f, 0.75f);
+
 	if (flags & CCameraBase::flPositionRigid)
 		vPosition.set(P);
 	else
 		vPosition.inertion(P, psCamInert);
-	if (flags & CCameraBase::flDirectionRigid) {
+
+	if (flags & CCameraBase::flDirectionRigid) 
+	{
 		vDirection.set(D);
 		vNormal.set(N);
 	}
-	else {
+	else 
+	{
 		vDirection.inertion(D, psCamInert);
 		vNormal.inertion(N, psCamInert);
 	}
