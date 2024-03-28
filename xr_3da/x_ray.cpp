@@ -603,11 +603,7 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance,
 	logoWindow = CreateDialog(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_STARTUP), 0, logDlgProc);
 	SetWindowPos(
 		logoWindow,
-#ifndef DEBUG
-		HWND_TOPMOST,
-#else
 		HWND_NOTOPMOST,
-#endif // NDEBUG
 		0,
 		0,
 		0,

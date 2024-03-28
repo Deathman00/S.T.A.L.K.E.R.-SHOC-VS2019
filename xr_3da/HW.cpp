@@ -437,7 +437,7 @@ void	CHW::updateWindowProps(HWND m_hWnd)
 	u32		dwWindowStyle = 0;
 	// Set window properties depending on what mode were in.
 	if (bWindowed) {
-		SetWindowLong(m_hWnd, GWL_STYLE, dwWindowStyle = (WS_BORDER | WS_DLGFRAME | WS_VISIBLE | WS_SYSMENU | WS_MINIMIZEBOX));
+		SetWindowLong(m_hWnd, GWL_STYLE, dwWindowStyle = (WS_POPUP | WS_VISIBLE));
 		// When moving from fullscreen to windowed mode, it is important to
 		// adjust the window size after recreating the device rather than
 		// beforehand to ensure that you get the window size you want.  For
@@ -477,7 +477,7 @@ void	CHW::updateWindowProps(HWND m_hWnd)
 		AdjustWindowRect(&m_rcWindowBounds, dwWindowStyle, FALSE);
 
 		SetWindowPos(m_hWnd,
-			HWND_TOP,
+			HWND_NOTOPMOST,
 			m_rcWindowBounds.left,
 			m_rcWindowBounds.top,
 			(m_rcWindowBounds.right - m_rcWindowBounds.left),
