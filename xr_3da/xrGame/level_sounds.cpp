@@ -84,6 +84,26 @@ void SMusicTrack::Load(LPCSTR fn, LPCSTR params)
 	m_PauseTime.mul		(1000);			// convert sec to ms
 }
 
+BOOL SMusicTrack::in(u32 game_time)
+{
+	// game_time -ms
+	if (m_ActiveTime.x == 0 && m_ActiveTime.y)
+		return TRUE;
+
+	bool b_cross_midnight = (m_ActiveTime.y < m_ActiveTime.x);
+	BOOL res = FALSE;
+
+	if (!b_cross_midnight)
+	{
+		res = ((int(game_time) >= m_ActiveTime.x) && (int(game_time) < m_ActiveTime.y));
+	}
+	else
+	{
+		res = ((int(game_time) >= m_ActiveTime.x) || (int(game_time) <= m_ActiveTime.y));
+	}
+	return res;
+}
+
 void	SMusicTrack::Play()
 {
 	m_SourceLeft.play_at_pos	(0,Fvector().set(-0.5f,0.f,0.3f),sm_2D);
@@ -158,47 +178,66 @@ void CLevelSoundManager::Unload()
 
 void CLevelSoundManager::Update()
 {
-	if (Device.Paused())				return;
-	if (Device.dwPrecacheFrame!=0)	return;
+	if (Device.Paused())
+		return;
+	if (Device.dwPrecacheFrame != 0)
+		return;
 	// static sounds
-	u32 game_time				= Level().GetGameDayTimeMS();
-	u32 engine_time				= Device.dwTimeGlobal;
-	
-	for (u32 k=0; k<m_StaticSounds.size(); ++k){
-		SStaticSound& s			= m_StaticSounds[k];
-		s.Update				(game_time,engine_time);
+	u32 game_time = Level().GetGameDayTimeMS();
+	u32 engine_time = Device.dwTimeGlobal;
+
+	for (u32 k = 0; k < m_StaticSounds.size(); ++k)
+	{
+		SStaticSound& s = m_StaticSounds[k];
+		s.Update(game_time, engine_time);
 	}
 
 	// music track
-	if (!m_MusicTracks.empty()){
-		if (m_CurrentTrack<0 && engine_time>m_NextTrackTime){
-			U32Vec				indices;
-			for (u32 k=0; k<m_MusicTracks.size(); ++k){
-				SMusicTrack& T	= m_MusicTracks[k];
-				if (T.IsPlaying()) T.Stop();
-				if ((0==T.m_ActiveTime.x)&&(0==T.m_ActiveTime.y)||
-					((int(game_time)>=T.m_ActiveTime.x)&&(int(game_time)<T.m_ActiveTime.y)))
+	if (!m_MusicTracks.empty())
+	{
+		if (m_CurrentTrack < 0 && engine_time > m_NextTrackTime)
+		{
+			U32Vec indices;
+			for (u32 k = 0; k < m_MusicTracks.size(); ++k)
+			{
+				SMusicTrack& T = m_MusicTracks[k];
+				if (T.IsPlaying())
+					T.Stop();
+
+				if (T.in(game_time))
 					indices.push_back(k);
+				/*
+								if ((0==T.m_ActiveTime.x) && (0==T.m_ActiveTime.y)||
+									((int(game_time)>=T.m_ActiveTime.x)&&(int(game_time)<T.m_ActiveTime.y)))
+									indices.push_back	(k);
+				*/
 			}
-			if (!indices.empty()){
-				u32 idx			= Random.randI(indices.size());
-				m_CurrentTrack	= indices[idx];
-				SMusicTrack& T	= m_MusicTracks[m_CurrentTrack];
-				T.Play			();
+			if (!indices.empty())
+			{
+				u32 idx = Random.randI(indices.size());
+				m_CurrentTrack = indices[idx];
+				SMusicTrack& T = m_MusicTracks[m_CurrentTrack];
+				T.Play();
 #ifdef DEBUG
-				Log				("- Play music track:",T.m_DbgName.c_str());
+				Log("- Play music track:", T.m_DbgName.c_str());
 #endif
-			}else{
-				m_NextTrackTime	= engine_time+10000; // next check after 10 sec
+			}
+			else
+			{
+				m_NextTrackTime = engine_time + 10000; // next check after 10 sec
 			}
 		}
-		if (m_CurrentTrack>=0){
-			SMusicTrack& T		= m_MusicTracks[m_CurrentTrack];
-			if (!T.IsPlaying()){ 
-				m_CurrentTrack	= -1;
-				m_NextTrackTime	= engine_time;
-				if (!((0==T.m_PauseTime.x)&&(0==T.m_PauseTime.y)))
-					m_NextTrackTime	+= Random.randI(T.m_PauseTime.x,T.m_PauseTime.y);
+
+		if (m_CurrentTrack >= 0)
+		{
+			SMusicTrack& T = m_MusicTracks[m_CurrentTrack];
+			if (!T.IsPlaying())
+			{
+				m_CurrentTrack = -1;
+				m_NextTrackTime = engine_time;
+
+				if (!((0 == T.m_PauseTime.x) && (0 == T.m_PauseTime.y)))
+					m_NextTrackTime += Random.randI(T.m_PauseTime.x, T.m_PauseTime.y);
 			}
 		}
 	}

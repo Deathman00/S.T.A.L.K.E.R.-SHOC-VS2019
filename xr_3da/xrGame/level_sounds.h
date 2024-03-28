@@ -32,6 +32,7 @@ struct	SMusicTrack
 	float			m_Volume;
 public:
 	void			Load			(LPCSTR fn, LPCSTR params);
+	BOOL in(u32 game_time);
 	BOOL			IsPlaying		(){return m_SourceLeft._feedback() || m_SourceRight._feedback();}
 	void			Play			();
 	void			Stop			();
