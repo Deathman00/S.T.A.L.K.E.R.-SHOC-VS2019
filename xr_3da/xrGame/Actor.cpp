@@ -897,12 +897,14 @@ void CActor::UpdateCL	()
 	}
 	if(pWeapon )
 	{
+#pragma todo("Deathman to Deathman: заменить прототипную реализацию на нормальную")
 		if(pWeapon->IsZoomed())
 		{
-			float full_fire_disp = pWeapon->GetFireDispersion(true);
+			const float zoom_fire_disp_multiplier = 0.25f;
+			float zoom_fire_disp = pWeapon->GetFireDispersion(true) * zoom_fire_disp_multiplier;
 
 			CEffectorZoomInertion* S = smart_cast<CEffectorZoomInertion*>	(Cameras().GetCamEffector(eCEZoom));
-			if(S) S->SetParams(full_fire_disp);
+			if(S) S->SetParams(zoom_fire_disp);
 
 			m_bZoomAimingMode = true;
 		}
