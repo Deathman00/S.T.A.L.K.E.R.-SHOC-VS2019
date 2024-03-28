@@ -91,16 +91,21 @@ void	CResourceManager::OnDeviceCreate(IReader* F)
 			CBlender_DESC	desc;
 			chunk->r(&desc, sizeof(desc));
 			IBlender* B = IBlender::Create(desc.CLS);
+
 			if (0 == B)
 			{
+#if defined(DEBUG) || defined(EDITOR)
 				Msg("! Renderer doesn't support blender '%s'", desc.cName);
+#endif
 			}
 			else
 			{
+#if defined(DEBUG) || defined(EDITOR)
 				if (B->getDescription().version != desc.version)
 				{
 					Msg("! Version conflict in shader '%s'", desc.cName);
 				}
+#endif
 
 				chunk->seek(0);
 				B->Load(*chunk, desc.version);
