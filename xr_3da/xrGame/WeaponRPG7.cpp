@@ -82,6 +82,13 @@ void CWeaponRPG7::ReloadMagazine()
 		CRocketLauncher::SpawnRocket(*m_sRocketSection, this);
 	}
 }
+
+void CWeaponRPG7::PlayAnimReload()
+{
+	VERIFY(GetState() == eReload);
+	m_pHUD->animPlay(random_anim(mhud.mhud_reload), FALSE, this, GetState());
+}
+
 void CWeaponRPG7::SwitchState(u32 S) 
 {
 	inherited::SwitchState(S);
