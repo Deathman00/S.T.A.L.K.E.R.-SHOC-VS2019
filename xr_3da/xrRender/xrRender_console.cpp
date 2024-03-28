@@ -61,7 +61,7 @@ float		ps_r2_ssaLOD_B				= 32.f	;
 float		ps_r2_tf_Mipbias			= 0.0f	;
 
 // R2-specific
-Flags32		ps_r2_ls_flags				= { R2FLAG_SUN | R2FLAG_SUN_TSM | R2FLAG_SUN_FOCUS | R2FLAG_SUN_IGNORE_PORTALS | R2FLAG_EXP_DONT_TEST_UNSHADOWED | R2FLAG_USE_NVSTENCIL | R2FLAG_EXP_SPLIT_SCENE | R2FLAG_EXP_MT_CALC};	// r2-only
+Flags32		ps_r2_ls_flags				= { R2FLAG_SUN | R2FLAG_SUN_TSM | R2FLAG_SUN_FOCUS | R2FLAG_SUN_IGNORE_PORTALS | R2FLAG_SUN_DETAILS | R2FLAG_EXP_DONT_TEST_UNSHADOWED | R2FLAG_USE_NVSTENCIL | R2FLAG_EXP_SPLIT_SCENE | R2FLAG_EXP_MT_CALC};	// r2-only
 float		ps_r2_df_parallax_h			= 0.02f;
 float		ps_r2_df_parallax_range		= 75.f;
 float		ps_r2_tonemap_middlegray	= 0.25f;			// r2-only

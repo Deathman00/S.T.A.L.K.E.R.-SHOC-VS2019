@@ -11,10 +11,6 @@ void	CRenderTarget::phase_scene_prepare	()
 // begin
 void	CRenderTarget::phase_scene_begin	()
 {
-	// Enable ANISO
-	for (u32 i=0; i<HW.Caps.raster.dwStages; i++)
-		CHK_DX(HW.pDevice->SetSamplerState( i, D3DSAMP_MAXANISOTROPY, ps_r__tf_Anisotropic	));
-
 	// Targets, use accumulator for temporary storage
 	if (RImplementation.o.albedo_wo)	u_setrt		(rt_Position,	rt_Normal,	rt_Accumulator,	HW.pBaseZB);
 	else								u_setrt		(rt_Position,	rt_Normal,	rt_Color,		HW.pBaseZB);
@@ -28,6 +24,13 @@ void	CRenderTarget::phase_scene_begin	()
 	RCache.set_ColorWriteEnable			( );
 }
 
+void	CRenderTarget::enable_aniso()
+{
+	// Disable ANISO
+	for (u32 i = 0; i < HW.Caps.raster.dwStages; i++)
+		CHK_DX(HW.pDevice->SetSamplerState(i, D3DSAMP_MAXANISOTROPY, ps_r__tf_Anisotropic));
+}
+
 void	CRenderTarget::disable_aniso		()
 {
 	// Disable ANISO
@@ -38,8 +41,6 @@ void	CRenderTarget::disable_aniso		()
 // end
 void	CRenderTarget::phase_scene_end		()
 {
-	disable_aniso	();
-
 	if (!RImplementation.o.albedo_wo)		return;
 
 	// transfer from "rt_Accumulator" into "rt_Color"

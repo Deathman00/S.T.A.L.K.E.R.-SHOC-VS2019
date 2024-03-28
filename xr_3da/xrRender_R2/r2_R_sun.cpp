@@ -861,6 +861,11 @@ void CRender::render_sun				()
 			RCache.set_xform_view				(Fidentity					);
 			RCache.set_xform_project			(fuckingsun->X.D.combine	);	
 			r_dsgraph_render_graph				(0);
+			if (ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS))
+			{
+				Details->UpdateVisibleM();
+				Details->Render();
+			}
 			fuckingsun->X.D.transluent			= FALSE;
 			if (bSpecial)						{
 				fuckingsun->X.D.transluent			= TRUE;
@@ -1065,9 +1070,11 @@ void CRender::render_sun_near	()
 			RCache.set_xform_view				(Fidentity					);
 			RCache.set_xform_project			(fuckingsun->X.D.combine	);	
 			r_dsgraph_render_graph				(0)	;
-			if (ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS))	
-				Details->UpdateVisibleM			()	;
-				Details->Render					()	;
+			if (ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS))
+			{
+				Details->UpdateVisibleM();
+				Details->Render();
+			}
 			fuckingsun->X.D.transluent			= FALSE;
 			if (bSpecial)						{
 				fuckingsun->X.D.transluent			= TRUE;

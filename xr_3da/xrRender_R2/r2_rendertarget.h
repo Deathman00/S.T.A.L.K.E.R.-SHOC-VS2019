@@ -159,6 +159,7 @@ public:
 
 	void						phase_scene_prepare		();
 	void						phase_scene_begin		();
+	void						enable_aniso();
 	void						phase_scene_end			();
 	void						phase_occq				();
 	void						phase_wallmarks			();

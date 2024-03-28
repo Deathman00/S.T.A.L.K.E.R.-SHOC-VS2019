@@ -277,15 +277,19 @@ void CRender::Render		()
 	if (!split_the_scene_to_minimize_wait)
 	{
 		// level, DO NOT SPLIT
+		Target->enable_aniso();
 		Target->phase_scene_begin				();
+		if (Details)	Details->Render();
 		r_dsgraph_render_hud					();
 		r_dsgraph_render_graph					(0);
 		r_dsgraph_render_lods					(true,true);
-		if(Details)	Details->Render				();
+		Target->disable_aniso();
 		Target->phase_scene_end					();
 	} else {
 		// level, SPLIT
+		Target->enable_aniso();
 		Target->phase_scene_begin				();
+		if (Details)	Details->Render();
 		r_dsgraph_render_graph					(0);
 		Target->disable_aniso					();
 	}
@@ -349,10 +353,11 @@ void CRender::Render		()
 		}
 
 		// level
+		Target->enable_aniso();
 		Target->phase_scene_begin				();
 		r_dsgraph_render_hud					();
 		r_dsgraph_render_lods					(true,true);
-		if(Details)	Details->Render				();
+		Target->disable_aniso();
 		Target->phase_scene_end					();
 	}
 
@@ -412,9 +417,11 @@ void CRender::render_forward				()
 		r_pmask									(false,true);			// enable priority "1"
 		phase									= PHASE_NORMAL;
 		render_main								(Device.mFullTransform,false);//
+		PortalTraverser.fade_render();					// faded-portals
+		Target->enable_aniso();
 		r_dsgraph_render_graph					(1)	;					// normal level, secondary priority
-		PortalTraverser.fade_render				()	;					// faded-portals
 		r_dsgraph_render_sorted					()	;					// strict-sorted geoms
+		Target->disable_aniso();
 		g_pGamePersistent->Environment().RenderLast()	;					// rain/thunder-bolts
 	}
 
