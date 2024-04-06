@@ -34,7 +34,7 @@ string_class luabind::detail::stack_content_by_name(lua_State* L, int start_inde
 	for (int i = start_index; i <= top; ++i)
 	{
 		object_rep* obj = is_class_object(L, i);
-		class_rep* crep = is_class_rep(L, i)?(class_rep*)lua_touserdata(L, i):0;
+		class_rep* crep = is_class_rep(L, i) ? (class_rep*)lua_touserdata(L, i) : 0;
 		if (obj == 0 && crep == 0)
 		{
 			int type = lua_type(L, i);
@@ -42,7 +42,8 @@ string_class luabind::detail::stack_content_by_name(lua_State* L, int start_inde
 		}
 		else if (obj)
 		{
-			if (obj->flags() & object_rep::constant) ret += "const ";
+			if (obj->flags() & object_rep::constant)
+				ret += "const ";
 			ret += obj->crep()->name();
 		}
 		else if (crep)
@@ -51,8 +52,8 @@ string_class luabind::detail::stack_content_by_name(lua_State* L, int start_inde
 			ret += crep->name();
 			ret += ">";
 		}
-		if (i < top) ret += ", ";
+		if (i < top)
+			ret += ", ";
 	}
 	return ret;
 }
-

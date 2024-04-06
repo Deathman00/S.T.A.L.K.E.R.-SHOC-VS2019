@@ -2,7 +2,7 @@
 #pragma hdrstop
 
 #pragma warning(push)
-#pragma warning(disable:4995)
+#pragma warning(disable : 4995)
 #include <d3dx9.h>
 #pragma warning(pop)
 
@@ -14,9 +14,15 @@
 #include "environment.h"
 
 // matrices
-#define	BIND_DECLARE(xf)	\
-class cl_xform_##xf	: public R_constant_setup {	virtual void setup (R_constant* C) { RCache.xforms.set_c_##xf (C); } }; \
-	static cl_xform_##xf	binder_##xf
+#define BIND_DECLARE(xf)                                                                                               \
+	class cl_xform_##xf : public R_constant_setup                                                                      \
+	{                                                                                                                  \
+		virtual void setup(R_constant* C)                                                                              \
+		{                                                                                                              \
+			RCache.xforms.set_c_##xf(C);                                                                               \
+		}                                                                                                              \
+	};                                                                                                                 \
+	static cl_xform_##xf binder_##xf
 BIND_DECLARE(w);
 BIND_DECLARE(v);
 BIND_DECLARE(p);
@@ -25,15 +31,16 @@ BIND_DECLARE(vp);
 BIND_DECLARE(wvp);
 
 // fog
-class cl_fog_plane : public R_constant_setup {
-	u32			marker;
-	Fvector4	result;
+class cl_fog_plane : public R_constant_setup
+{
+	u32 marker;
+	Fvector4 result;
 	virtual void setup(R_constant* C)
 	{
 		if (marker != Device.dwFrame)
 		{
 			// Plane
-			Fvector4		plane;
+			Fvector4 plane;
 			Fmatrix& M = Device.mFullTransform;
 			plane.x = -(M._14 + M._13);
 			plane.y = -(M._24 + M._23);
@@ -46,112 +53,133 @@ class cl_fog_plane : public R_constant_setup {
 			float A = g_pGamePersistent->Environment().CurrentEnv.fog_near;
 			float B = 1 / (g_pGamePersistent->Environment().CurrentEnv.fog_far - A);
 
-			result.set(-plane.x * B, -plane.y * B, -plane.z * B, 1 - (plane.w - A) * B);								// view-plane
+			result.set(-plane.x * B, -plane.y * B, -plane.z * B, 1 - (plane.w - A) * B); // view-plane
 		}
 		RCache.set_c(C, result);
 	}
 };
-static cl_fog_plane		binder_fog_plane;
+static cl_fog_plane binder_fog_plane;
 
 // fog-params
-class cl_fog_params : public R_constant_setup {
-	u32			marker;
-	Fvector4	result;
+class cl_fog_params : public R_constant_setup
+{
+	u32 marker;
+	Fvector4 result;
 	virtual void setup(R_constant* C)
 	{
 		if (marker != Device.dwFrame)
 		{
 			// Near/Far
-			float	n = g_pGamePersistent->Environment().CurrentEnv.fog_near;
-			float	f = g_pGamePersistent->Environment().CurrentEnv.fog_far;
-			float	r = 1 / (f - n);
+			float n = g_pGamePersistent->Environment().CurrentEnv.fog_near;
+			float f = g_pGamePersistent->Environment().CurrentEnv.fog_far;
+			float r = 1 / (f - n);
 			result.set(-n * r, r, r, r);
 		}
 		RCache.set_c(C, result);
 	}
-};	static cl_fog_params	binder_fog_params;
+};
+static cl_fog_params binder_fog_params;
 
 // fog-color
-class cl_fog_color : public R_constant_setup {
-	u32			marker;
-	Fvector4	result;
-	virtual void setup(R_constant* C) {
-		if (marker != Device.dwFrame) {
+class cl_fog_color : public R_constant_setup
+{
+	u32 marker;
+	Fvector4 result;
+	virtual void setup(R_constant* C)
+	{
+		if (marker != Device.dwFrame)
+		{
 			CEnvDescriptor& desc = g_pGamePersistent->Environment().CurrentEnv;
 			result.set(desc.fog_color.x, desc.fog_color.y, desc.fog_color.z, 0);
 		}
 		RCache.set_c(C, result);
 	}
-};	static cl_fog_color		binder_fog_color;
+};
+static cl_fog_color binder_fog_color;
 
 // times
-class cl_times : public R_constant_setup {
+class cl_times : public R_constant_setup
+{
 	virtual void setup(R_constant* C)
 	{
-		float 		t = Device.fTimeGlobal;
+		float t = Device.fTimeGlobal;
 		RCache.set_c(C, t, t * 10, t / 10, _sin(t));
 	}
 };
-static cl_times		binder_times;
+static cl_times binder_times;
 
 // eye-params
-class cl_eye_P : public R_constant_setup {
+class cl_eye_P : public R_constant_setup
+{
 	virtual void setup(R_constant* C)
 	{
 		Fvector& V = Device.vCameraPosition;
 		RCache.set_c(C, V.x, V.y, V.z, 1);
 	}
 };
-static cl_eye_P		binder_eye_P;
+static cl_eye_P binder_eye_P;
 
 // eye-params
-class cl_eye_D : public R_constant_setup {
+class cl_eye_D : public R_constant_setup
+{
 	virtual void setup(R_constant* C)
 	{
 		Fvector& V = Device.vCameraDirection;
 		RCache.set_c(C, V.x, V.y, V.z, 0);
 	}
 };
-static cl_eye_D		binder_eye_D;
+static cl_eye_D binder_eye_D;
 
 // eye-params
-class cl_eye_N : public R_constant_setup {
+class cl_eye_N : public R_constant_setup
+{
 	virtual void setup(R_constant* C)
 	{
 		Fvector& V = Device.vCameraTop;
 		RCache.set_c(C, V.x, V.y, V.z, 0);
 	}
 };
-static cl_eye_N		binder_eye_N;
+static cl_eye_N binder_eye_N;
 
 // D-Light0
-class cl_sun0_color : public R_constant_setup {
-	u32			marker;
-	Fvector4	result;
-	virtual void setup(R_constant* C) {
-		if (marker != Device.dwFrame) {
+class cl_sun0_color : public R_constant_setup
+{
+	u32 marker;
+	Fvector4 result;
+	virtual void setup(R_constant* C)
+	{
+		if (marker != Device.dwFrame)
+		{
 			CEnvDescriptor& desc = g_pGamePersistent->Environment().CurrentEnv;
 			result.set(desc.sun_color.x, desc.sun_color.y, desc.sun_color.z, 0);
 		}
 		RCache.set_c(C, result);
 	}
-};	static cl_sun0_color		binder_sun0_color;
-class cl_sun0_dir_w : public R_constant_setup {
-	u32			marker;
-	Fvector4	result;
-	virtual void setup(R_constant* C) {
-		if (marker != Device.dwFrame) {
+};
+static cl_sun0_color binder_sun0_color;
+class cl_sun0_dir_w : public R_constant_setup
+{
+	u32 marker;
+	Fvector4 result;
+	virtual void setup(R_constant* C)
+	{
+		if (marker != Device.dwFrame)
+		{
 			CEnvDescriptor& desc = g_pGamePersistent->Environment().CurrentEnv;
 			result.set(desc.sun_dir.x, desc.sun_dir.y, desc.sun_dir.z, 0);
 		}
 		RCache.set_c(C, result);
 	}
-};	static cl_sun0_dir_w		binder_sun0_dir_w;
-class cl_sun0_dir_e : public R_constant_setup {
-	u32			marker;
-	Fvector4	result;
-	virtual void setup(R_constant* C) {
-		if (marker != Device.dwFrame) {
+};
+static cl_sun0_dir_w binder_sun0_dir_w;
+class cl_sun0_dir_e : public R_constant_setup
+{
+	u32 marker;
+	Fvector4 result;
+	virtual void setup(R_constant* C)
+	{
+		if (marker != Device.dwFrame)
+		{
 			Fvector D;
 			CEnvDescriptor& desc = g_pGamePersistent->Environment().CurrentEnv;
 			Device.mView.transform_dir(D, desc.sun_dir);
@@ -160,34 +188,43 @@ class cl_sun0_dir_e : public R_constant_setup {
 		}
 		RCache.set_c(C, result);
 	}
-};	static cl_sun0_dir_e		binder_sun0_dir_e;
+};
+static cl_sun0_dir_e binder_sun0_dir_e;
 
 //
-class cl_amb_color : public R_constant_setup {
-	u32			marker;
-	Fvector4	result;
-	virtual void setup(R_constant* C) {
-		if (marker != Device.dwFrame) {
+class cl_amb_color : public R_constant_setup
+{
+	u32 marker;
+	Fvector4 result;
+	virtual void setup(R_constant* C)
+	{
+		if (marker != Device.dwFrame)
+		{
 			CEnvDescriptorMixer& desc = g_pGamePersistent->Environment().CurrentEnv;
 			result.set(desc.ambient.x, desc.ambient.y, desc.ambient.z, desc.weight);
 		}
 		RCache.set_c(C, result);
 	}
-};	static cl_amb_color		binder_amb_color;
-class cl_hemi_color : public R_constant_setup {
-	u32			marker;
-	Fvector4	result;
-	virtual void setup(R_constant* C) {
-		if (marker != Device.dwFrame) {
+};
+static cl_amb_color binder_amb_color;
+class cl_hemi_color : public R_constant_setup
+{
+	u32 marker;
+	Fvector4 result;
+	virtual void setup(R_constant* C)
+	{
+		if (marker != Device.dwFrame)
+		{
 			CEnvDescriptor& desc = g_pGamePersistent->Environment().CurrentEnv;
 			result.set(desc.hemi_color.x, desc.hemi_color.y, desc.hemi_color.z, desc.hemi_color.w);
 		}
 		RCache.set_c(C, result);
 	}
-};	static cl_hemi_color		binder_hemi_color;
+};
+static cl_hemi_color binder_hemi_color;
 
 // Standart constant-binding
-void	CBlender_Compile::SetMapping()
+void CBlender_Compile::SetMapping()
 {
 	// matrices
 	r_Constant("m_W", &binder_w);
@@ -225,7 +262,7 @@ void	CBlender_Compile::SetMapping()
 	// other common
 	for (u32 it = 0; it < Device.Resources->v_constant_setup.size(); it++)
 	{
-		std::pair<shared_str, R_constant_setup*>	cs = Device.Resources->v_constant_setup[it];
+		std::pair<shared_str, R_constant_setup*> cs = Device.Resources->v_constant_setup[it];
 		r_Constant(*cs.first, cs.second);
 	}
 }

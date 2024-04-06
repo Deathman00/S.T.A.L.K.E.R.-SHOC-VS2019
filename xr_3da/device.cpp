@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "frustum.h"
 
-#pragma warning(disable:4995)
+#pragma warning(disable : 4995)
 // mmsystem.h
 #define MMNOSOUND
 #define MMNOMIDI
@@ -11,7 +11,7 @@
 #include <mmsystem.h>
 // d3dx9.h
 #include <d3dx9.h>
-#pragma warning(default:4995)
+#pragma warning(default : 4995)
 
 #include "x_ray.h"
 #include "render.h"
@@ -19,20 +19,21 @@
 ENGINE_API CRenderDevice Device;
 ENGINE_API BOOL g_bRendering = FALSE;
 
-BOOL		g_bLoaded = FALSE;
-ref_light	precache_light = 0;
+BOOL g_bLoaded = FALSE;
+ref_light precache_light = 0;
 
 BOOL CRenderDevice::Begin()
 {
 #ifndef DEDICATED_SERVER
 	HW.Validate();
-	HRESULT	_hr = HW.pDevice->TestCooperativeLevel();
+	HRESULT _hr = HW.pDevice->TestCooperativeLevel();
 	if (FAILED(_hr))
 	{
 		// If the device was lost, do not render until we get it back
-		if (D3DERR_DEVICELOST == _hr) {
+		if (D3DERR_DEVICELOST == _hr)
+		{
 			Sleep(33);
-			return	FALSE;
+			return FALSE;
 		}
 
 		// Check if the device is ready to be reset
@@ -46,21 +47,20 @@ BOOL CRenderDevice::Begin()
 	RCache.OnFrameBegin();
 	RCache.set_CullMode(CULL_CW);
 	RCache.set_CullMode(CULL_CCW);
-	if (HW.Caps.SceneMode)	overdrawBegin();
+	if (HW.Caps.SceneMode)
+		overdrawBegin();
 	FPU::m24r();
 	g_bRendering = TRUE;
 #endif
-	return		TRUE;
+	return TRUE;
 }
 
 void CRenderDevice::Clear()
 {
 	CHK_DX(HW.pDevice->Clear(0, 0,
-		D3DCLEAR_ZBUFFER |
-		(psDeviceFlags.test(rsClearBB) ? D3DCLEAR_TARGET : 0) |
-		(HW.Caps.bStencil ? D3DCLEAR_STENCIL : 0),
-		D3DCOLOR_XRGB(0, 0, 0), 1, 0
-	));
+							 D3DCLEAR_ZBUFFER | (psDeviceFlags.test(rsClearBB) ? D3DCLEAR_TARGET : 0) |
+								 (HW.Caps.bStencil ? D3DCLEAR_STENCIL : 0),
+							 D3DCOLOR_XRGB(0, 0, 0), 1, 0));
 }
 
 extern void CheckPrivilegySlowdown();
@@ -72,7 +72,8 @@ void CRenderDevice::End(void)
 
 	VERIFY(HW.pDevice);
 
-	if (HW.Caps.SceneMode)	overdrawEnd();
+	if (HW.Caps.SceneMode)
+		overdrawEnd();
 
 	//
 	if (dwPrecacheFrame)
@@ -84,8 +85,10 @@ void CRenderDevice::End(void)
 		{
 			Gamma.Update();
 
-			if (precache_light) precache_light->set_active(false);
-			if (precache_light) precache_light.destroy();
+			if (precache_light)
+				precache_light->set_active(false);
+			if (precache_light)
+				precache_light.destroy();
 			::Sound->set_master_volume(1.f);
 			pApp->destroy_loading_shaders();
 			Resources->DestroyNecessaryTextures();
@@ -102,20 +105,24 @@ void CRenderDevice::End(void)
 	CHK_DX(HW.pDevice->EndScene());
 
 	HRESULT _hr = HW.pDevice->Present(NULL, NULL, NULL, NULL);
-	if (D3DERR_DEVICELOST == _hr)	return;			// we will handle this later
-	//R_ASSERT2		(SUCCEEDED(_hr),	"Presentation failed. Driver upgrade needed?");
+	if (D3DERR_DEVICELOST == _hr)
+		return; // we will handle this later
+				// R_ASSERT2		(SUCCEEDED(_hr),	"Presentation failed. Driver upgrade needed?");
 #endif
 }
 
-volatile u32	mt_Thread_marker = 0x12345678;
-void 			mt_Thread(void* ptr) {
-	while (true) {
+volatile u32 mt_Thread_marker = 0x12345678;
+void mt_Thread(void* ptr)
+{
+	while (true)
+	{
 		// waiting for Device permission to execute
 		Device.mt_csEnter.Enter();
 
-		if (Device.mt_bMustExit) {
-			Device.mt_bMustExit = FALSE;				// Important!!!
-			Device.mt_csEnter.Leave();					// Important!!!
+		if (Device.mt_bMustExit)
+		{
+			Device.mt_bMustExit = FALSE; // Important!!!
+			Device.mt_csEnter.Leave();	 // Important!!!
 			return;
 		}
 		// we has granted permission to execute
@@ -138,7 +145,8 @@ void 			mt_Thread(void* ptr) {
 #include "igame_level.h"
 void CRenderDevice::PreCache(u32 amount)
 {
-	if (HW.Caps.bForceGPU_REF)	amount = 0;
+	if (HW.Caps.bForceGPU_REF)
+		amount = 0;
 #ifdef DEDICATED_SERVER
 	amount = 0;
 #endif
@@ -157,14 +165,14 @@ void CRenderDevice::PreCache(u32 amount)
 
 int g_svDedicateServerUpdateReate = 100;
 
-ENGINE_API xr_list<LOADING_EVENT>			g_loading_events;
+ENGINE_API xr_list<LOADING_EVENT> g_loading_events;
 
 void CRenderDevice::Run()
 {
 	//	DUMP_PHASE;
 	g_bLoaded = FALSE;
-	MSG				msg;
-	BOOL			bGotMsg;
+	MSG msg;
+	BOOL bGotMsg;
 	Log("Starting engine...");
 	thread_name("X-RAY Primary thread");
 
@@ -173,15 +181,16 @@ void CRenderDevice::Run()
 	Timer_MM_Delta = 0;
 	{
 		u32 time_mm = timeGetTime();
-		while (timeGetTime() == time_mm);			// wait for next tick
+		while (timeGetTime() == time_mm)
+			; // wait for next tick
 		u32 time_system = timeGetTime();
 		u32 time_local = TimerAsync();
 		Timer_MM_Delta = time_system - time_local;
 	}
 
 	// Start all threads
-//	InitializeCriticalSection	(&mt_csEnter);
-//	InitializeCriticalSection	(&mt_csLeave);
+	//	InitializeCriticalSection	(&mt_csEnter);
+	//	InitializeCriticalSection	(&mt_csLeave);
 	mt_csEnter.Enter();
 	mt_bMustExit = FALSE;
 	thread_spawn(mt_Thread, "X-RAY Secondary thread", 0, 0);
@@ -203,15 +212,18 @@ void CRenderDevice::Run()
 		}
 		else
 		{
-			if (b_is_Ready) {
+			if (b_is_Ready)
+			{
 #ifdef DEDICATED_SERVER
 				u32 FrameStartTime = TimerGlobal.GetElapsed_ms();
 #endif
-				if (psDeviceFlags.test(rsStatistic))	g_bEnableStatGather = TRUE;
-				else									g_bEnableStatGather = FALSE;
+				if (psDeviceFlags.test(rsStatistic))
+					g_bEnableStatGather = TRUE;
+				else
+					g_bEnableStatGather = FALSE;
 				if (g_loading_events.size())
 				{
-					if (g_loading_events.front() ())
+					if (g_loading_events.front()())
 						g_loading_events.pop_front();
 
 					pApp->LoadDraw();
@@ -225,7 +237,8 @@ void CRenderDevice::Run()
 				{
 					float factor = float(dwPrecacheFrame) / float(dwPrecacheTotal);
 					float angle = PI_MUL_2 * factor;
-					vCameraDirection.set(_sin(angle), 0, _cos(angle));	vCameraDirection.normalize();
+					vCameraDirection.set(_sin(angle), 0, _cos(angle));
+					vCameraDirection.normalize();
 					vCameraTop.set(0, 1, 0);
 					vCameraRight.crossproduct(vCameraTop, vCameraDirection);
 
@@ -248,10 +261,13 @@ void CRenderDevice::Run()
 #ifndef DEDICATED_SERVER
 				Statistic->RenderTOTAL_Real.FrameStart();
 				Statistic->RenderTOTAL_Real.Begin();
-				if (b_is_Active) {
-					if (Begin()) {
+				if (b_is_Active)
+				{
+					if (Begin())
+					{
 						seqRender.Process(rp_Render);
-						if (psDeviceFlags.test(rsCameraPos) || psDeviceFlags.test(rsStatistic) || Statistic->errors.size())
+						if (psDeviceFlags.test(rsCameraPos) || psDeviceFlags.test(rsStatistic) ||
+							Statistic->errors.size())
 							Statistic->Show();
 						End();
 					}
@@ -267,7 +283,8 @@ void CRenderDevice::Run()
 				mt_csLeave.Leave();
 
 				// Ensure, that second thread gets chance to execute anyway
-				if (dwFrame != mt_Thread_marker) {
+				if (dwFrame != mt_Thread_marker)
+				{
 					for (u32 pit = 0; pit < Device.seqParallel.size(); pit++)
 						Device.seqParallel[pit]();
 					Device.seqParallel.clear_not_free();
@@ -304,10 +321,12 @@ void CRenderDevice::Run()
 				//				Msg(FPS_str);
 #endif
 			}
-			else {
+			else
+			{
 				Sleep(100);
 			}
-			if (!b_is_Active)	Sleep(1);
+			if (!b_is_Active)
+				Sleep(1);
 		}
 	}
 	seqAppEnd.Process(rp_AppEnd);
@@ -315,7 +334,8 @@ void CRenderDevice::Run()
 	// Stop Balance-Thread
 	mt_bMustExit = TRUE;
 	mt_csEnter.Leave();
-	while (mt_bMustExit)	Sleep(0);
+	while (mt_bMustExit)
+		Sleep(0);
 	//	DeleteCriticalSection	(&mt_csEnter);
 	//	DeleteCriticalSection	(&mt_csLeave);
 }
@@ -326,25 +346,31 @@ void CRenderDevice::FrameMove()
 	dwFrame++;
 
 	dwTimeContinual = TimerMM.GetElapsed_ms();
-	if (psDeviceFlags.test(rsConstantFPS)) {
+	if (psDeviceFlags.test(rsConstantFPS))
+	{
 		// 20ms = 50fps
 		fTimeDelta = 0.020f;
 		fTimeGlobal += 0.020f;
 		dwTimeDelta = 20;
 		dwTimeGlobal += 20;
 	}
-	else {
+	else
+	{
 		// Timer
-		float fPreviousFrameTime = Timer.GetElapsed_sec(); Timer.Start();	// previous frame
-		fTimeDelta = 0.1f * fTimeDelta + 0.9f * fPreviousFrameTime;			// smooth random system activity - worst case ~7% error
-		if (fTimeDelta > .1f) fTimeDelta = .1f;									// limit to 15fps minimum
+		float fPreviousFrameTime = Timer.GetElapsed_sec();
+		Timer.Start(); // previous frame
+		fTimeDelta =
+			0.1f * fTimeDelta + 0.9f * fPreviousFrameTime; // smooth random system activity - worst case ~7% error
+		if (fTimeDelta > .1f)
+			fTimeDelta = .1f; // limit to 15fps minimum
 
-		if (Paused())		fTimeDelta = 0.0f;
+		if (Paused())
+			fTimeDelta = 0.0f;
 
 		//		u64	qTime		= TimerGlobal.GetElapsed_clk();
-		fTimeGlobal = TimerGlobal.GetElapsed_sec(); //float(qTime)*CPU::cycles2seconds;
-		u32	_old_global = dwTimeGlobal;
-		dwTimeGlobal = TimerGlobal.GetElapsed_ms();	//u32((qTime*u64(1000))/CPU::cycles_per_second);
+		fTimeGlobal = TimerGlobal.GetElapsed_sec(); // float(qTime)*CPU::cycles2seconds;
+		u32 _old_global = dwTimeGlobal;
+		dwTimeGlobal = TimerGlobal.GetElapsed_ms(); // u32((qTime*u64(1000))/CPU::cycles_per_second);
 		dwTimeDelta = dwTimeGlobal - _old_global;
 	}
 
@@ -370,10 +396,12 @@ void CRenderDevice::Pause(BOOL bOn, BOOL bTimer, BOOL bSound, LPCSTR reason)
 {
 	static int snd_emitters_ = -1;
 
-	if (g_bBenchmark)	return;
+	if (g_bBenchmark)
+		return;
 
 #ifdef DEBUG
-	Msg("pause [%s] timer=[%s] sound=[%s] reason=%s", bOn ? "ON" : "OFF", bTimer ? "ON" : "OFF", bSound ? "ON" : "OFF", reason);
+	Msg("pause [%s] timer=[%s] sound=[%s] reason=%s", bOn ? "ON" : "OFF", bTimer ? "ON" : "OFF", bSound ? "ON" : "OFF",
+		reason);
 #endif // DEBUG
 
 #ifndef DEDICATED_SERVER
@@ -386,7 +414,8 @@ void CRenderDevice::Pause(BOOL bOn, BOOL bTimer, BOOL bSound, LPCSTR reason)
 		if (bTimer && g_pGamePersistent->CanBePaused())
 			g_pauseMngr.Pause(TRUE);
 
-		if (bSound) {
+		if (bSound)
+		{
 			snd_emitters_ = ::Sound->pause_emitters(true);
 #ifdef DEBUG
 			Log("snd_emitters_[true]", snd_emitters_);
@@ -400,14 +429,15 @@ void CRenderDevice::Pause(BOOL bOn, BOOL bTimer, BOOL bSound, LPCSTR reason)
 
 		if (bSound)
 		{
-			if (snd_emitters_ > 0) //avoid crash
+			if (snd_emitters_ > 0) // avoid crash
 			{
 				snd_emitters_ = ::Sound->pause_emitters(false);
 #ifdef DEBUG
 				Log("snd_emitters_[false]", snd_emitters_);
 #endif // DEBUG
 			}
-			else {
+			else
+			{
 #ifdef DEBUG
 				Log("Sound->pause_emitters underflow");
 #endif // DEBUG

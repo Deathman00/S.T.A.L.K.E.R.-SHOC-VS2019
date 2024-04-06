@@ -1,20 +1,20 @@
 #include "gsCommon.h"
 #include "gsAvailable.h"
 
-#define PACKET_TYPE    0x09
-#define MASTER_PORT   27900
-#define MAX_RETRIES       1
-#define TIMEOUT_TIME   2000
+#define PACKET_TYPE 0x09
+#define MASTER_PORT 27900
+#define MAX_RETRIES 1
+#define TIMEOUT_TIME 2000
 
 // this is the global var that the SDKs check
 // to see if they should communicate with the backend
-GSIACResult __GSIACResult	= GSIACWaiting;
+GSIACResult __GSIACResult = GSIACWaiting;
 
 // this makes the gamename available to all of the SDKs
-char __GSIACGamename[64]	= {0};
+char __GSIACGamename[64] = {0};
 
 // this allows devs to do their own hostname resolution
-char GSIACHostname[64]		= {0};
+char GSIACHostname[64] = {0};
 
 // used to keep state during the check
 static struct
@@ -27,7 +27,7 @@ static struct
 	int retryCount;
 } AC;
 
-static int get_sockaddrin(const char * hostname, int port, SOCKADDR_IN * saddr)
+static int get_sockaddrin(const char* hostname, int port, SOCKADDR_IN* saddr)
 {
 	GS_ASSERT(hostname)
 	GS_ASSERT(saddr)
@@ -35,13 +35,13 @@ static int get_sockaddrin(const char * hostname, int port, SOCKADDR_IN * saddr)
 	saddr->sin_family = AF_INET;
 	saddr->sin_port = htons((unsigned short)port);
 	saddr->sin_addr.s_addr = inet_addr(hostname);
-	
-	if(saddr->sin_addr.s_addr == INADDR_NONE)
+
+	if (saddr->sin_addr.s_addr == INADDR_NONE)
 	{
-		HOSTENT * host = gethostbyname(hostname);
-		if(!host)
+		HOSTENT* host = gethostbyname(hostname);
+		if (!host)
 			return 0;
-		saddr->sin_addr.s_addr = *(unsigned int *)host->h_addr_list[0];
+		saddr->sin_addr.s_addr = *(unsigned int*)host->h_addr_list[0];
 	}
 
 	return 1;
@@ -49,11 +49,11 @@ static int get_sockaddrin(const char * hostname, int port, SOCKADDR_IN * saddr)
 
 static void SendPacket(void)
 {
-	sendto(AC.sock, AC.packet, AC.packetLen, 0, (SOCKADDR *)&AC.address, sizeof(AC.address));
+	sendto(AC.sock, AC.packet, AC.packetLen, 0, (SOCKADDR*)&AC.address, sizeof(AC.address));
 	AC.sendTime = current_time();
 }
 
-void GSIStartAvailableCheckA(const char * gamename)
+void GSIStartAvailableCheckA(const char* gamename)
 {
 	char hostname[64];
 	int override;
@@ -73,17 +73,17 @@ void GSIStartAvailableCheckA(const char * gamename)
 
 	// setup the hostname
 	override = GSIACHostname[0];
-	if(!override)
+	if (!override)
 		sprintf(hostname, "%s.available." GSI_DOMAIN_NAME, gamename);
 
 	// get the master address
-	rcode = get_sockaddrin(override?GSIACHostname:hostname, MASTER_PORT, &AC.address);
-	if(!rcode)
+	rcode = get_sockaddrin(override ? GSIACHostname : hostname, MASTER_PORT, &AC.address);
+	if (!rcode)
 		return;
 
 	// create the socket
 	AC.sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-	if(AC.sock == INVALID_SOCKET)
+	if (AC.sock == INVALID_SOCKET)
 		return;
 
 	// setup our packet
@@ -99,7 +99,7 @@ void GSIStartAvailableCheckA(const char * gamename)
 	AC.retryCount = 0;
 }
 #ifdef GSI_UNICODE
-void GSIStartAvailableCheckW(const unsigned short * gamename)
+void GSIStartAvailableCheckW(const unsigned short* gamename)
 {
 	char gamename_A[32];
 	GS_ASSERT(gamename)
@@ -110,24 +110,24 @@ void GSIStartAvailableCheckW(const unsigned short * gamename)
 }
 #endif
 
-static int HandlePacket(char * packet, int len, SOCKADDR_IN * address, int * disabledservices)
+static int HandlePacket(char* packet, int len, SOCKADDR_IN* address, int* disabledservices)
 {
 	int bitfield;
 
 	// check the length
-	if(len < 7)
+	if (len < 7)
 		return 1;
 
 	// check the IP
-	if(memcmp(&address->sin_addr, &AC.address.sin_addr, sizeof(IN_ADDR)) != 0)
+	if (memcmp(&address->sin_addr, &AC.address.sin_addr, sizeof(IN_ADDR)) != 0)
 		return 1;
 
 	// check the port
-	if(address->sin_port != AC.address.sin_port)
+	if (address->sin_port != AC.address.sin_port)
 		return 1;
 
 	// check the header
-	if(memcmp(packet, "\xFE\xFD\x09", 3) != 0)
+	if (memcmp(packet, "\xFE\xFD\x09", 3) != 0)
 		return 1;
 
 	// read out the bitfield
@@ -152,29 +152,29 @@ GSIACResult GSIAvailableCheckThink(void)
 	int disabledservices;
 
 	// if we don't have a sock, possibly because of an initialization error, default to available
-	if(AC.sock == INVALID_SOCKET)
+	if (AC.sock == INVALID_SOCKET)
 	{
 		__GSIACResult = GSIACAvailable;
 		return __GSIACResult;
 	}
 
 	// did we get a response?
-	if(CanReceiveOnSocket(AC.sock))
+	if (CanReceiveOnSocket(AC.sock))
 	{
 		// read it from the socket
-		rcode = (int)recvfrom(AC.sock, packet, (int)sizeof(packet), 0, (SOCKADDR *)&address, &len);
+		rcode = (int)recvfrom(AC.sock, packet, (int)sizeof(packet), 0, (SOCKADDR*)&address, &len);
 
 		// verify the packet
 		rcode = HandlePacket(packet, rcode, &address, &disabledservices);
-		if(rcode == 0)
+		if (rcode == 0)
 		{
 			// we got a valid response, clean up
 			closesocket(AC.sock);
 
 			// set the result based on the bit flags
-			if(disabledservices & 1)
+			if (disabledservices & 1)
 				__GSIACResult = GSIACUnavailable;
-			else if(disabledservices & 2)
+			else if (disabledservices & 2)
 				__GSIACResult = GSIACTemporarilyUnavailable;
 			else
 				__GSIACResult = GSIACAvailable;
@@ -185,10 +185,10 @@ GSIACResult GSIAvailableCheckThink(void)
 	}
 
 	// check for a timeout
-	if(current_time() > (AC.sendTime + TIMEOUT_TIME))
+	if (current_time() > (AC.sendTime + TIMEOUT_TIME))
 	{
 		// check for too many retries
-		if(AC.retryCount == MAX_RETRIES)
+		if (AC.retryCount == MAX_RETRIES)
 		{
 			// default to available
 			closesocket(AC.sock);
@@ -206,7 +206,7 @@ GSIACResult GSIAvailableCheckThink(void)
 
 void GSICancelAvailableCheck(void)
 {
-	if(AC.sock != INVALID_SOCKET)
+	if (AC.sock != INVALID_SOCKET)
 	{
 		closesocket(AC.sock);
 		AC.sock = INVALID_SOCKET;

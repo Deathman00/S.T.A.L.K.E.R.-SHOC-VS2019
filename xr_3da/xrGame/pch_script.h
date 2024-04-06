@@ -16,15 +16,16 @@
 //#pragma warning(disable:4530)
 //#pragma warning(disable:4267)
 
-extern "C" {
-	#include <lua.h>
-	#include <lualib.h>
-	#include <lauxlib.h>
-	#include <luajit.h>
+extern "C"
+{
+#include <lua.h>
+#include <lualib.h>
+#include <lauxlib.h>
+#include <luajit.h>
 };
 
 #pragma warning(push)
-#pragma warning(disable:4995)
+#pragma warning(disable : 4995)
 #include <luabind/luabind.hpp>
 #pragma warning(pop)
 

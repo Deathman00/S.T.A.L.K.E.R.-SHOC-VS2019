@@ -7,17 +7,19 @@
 #pragma once
 #include "artifact.h"
 
-class CMercuryBall : public CArtefact 
+class CMercuryBall : public CArtefact
 {
-private:
+  private:
 	typedef CArtefact inherited;
-public:
+
+  public:
 	CMercuryBall(void);
 	virtual ~CMercuryBall(void);
 
-	virtual void Load				(LPCSTR section);
-protected:
-	virtual void	UpdateCLChild	();
+	virtual void Load(LPCSTR section);
+
+  protected:
+	virtual void UpdateCLChild();
 
 	//врем€ последнего обновлени€ поведени€ шара
 	ALife::_TIME_ID m_timeLastUpdate;
@@ -38,7 +40,7 @@ protected:
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // –тутный шар
 // ѕо€вл€етс€ после выброса, держитс€ недолго, после чего испар€етс€.
-// ÷ены:  от 50 до 200 рублей, в зависимости от размера 
+// ÷ены:  от 50 до 200 рублей, в зависимости от размера
 // —пецифика: опасное аномальное образование, хранить только в защищенном контейнере,
 // например в капсуле R1.
 class CMercuryBall : public CGameObject {
@@ -50,7 +52,7 @@ public:
 	virtual void OnH_A_Chield();
 	virtual void OnH_B_Independent(bool just_before_destroy);
 
-	
+
 	virtual BOOL			net_Spawn			(CSE_Abstract* DC);
 };
 */
