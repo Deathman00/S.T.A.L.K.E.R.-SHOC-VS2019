@@ -580,7 +580,7 @@ IC float MgcSqrDistance(const Fvector& rkPoint, const Fvector& orig, const Fvect
 			}
 		}
 		else
-		{	// region 0
+		{ // region 0
 			// minimum at interior point
 			float fInvDet = 1.0f / fDet;
 			fS *= fInvDet;

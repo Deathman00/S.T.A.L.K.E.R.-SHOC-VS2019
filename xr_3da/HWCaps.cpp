@@ -4,6 +4,105 @@
 #include "hwcaps.h"
 #include "hw.h"
 
+#ifndef _EDITOR
+#include "NVAPI/nvapi.h"
+#include "ATI/atimgpud.h"
+
+#pragma comment(lib, "nvapi")
+#pragma comment(lib, "atimgpud_mtdll_x86")
+#endif
+
+namespace
+{
+#ifndef _EDITOR
+u32 GetNVGpuNum()
+{
+	NvLogicalGpuHandle logicalGPUs[NVAPI_MAX_LOGICAL_GPUS];
+	NvU32 logicalGPUCount;
+	NvPhysicalGpuHandle physicalGPUs[NVAPI_MAX_PHYSICAL_GPUS];
+	NvU32 physicalGPUCount;
+
+	//	int result = NVAPI_OK;
+
+	int iGpuNum = 0;
+
+	NvAPI_Status status;
+	status = NvAPI_Initialize();
+
+	if (status != NVAPI_OK)
+	{
+		Msg("* NVAPI is missing.");
+		return iGpuNum;
+	}
+
+	// enumerate logical gpus
+	status = NvAPI_EnumLogicalGPUs(logicalGPUs, &logicalGPUCount);
+	if (status != NVAPI_OK)
+	{
+		return iGpuNum;
+	}
+
+	// enumerate physical gpus
+	status = NvAPI_EnumPhysicalGPUs(physicalGPUs, &physicalGPUCount);
+	if (status != NVAPI_OK)
+	{
+		return iGpuNum;
+	}
+
+	Msg("* NVidia MGPU: Logical(%d), Physical(%d)", logicalGPUCount, physicalGPUCount);
+
+	//	Assume that we are running on logical GPU with most physical GPUs connected.
+	for (u32 i = 0; i < logicalGPUCount; ++i)
+	{
+		status = NvAPI_GetPhysicalGPUsFromLogicalGPU(logicalGPUs[i], physicalGPUs, &physicalGPUCount);
+		if (status == NVAPI_OK)
+			iGpuNum = _max(iGpuNum, physicalGPUCount);
+	}
+
+	if (iGpuNum > 1)
+	{
+		Msg("* NVidia MGPU: %d-Way SLI detected.", iGpuNum);
+	}
+
+	return iGpuNum;
+}
+
+u32 GetATIGpuNum()
+{
+	int iGpuNum = AtiMultiGPUAdapters();
+
+	if (iGpuNum > 1)
+	{
+		Msg("* ATI MGPU: %d-Way CrossFire detected.", iGpuNum);
+	}
+
+	return iGpuNum;
+}
+
+u32 GetGpuNum()
+{
+	u32 GPUNum = GetNVGpuNum();
+
+	GPUNum = _max(GPUNum, GetATIGpuNum());
+
+	GPUNum = _min(GPUNum, CHWCaps::MAX_GPUS);
+
+	//	It's vital to have at least one GPU, else
+	//	code will fail.
+	VERIFY(GPUNum > 0);
+
+	Msg("* Starting rendering as %d-GPU", GPUNum);
+
+	return GPUNum;
+}
+#else
+u32 GetGpuNum()
+{
+	return 1;
+}
+#endif
+} // namespace
+
 void CHWCaps::Update()
 {
 	D3DCAPS9 caps;
@@ -114,5 +213,10 @@ void CHWCaps::Update()
 		dwMaxStencilValue = (1 << 8) - 1;
 	}
 
+	HW.pD3D->CheckDeviceMultiSampleType(HW.DevAdapter, HW.DevT, HW.Caps.fTarget, FALSE, D3DMULTISAMPLE_NONMASKABLE,
+										&max_coverage);
+	max_coverage = max_coverage - 1; // get real max coverage
+
 	// DEV INFO
+	iGPUNum = GetGpuNum();
 }

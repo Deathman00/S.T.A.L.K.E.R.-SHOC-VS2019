@@ -119,7 +119,7 @@ BOOL CTheoraSurface::Load(const char* fname)
 		}
 #endif
 		//.		VERIFY3			(btwIsPow2(m_rgb->t_info.frame_width)&&btwIsPow2(m_rgb->t_info.frame_height),"Invalid
-		//size.",fname);
+		// size.",fname);
 		tm_total = m_rgb->tm_total;
 		VERIFY(0 != tm_total);
 		// reset playback

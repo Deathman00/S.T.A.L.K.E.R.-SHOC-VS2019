@@ -3997,7 +3997,7 @@ static void* internal_memalign(mstate m, size_t alignment, size_t bytes)
 			if (PREACTION(m))
 				return 0;
 			if ((((size_t)(mem)) % alignment) != 0)
-			{	/* misaligned */
+			{ /* misaligned */
 				/*
 				  Find an aligned spot inside chunk.  Since we need to give
 				  back leading space in a chunk of at least MIN_CHUNK_SIZE, if

@@ -4,8 +4,14 @@
 
 #define CAP_VERSION(a, b) (u32(a) * 10 + u32(b))
 
-class ENGINE_API CHWCaps
+class CHWCaps
 {
+  public:
+	enum
+	{
+		MAX_GPUS = 8
+	};
+
   public:
 	struct caps_Geometry
 	{
@@ -36,6 +42,8 @@ class ENGINE_API CHWCaps
 	BOOL bForceGPU_NonPure;
 	BOOL SceneMode;
 
+	u32 iGPUNum;
+
 	// device format
 	D3DFORMAT fTarget;
 	D3DFORMAT fDepth;
@@ -48,6 +56,8 @@ class ENGINE_API CHWCaps
 	u16 raster_major;
 	u16 raster_minor;
 	caps_Raster raster;
+
+	DWORD max_coverage;
 
 	u32 id_vendor;
 	u32 id_device;

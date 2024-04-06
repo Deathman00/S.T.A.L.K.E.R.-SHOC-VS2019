@@ -352,8 +352,8 @@ u16 CGameFont::SplitByWidth(u16* puBuffer, u16 uBufferSize, float fTargetWidth, 
 			(!IsBadStartCharacter(wsStr[i])) &&				// can start with this character
 			(i < len) &&									// is not the last character
 			((i > 1) && (!IsBadEndCharacter(wsStr[i - 1]))) // && // do not stop the string on a "bad" character
-			//				( ( i > 1 ) && ( ! ( ( IsAlphaCharacter( wsStr[ i - 1 ] ) ) && (  IsAlphaCharacter( wsStr[ i ] ) )
-			//) ) ) // do not split numbers or words
+			//				( ( i > 1 ) && ( ! ( ( IsAlphaCharacter( wsStr[ i - 1 ] ) ) && (  IsAlphaCharacter( wsStr[ i ] )
+			//) ) ) ) // do not split numbers or words
 		)
 		{
 			fCurWidth = fDelta;

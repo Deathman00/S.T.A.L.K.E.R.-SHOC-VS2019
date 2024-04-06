@@ -215,7 +215,7 @@ BOOL CTheoraStream::Decode(u32 tm_play)
 					int res = theora_decode_packetin(&t_state, &o_packet);
 					VERIFY(res != OC_BADPACKET);
 					//.					dbg_log					((stderr,"%04d: granule
-					//frame\n",theora_granule_frame(&t_state,t_state.granulepos)));
+					// frame\n",theora_granule_frame(&t_state,t_state.granulepos)));
 					if (d_frame >= t_frame)
 						result = TRUE;
 				}

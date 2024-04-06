@@ -59,8 +59,8 @@ class ENGINE_API CObjectSpace
 	BOOL RayQuery(collide::rq_results& dest, const collide::ray_defs& rq, collide::rq_callback* cb, LPVOID user_data,
 				  collide::test_callback* tb, CObject* ignore_object);
 	BOOL RayQuery(collide::rq_results& dest, ICollisionForm* target, const collide::ray_defs& rq);
-	// void								BoxQuery			( collide::rq_results& dest, const Fbox& B, const Fmatrix& M, u32
-	// flags=clGET_TRIS|clGET_BOXES|clQUERY_STATIC|clQUERY_DYNAMIC);
+	// void								BoxQuery			( collide::rq_results& dest, const Fbox& B, const Fmatrix& M,
+	// u32 flags=clGET_TRIS|clGET_BOXES|clQUERY_STATIC|clQUERY_DYNAMIC);
 
 	int GetNearest(xr_vector<CObject*>& q_nearest, ICollisionForm* obj, float range);
 	int GetNearest(xr_vector<CObject*>& q_nearest, const Fvector& point, float range, CObject* ignore_object);

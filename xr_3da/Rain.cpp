@@ -254,14 +254,16 @@ void CEffect_Rain::Render()
 						}
 						else
 						{
-							RenewItem(one, height - _sqrt(dist_sqr), TRUE); // fly to point
-																			//							Log("2",height-dist);
+							RenewItem(one, height - _sqrt(dist_sqr),
+									  TRUE); // fly to point
+											 //							Log("2",height-dist);
 						}
 					}
 					else
 					{
-						RenewItem(one, max_distance - _sqrt(dist_sqr), FALSE); // fly ...
-																			   //						Log("3",1.5f*b_height-dist);
+						RenewItem(one, max_distance - _sqrt(dist_sqr),
+								  FALSE); // fly ...
+										  //						Log("3",1.5f*b_height-dist);
 					}
 				}
 				else
