@@ -17,25 +17,19 @@
 #include "ColHelper.h"
 
 /// Hash table.
-template
-<
-	typename KEY_TYPE,
-	typename DATA_TYPE,
-	class KEY_INSTANCE_TRAITS = CObjectTraits<KEY_TYPE>,
-	class DATA_INSTANCE_TRAITS = CObjectTraits<DATA_TYPE>,
-	class COMPARE_TRAITS = CCompareTraits<KEY_TYPE>,
-	class HASH_TRAITS = CHashTraits<KEY_TYPE>
->
+template <typename KEY_TYPE, typename DATA_TYPE, class KEY_INSTANCE_TRAITS = CObjectTraits<KEY_TYPE>,
+		  class DATA_INSTANCE_TRAITS = CObjectTraits<DATA_TYPE>, class COMPARE_TRAITS = CCompareTraits<KEY_TYPE>,
+		  class HASH_TRAITS = CHashTraits<KEY_TYPE>>
 class CHash
 {
-private:
+  private:
 	/// Hash item.
 	class CHashItem
 	{
 		/// Hash table.
 		friend class CHash;
 
-	private:
+	  private:
 		/// Contains key value.
 		KEY_TYPE m_Key;
 		/// Contains data value.
@@ -50,17 +44,23 @@ private:
 		/// Hash table.
 		friend class CHash;
 
-	private:
+	  private:
 		/// Pointer to current hash item.
 		CHashItem* m_pItem;
 		/// Index in the internal array containing current hash items.
 		int m_nIndex;
 
-	public:
+	  public:
 		/// Return true if iterator points to valid value.
-		operator bool(void) const { return (m_pItem != NULL); }
+		operator bool(void) const
+		{
+			return (m_pItem != NULL);
+		}
 		/// Return false if iterator points to valid value.
-		bool operator!(void) const { return (m_pItem == NULL); }
+		bool operator!(void) const
+		{
+			return (m_pItem == NULL);
+		}
 	};
 
 	/// Dynamic array of hash items arranged as list.
@@ -72,7 +72,7 @@ private:
 	/// Number of items in collection.
 	int m_nCount;
 
-public:
+  public:
 	/// Synonym of hash iterator type.
 	typedef CHashIterator POSITION;
 
@@ -123,7 +123,7 @@ public:
 	/// Get the data at a given position.
 	static DATA_TYPE& GetDataAt(const typename POSITION& pos);
 
-private:
+  private:
 	/// Look for hash item by the specified key.
 	CHashItem* InternalLookup(const typename KEY_TYPE& rKey, int& rIndex) const;
 	/// Delete hash item from the hash table.
@@ -137,21 +137,24 @@ private:
 /**
  * @param nHashSize - hash table size.
  */
-template <typename KEY_TYPE, typename DATA_TYPE, class KEY_INSTANCE_TRAITS, class DATA_INSTANCE_TRAITS, class COMPARE_TRAITS, class HASH_TRAITS>
-void CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPARE_TRAITS, HASH_TRAITS>::InitHashTable(int nHashSize)
+template <typename KEY_TYPE, typename DATA_TYPE, class KEY_INSTANCE_TRAITS, class DATA_INSTANCE_TRAITS,
+		  class COMPARE_TRAITS, class HASH_TRAITS>
+void CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPARE_TRAITS, HASH_TRAITS>::InitHashTable(
+	int nHashSize)
 {
 	m_pGarbage = NULL;
 	m_nHashSize = nHashSize;
 	m_nCount = 0;
 	m_pHash = new CHashItem*[nHashSize];
-	if (! m_pHash)
+	if (!m_pHash)
 		RaiseException(STATUS_NO_MEMORY, 0, 0, NULL);
 }
 
 /**
  * @param nHashSize - hash table size.
  */
-template <typename KEY_TYPE, typename DATA_TYPE, class KEY_INSTANCE_TRAITS, class DATA_INSTANCE_TRAITS, class COMPARE_TRAITS, class HASH_TRAITS>
+template <typename KEY_TYPE, typename DATA_TYPE, class KEY_INSTANCE_TRAITS, class DATA_INSTANCE_TRAITS,
+		  class COMPARE_TRAITS, class HASH_TRAITS>
 CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPARE_TRAITS, HASH_TRAITS>::CHash(int nHashSize)
 {
 	InitHashTable(nHashSize);
@@ -162,19 +165,23 @@ CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPARE_TR
 /**
  * @param pos - validated position.
  */
-template <typename KEY_TYPE, typename DATA_TYPE, class KEY_INSTANCE_TRAITS, class DATA_INSTANCE_TRAITS, class COMPARE_TRAITS, class HASH_TRAITS>
-inline void CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPARE_TRAITS, HASH_TRAITS>::ValidatePosition(const typename CHash::POSITION& pos)
+template <typename KEY_TYPE, typename DATA_TYPE, class KEY_INSTANCE_TRAITS, class DATA_INSTANCE_TRAITS,
+		  class COMPARE_TRAITS, class HASH_TRAITS>
+inline void CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPARE_TRAITS,
+				  HASH_TRAITS>::ValidatePosition(const typename CHash::POSITION& pos)
 {
 	_ASSERTE(pos);
-	if (! pos)
+	if (!pos)
 		RaiseException(STATUS_ARRAY_BOUNDS_EXCEEDED, 0, 0, NULL);
 }
 
 /**
  * @param rHash - object to be copied.
  */
-template <typename KEY_TYPE, typename DATA_TYPE, class KEY_INSTANCE_TRAITS, class DATA_INSTANCE_TRAITS, class COMPARE_TRAITS, class HASH_TRAITS>
-CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPARE_TRAITS, HASH_TRAITS>::CHash(const CHash& rHash)
+template <typename KEY_TYPE, typename DATA_TYPE, class KEY_INSTANCE_TRAITS, class DATA_INSTANCE_TRAITS,
+		  class COMPARE_TRAITS, class HASH_TRAITS>
+CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPARE_TRAITS, HASH_TRAITS>::CHash(
+	const CHash& rHash)
 {
 	InitHashTable(rHash.m_nHashSize);
 	for (int nIndex = 0; nIndex < m_nHashSize; ++nIndex)
@@ -193,8 +200,11 @@ CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPARE_TR
  * @param rHash - object to be copied.
  * @return reference to itself.
  */
-template <typename KEY_TYPE, typename DATA_TYPE, class KEY_INSTANCE_TRAITS, class DATA_INSTANCE_TRAITS, class COMPARE_TRAITS, class HASH_TRAITS>
-const CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPARE_TRAITS, HASH_TRAITS>& CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPARE_TRAITS, HASH_TRAITS>::operator=(const CHash& rHash)
+template <typename KEY_TYPE, typename DATA_TYPE, class KEY_INSTANCE_TRAITS, class DATA_INSTANCE_TRAITS,
+		  class COMPARE_TRAITS, class HASH_TRAITS>
+const CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPARE_TRAITS, HASH_TRAITS>& CHash<
+	KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPARE_TRAITS, HASH_TRAITS>::operator=(const CHash&
+																												rHash)
 {
 	if (this != &rHash)
 	{
@@ -212,7 +222,8 @@ const CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMP
 	return *this;
 }
 
-template <typename KEY_TYPE, typename DATA_TYPE, class KEY_INSTANCE_TRAITS, class DATA_INSTANCE_TRAITS, class COMPARE_TRAITS, class HASH_TRAITS>
+template <typename KEY_TYPE, typename DATA_TYPE, class KEY_INSTANCE_TRAITS, class DATA_INSTANCE_TRAITS,
+		  class COMPARE_TRAITS, class HASH_TRAITS>
 inline CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPARE_TRAITS, HASH_TRAITS>::~CHash(void)
 {
 	DeleteAll(true);
@@ -222,8 +233,10 @@ inline CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COM
 /**
  * @return size of hash table.
  */
-template <typename KEY_TYPE, typename DATA_TYPE, class KEY_INSTANCE_TRAITS, class DATA_INSTANCE_TRAITS, class COMPARE_TRAITS, class HASH_TRAITS>
-inline int CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPARE_TRAITS, HASH_TRAITS>::GetSize(void) const
+template <typename KEY_TYPE, typename DATA_TYPE, class KEY_INSTANCE_TRAITS, class DATA_INSTANCE_TRAITS,
+		  class COMPARE_TRAITS, class HASH_TRAITS>
+inline int CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPARE_TRAITS, HASH_TRAITS>::GetSize(
+	void) const
 {
 	return m_nHashSize;
 }
@@ -231,8 +244,10 @@ inline int CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS,
 /**
  * @return the number of elements.
  */
-template <typename KEY_TYPE, typename DATA_TYPE, class KEY_INSTANCE_TRAITS, class DATA_INSTANCE_TRAITS, class COMPARE_TRAITS, class HASH_TRAITS>
-inline int CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPARE_TRAITS, HASH_TRAITS>::GetCount(void) const
+template <typename KEY_TYPE, typename DATA_TYPE, class KEY_INSTANCE_TRAITS, class DATA_INSTANCE_TRAITS,
+		  class COMPARE_TRAITS, class HASH_TRAITS>
+inline int CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPARE_TRAITS, HASH_TRAITS>::GetCount(
+	void) const
 {
 	return m_nCount;
 }
@@ -240,8 +255,10 @@ inline int CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS,
 /**
  * @return true if this hash contains no elements; otherwise false.
  */
-template <typename KEY_TYPE, typename DATA_TYPE, class KEY_INSTANCE_TRAITS, class DATA_INSTANCE_TRAITS, class COMPARE_TRAITS, class HASH_TRAITS>
-inline bool CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPARE_TRAITS, HASH_TRAITS>::IsEmpty(void) const
+template <typename KEY_TYPE, typename DATA_TYPE, class KEY_INSTANCE_TRAITS, class DATA_INSTANCE_TRAITS,
+		  class COMPARE_TRAITS, class HASH_TRAITS>
+inline bool CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPARE_TRAITS, HASH_TRAITS>::IsEmpty(
+	void) const
 {
 	return (m_nCount == 0);
 }
@@ -251,8 +268,11 @@ inline bool CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS
  * @param rIndex - index in array of obtained item.
  * @return pointer to obtained hash item or NULL.
  */
-template <typename KEY_TYPE, typename DATA_TYPE, class KEY_INSTANCE_TRAITS, class DATA_INSTANCE_TRAITS, class COMPARE_TRAITS, class HASH_TRAITS>
-typename CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPARE_TRAITS, HASH_TRAITS>::CHashItem* CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPARE_TRAITS, HASH_TRAITS>::InternalLookup(const typename KEY_TYPE& rKey, int& rIndex) const
+template <typename KEY_TYPE, typename DATA_TYPE, class KEY_INSTANCE_TRAITS, class DATA_INSTANCE_TRAITS,
+		  class COMPARE_TRAITS, class HASH_TRAITS>
+typename CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPARE_TRAITS, HASH_TRAITS>::CHashItem*
+CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPARE_TRAITS, HASH_TRAITS>::InternalLookup(
+	const typename KEY_TYPE& rKey, int& rIndex) const
 {
 	rIndex = HASH_TRAITS::HashKey(rKey) % m_nHashSize;
 	CHashItem* pItem = m_pHash[rIndex];
@@ -270,8 +290,10 @@ typename CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, C
  * @param rData - data variable that is being set to found value.
  * @return true if the key was found.
  */
-template <typename KEY_TYPE, typename DATA_TYPE, class KEY_INSTANCE_TRAITS, class DATA_INSTANCE_TRAITS, class COMPARE_TRAITS, class HASH_TRAITS>
-inline bool CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPARE_TRAITS, HASH_TRAITS>::Lookup(const KEY_TYPE& rKey, DATA_TYPE& rData)
+template <typename KEY_TYPE, typename DATA_TYPE, class KEY_INSTANCE_TRAITS, class DATA_INSTANCE_TRAITS,
+		  class COMPARE_TRAITS, class HASH_TRAITS>
+inline bool CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPARE_TRAITS, HASH_TRAITS>::Lookup(
+	const KEY_TYPE& rKey, DATA_TYPE& rData)
 {
 	int nIndex;
 	CHashItem* pItem = InternalLookup(rKey, nIndex);
@@ -287,8 +309,10 @@ inline bool CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS
  * @param rKey - specifies the key that identifies the element to be looked up.
  * @return pointer to obtained hash item or NULL.
  */
-template <typename KEY_TYPE, typename DATA_TYPE, class KEY_INSTANCE_TRAITS, class DATA_INSTANCE_TRAITS, class COMPARE_TRAITS, class HASH_TRAITS>
-inline DATA_TYPE* CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPARE_TRAITS, HASH_TRAITS>::Lookup(const KEY_TYPE& rKey)
+template <typename KEY_TYPE, typename DATA_TYPE, class KEY_INSTANCE_TRAITS, class DATA_INSTANCE_TRAITS,
+		  class COMPARE_TRAITS, class HASH_TRAITS>
+inline DATA_TYPE* CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPARE_TRAITS,
+						HASH_TRAITS>::Lookup(const KEY_TYPE& rKey)
 {
 	int nIndex;
 	CHashItem* pItem = InternalLookup(rKey, nIndex);
@@ -299,8 +323,10 @@ inline DATA_TYPE* CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_
  * @param rKey - specifies the key that identifies the element to be looked up.
  * @return pointer to obtained hash item or NULL.
  */
-template <typename KEY_TYPE, typename DATA_TYPE, class KEY_INSTANCE_TRAITS, class DATA_INSTANCE_TRAITS, class COMPARE_TRAITS, class HASH_TRAITS>
-inline const DATA_TYPE* CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPARE_TRAITS, HASH_TRAITS>::Lookup(const KEY_TYPE& rKey) const
+template <typename KEY_TYPE, typename DATA_TYPE, class KEY_INSTANCE_TRAITS, class DATA_INSTANCE_TRAITS,
+		  class COMPARE_TRAITS, class HASH_TRAITS>
+inline const DATA_TYPE* CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPARE_TRAITS,
+							  HASH_TRAITS>::Lookup(const KEY_TYPE& rKey) const
 {
 	int nIndex;
 	CHashItem* pItem = InternalLookup(rKey, nIndex);
@@ -311,8 +337,10 @@ inline const DATA_TYPE* CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INS
  * @param rKey - specifies the key of the new element.
  * @param rData - specifies the value of the new element.
  */
-template <typename KEY_TYPE, typename DATA_TYPE, class KEY_INSTANCE_TRAITS, class DATA_INSTANCE_TRAITS, class COMPARE_TRAITS, class HASH_TRAITS>
-inline void CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPARE_TRAITS, HASH_TRAITS>::SetAt(const KEY_TYPE& rKey, const DATA_TYPE& rData)
+template <typename KEY_TYPE, typename DATA_TYPE, class KEY_INSTANCE_TRAITS, class DATA_INSTANCE_TRAITS,
+		  class COMPARE_TRAITS, class HASH_TRAITS>
+inline void CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPARE_TRAITS, HASH_TRAITS>::SetAt(
+	const KEY_TYPE& rKey, const DATA_TYPE& rData)
 {
 	DATA_INSTANCE_TRAITS::Assignment(GetAt(rKey), rData);
 }
@@ -321,8 +349,10 @@ inline void CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS
  * @param rKey - the key used to retrieve the value from the hash.
  * @return reference to the item.
  */
-template <typename KEY_TYPE, typename DATA_TYPE, class KEY_INSTANCE_TRAITS, class DATA_INSTANCE_TRAITS, class COMPARE_TRAITS, class HASH_TRAITS>
-DATA_TYPE& CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPARE_TRAITS, HASH_TRAITS>::GetAt(const KEY_TYPE& rKey)
+template <typename KEY_TYPE, typename DATA_TYPE, class KEY_INSTANCE_TRAITS, class DATA_INSTANCE_TRAITS,
+		  class COMPARE_TRAITS, class HASH_TRAITS>
+DATA_TYPE& CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPARE_TRAITS, HASH_TRAITS>::GetAt(
+	const KEY_TYPE& rKey)
 {
 	int nIndex;
 	CHashItem* pItem = InternalLookup(rKey, nIndex);
@@ -336,7 +366,7 @@ DATA_TYPE& CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS,
 		else
 		{
 			pItem = (CHashItem*)new BYTE[sizeof(CHashItem)];
-			if (! pItem)
+			if (!pItem)
 				RaiseException(STATUS_NO_MEMORY, 0, 0, NULL);
 		}
 		KEY_INSTANCE_TRAITS::Constructor(pItem->m_Key);
@@ -353,8 +383,10 @@ DATA_TYPE& CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS,
  * @param rKey - the key used to retrieve the value from the hash.
  * @return reference to the item.
  */
-template <typename KEY_TYPE, typename DATA_TYPE, class KEY_INSTANCE_TRAITS, class DATA_INSTANCE_TRAITS, class COMPARE_TRAITS, class HASH_TRAITS>
-inline DATA_TYPE& CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPARE_TRAITS, HASH_TRAITS>::operator[](const KEY_TYPE& rKey)
+template <typename KEY_TYPE, typename DATA_TYPE, class KEY_INSTANCE_TRAITS, class DATA_INSTANCE_TRAITS,
+		  class COMPARE_TRAITS, class HASH_TRAITS>
+inline DATA_TYPE& CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPARE_TRAITS,
+						HASH_TRAITS>::operator[](const KEY_TYPE& rKey)
 {
 	return GetAt(rKey);
 }
@@ -363,8 +395,10 @@ inline DATA_TYPE& CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_
  * @param pDelItem - pointer to deleted hash item.
  * @param nIndex - index of array there deleted item can be found.
  */
-template <typename KEY_TYPE, typename DATA_TYPE, class KEY_INSTANCE_TRAITS, class DATA_INSTANCE_TRAITS, class COMPARE_TRAITS, class HASH_TRAITS>
-void CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPARE_TRAITS, HASH_TRAITS>::InternalDelete(typename CHash::CHashItem* pDelItem, int nIndex)
+template <typename KEY_TYPE, typename DATA_TYPE, class KEY_INSTANCE_TRAITS, class DATA_INSTANCE_TRAITS,
+		  class COMPARE_TRAITS, class HASH_TRAITS>
+void CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPARE_TRAITS, HASH_TRAITS>::InternalDelete(
+	typename CHash::CHashItem* pDelItem, int nIndex)
 {
 	CHashItem* pPrev = NULL;
 	CHashItem* pItem = m_pHash[nIndex];
@@ -394,12 +428,14 @@ void CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPA
 /**
  * @param rKey - key for the element to be removed.
  */
-template <typename KEY_TYPE, typename DATA_TYPE, class KEY_INSTANCE_TRAITS, class DATA_INSTANCE_TRAITS, class COMPARE_TRAITS, class HASH_TRAITS>
-inline void CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPARE_TRAITS, HASH_TRAITS>::Delete(const typename KEY_TYPE& rKey)
+template <typename KEY_TYPE, typename DATA_TYPE, class KEY_INSTANCE_TRAITS, class DATA_INSTANCE_TRAITS,
+		  class COMPARE_TRAITS, class HASH_TRAITS>
+inline void CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPARE_TRAITS, HASH_TRAITS>::Delete(
+	const typename KEY_TYPE& rKey)
 {
 	int nIndex;
 	CHashItem* pItem = InternalLookup(rKey, nIndex);
-	if (! pItem)
+	if (!pItem)
 		RaiseException(STATUS_ARRAY_BOUNDS_EXCEEDED, 0, 0, NULL);
 	InternalDelete(pItem, nIndex);
 }
@@ -407,8 +443,10 @@ inline void CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS
 /**
  * @param bFree - pass true of release array memory.
  */
-template <typename KEY_TYPE, typename DATA_TYPE, class KEY_INSTANCE_TRAITS, class DATA_INSTANCE_TRAITS, class COMPARE_TRAITS, class HASH_TRAITS>
-void CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPARE_TRAITS, HASH_TRAITS>::DeleteAll(bool bFree)
+template <typename KEY_TYPE, typename DATA_TYPE, class KEY_INSTANCE_TRAITS, class DATA_INSTANCE_TRAITS,
+		  class COMPARE_TRAITS, class HASH_TRAITS>
+void CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPARE_TRAITS, HASH_TRAITS>::DeleteAll(
+	bool bFree)
 {
 	if (bFree)
 	{
@@ -416,7 +454,7 @@ void CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPA
 		while (m_pGarbage)
 		{
 			pNext = m_pGarbage->m_pNext;
-			delete[] (PBYTE)m_pGarbage;
+			delete[](PBYTE) m_pGarbage;
 			m_pGarbage = pNext;
 		}
 		for (int nIndex = 0; nIndex < m_nHashSize; ++nIndex)
@@ -427,7 +465,7 @@ void CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPA
 				pNext = pItem->m_pNext;
 				KEY_INSTANCE_TRAITS::Destructor(pItem->m_Key);
 				DATA_INSTANCE_TRAITS::Destructor(pItem->m_Data);
-				delete[] (PBYTE)pItem;
+				delete[](PBYTE) pItem;
 				pItem = pNext;
 			}
 			m_pHash[nIndex] = NULL;
@@ -456,8 +494,11 @@ void CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPA
 /**
  * @return a @a POSITION value that indicates a starting position for iterating the hash; or NULL if the hash is empty.
  */
-template <typename KEY_TYPE, typename DATA_TYPE, class KEY_INSTANCE_TRAITS, class DATA_INSTANCE_TRAITS, class COMPARE_TRAITS, class HASH_TRAITS>
-typename CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPARE_TRAITS, HASH_TRAITS>::POSITION CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPARE_TRAITS, HASH_TRAITS>::GetStartPosition(void) const
+template <typename KEY_TYPE, typename DATA_TYPE, class KEY_INSTANCE_TRAITS, class DATA_INSTANCE_TRAITS,
+		  class COMPARE_TRAITS, class HASH_TRAITS>
+typename CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPARE_TRAITS, HASH_TRAITS>::POSITION
+CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPARE_TRAITS, HASH_TRAITS>::GetStartPosition(
+	void) const
 {
 	POSITION posStart;
 	int nIndex = 0;
@@ -472,8 +513,11 @@ typename CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, C
  * @param pos - previous position.
  * @return a @a POSITION value that indicates the next position for iterating the hash; or NULL if it's a last position.
  */
-template <typename KEY_TYPE, typename DATA_TYPE, class KEY_INSTANCE_TRAITS, class DATA_INSTANCE_TRAITS, class COMPARE_TRAITS, class HASH_TRAITS>
-typename CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPARE_TRAITS, HASH_TRAITS>::POSITION CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPARE_TRAITS, HASH_TRAITS>::GetNextPosition(const typename CHash::POSITION& pos) const
+template <typename KEY_TYPE, typename DATA_TYPE, class KEY_INSTANCE_TRAITS, class DATA_INSTANCE_TRAITS,
+		  class COMPARE_TRAITS, class HASH_TRAITS>
+typename CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPARE_TRAITS, HASH_TRAITS>::POSITION
+CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPARE_TRAITS, HASH_TRAITS>::GetNextPosition(
+	const typename CHash::POSITION& pos) const
 {
 	ValidatePosition(pos);
 	CHashItem* pItem = pos.m_pItem->m_pNext;
@@ -490,8 +534,10 @@ typename CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, C
  * @param pos - hash item position.
  * @return reference to key at specified position.
  */
-template <typename KEY_TYPE, typename DATA_TYPE, class KEY_INSTANCE_TRAITS, class DATA_INSTANCE_TRAITS, class COMPARE_TRAITS, class HASH_TRAITS>
-inline const KEY_TYPE& CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPARE_TRAITS, HASH_TRAITS>::GetKeyAt(const typename CHash::POSITION& pos)
+template <typename KEY_TYPE, typename DATA_TYPE, class KEY_INSTANCE_TRAITS, class DATA_INSTANCE_TRAITS,
+		  class COMPARE_TRAITS, class HASH_TRAITS>
+inline const KEY_TYPE& CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPARE_TRAITS,
+							 HASH_TRAITS>::GetKeyAt(const typename CHash::POSITION& pos)
 {
 	ValidatePosition(pos);
 	return pos.m_pItem->m_Key;
@@ -501,8 +547,10 @@ inline const KEY_TYPE& CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INST
  * @param pos - hash item position.
  * @return reference to data at specified position.
  */
-template <typename KEY_TYPE, typename DATA_TYPE, class KEY_INSTANCE_TRAITS, class DATA_INSTANCE_TRAITS, class COMPARE_TRAITS, class HASH_TRAITS>
-inline DATA_TYPE& CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPARE_TRAITS, HASH_TRAITS>::GetDataAt(const typename CHash::POSITION& pos)
+template <typename KEY_TYPE, typename DATA_TYPE, class KEY_INSTANCE_TRAITS, class DATA_INSTANCE_TRAITS,
+		  class COMPARE_TRAITS, class HASH_TRAITS>
+inline DATA_TYPE& CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPARE_TRAITS,
+						HASH_TRAITS>::GetDataAt(const typename CHash::POSITION& pos)
 {
 	ValidatePosition(pos);
 	return pos.m_pItem->m_Data;
@@ -511,8 +559,10 @@ inline DATA_TYPE& CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_
 /**
  * @param pos - hash item position.
  */
-template <typename KEY_TYPE, typename DATA_TYPE, class KEY_INSTANCE_TRAITS, class DATA_INSTANCE_TRAITS, class COMPARE_TRAITS, class HASH_TRAITS>
-void CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPARE_TRAITS, HASH_TRAITS>::DeleteAt(const typename CHash::POSITION& pos)
+template <typename KEY_TYPE, typename DATA_TYPE, class KEY_INSTANCE_TRAITS, class DATA_INSTANCE_TRAITS,
+		  class COMPARE_TRAITS, class HASH_TRAITS>
+void CHash<KEY_TYPE, DATA_TYPE, KEY_INSTANCE_TRAITS, DATA_INSTANCE_TRAITS, COMPARE_TRAITS, HASH_TRAITS>::DeleteAt(
+	const typename CHash::POSITION& pos)
 {
 	ValidatePosition(pos);
 	InternalDelete(pos.m_pItem, pos.m_nIndex);

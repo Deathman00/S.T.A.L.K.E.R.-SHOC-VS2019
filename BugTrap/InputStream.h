@@ -19,7 +19,7 @@
 /// Input stream.
 class CInputStream : public virtual CBaseStream
 {
-public:
+  public:
 	/// Return true if end of stream has been reached. This function is required.
 	virtual bool IsEndOfStream(void) const = 0;
 	/// Read one byte from the stream. This function is required.

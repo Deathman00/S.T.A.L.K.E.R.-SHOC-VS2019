@@ -16,28 +16,28 @@
 
 class CBaseStream
 {
-public:
+  public:
 	/// List of optional, but supported features.
 	enum STREAM_FEATURES
 	{
 		/// Optional functions are not supported.
-		SF_NONE           = 0x00,
+		SF_NONE = 0x00,
 		/// IsOpen() is supported.
-		SF_ISOPEN         = 0x01,
+		SF_ISOPEN = 0x01,
 		/// Close() is supported.
-		SF_CLOSE          = 0x02,
+		SF_CLOSE = 0x02,
 		/// GetName() is supported.
-		SF_GETNAME        = 0x04,
+		SF_GETNAME = 0x04,
 		/// GetLastError() is supported.
-		SF_GETLASTERROR   = 0x08,
+		SF_GETLASTERROR = 0x08,
 		/// GetLength() is supported.
-		SF_GETLENGTH      = 0x10,
+		SF_GETLENGTH = 0x10,
 		/// SetLength() is supported.
-		SF_SETLENGTH      = 0x20,
+		SF_SETLENGTH = 0x20,
 		/// GetPosition() is supported.
-		SF_GETPOSITION    = 0x40,
+		SF_GETPOSITION = 0x40,
 		/// SetPosition() is supported.
-		SF_SETPOSITION    = 0x80
+		SF_SETPOSITION = 0x80
 	};
 
 	/// Destroy the object.

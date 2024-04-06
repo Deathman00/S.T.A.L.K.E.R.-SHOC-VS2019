@@ -17,12 +17,12 @@
 /// Splitter control class.
 class CSplitter
 {
-public:
+  public:
 	/// Splitter direction.
 	enum SPLITTER_DIRECTION
 	{
 		/// Vertical splitter.
-		SD_VERTICAL   = 0,
+		SD_VERTICAL = 0,
 		/// Horizontal splitter.
 		SD_HORIZONTAL = 1,
 	};
@@ -30,7 +30,7 @@ public:
 	enum
 	{
 		/// Number of panels.
-		NUM_PANELS    = 2
+		NUM_PANELS = 2
 	};
 
 	/// Initialize the object.
@@ -60,7 +60,7 @@ public:
 	/// Get proportional mode.
 	bool GetProportionalMode(void) const;
 
-private:
+  private:
 	/// Protect the class from being accidentally copied.
 	CSplitter(const CSplitter& rSplitter);
 	/// Protect the class from being accidentally copied.

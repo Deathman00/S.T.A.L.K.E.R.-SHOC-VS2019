@@ -27,56 +27,53 @@
 
 #include "common.h"
 
-
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
+	/* return 1 if the random number generator is working. */
+	int dTestRand();
 
-/* return 1 if the random number generator is working. */
-int dTestRand();
+	/* return next 32 bit random number. this uses a not-very-random linear
+	 * congruential method.
+	 */
+	unsigned long dRand();
 
-/* return next 32 bit random number. this uses a not-very-random linear
- * congruential method.
- */
-unsigned long dRand();
+	/* get and set the current random number seed. */
+	unsigned long dRandGetSeed();
+	void dRandSetSeed(unsigned long s);
 
-/* get and set the current random number seed. */
-unsigned long  dRandGetSeed();
-void dRandSetSeed (unsigned long s);
+	/* return a random integer between 0..n-1. the distribution will get worse
+	 * as n approaches 2^32.
+	 */
+	int dRandInt(int n);
 
-/* return a random integer between 0..n-1. the distribution will get worse
- * as n approaches 2^32.
- */
-int dRandInt (int n);
-
-/* return a random real number between 0..1 */
-dReal dRandReal();
+	/* return a random real number between 0..1 */
+	dReal dRandReal();
 
 /* print out a matrix */
 #ifdef __cplusplus
-void dPrintMatrix (const dReal *A, int n, int m, char *fmt = "%10.4f ",
-		   FILE *f=stdout);
+	void dPrintMatrix(const dReal* A, int n, int m, char* fmt = "%10.4f ", FILE* f = stdout);
 #else
-void dPrintMatrix (const dReal *A, int n, int m, char *fmt, FILE *f);
+void dPrintMatrix(const dReal* A, int n, int m, char* fmt, FILE* f);
 #endif
 
-/* make a random vector with entries between +/- range. A has n elements. */
-void dMakeRandomVector (dReal *A, int n, dReal range);
+	/* make a random vector with entries between +/- range. A has n elements. */
+	void dMakeRandomVector(dReal* A, int n, dReal range);
 
-/* make a random matrix with entries between +/- range. A has size n*m. */
-void dMakeRandomMatrix (dReal *A, int n, int m, dReal range);
+	/* make a random matrix with entries between +/- range. A has size n*m. */
+	void dMakeRandomMatrix(dReal* A, int n, int m, dReal range);
 
-/* clear the upper triangle of a square matrix */
-void dClearUpperTriangle (dReal *A, int n);
+	/* clear the upper triangle of a square matrix */
+	void dClearUpperTriangle(dReal* A, int n);
 
-/* return the maximum element difference between the two n*m matrices */
-dReal dMaxDifference (const dReal *A, const dReal *B, int n, int m);
+	/* return the maximum element difference between the two n*m matrices */
+	dReal dMaxDifference(const dReal* A, const dReal* B, int n, int m);
 
-/* return the maximum element difference between the lower triangle of two
- * n*n matrices */
-dReal dMaxDifferenceLowerTriangle (const dReal *A, const dReal *B, int n);
-
+	/* return the maximum element difference between the lower triangle of two
+	 * n*n matrices */
+	dReal dMaxDifferenceLowerTriangle(const dReal* A, const dReal* B, int n);
 
 #ifdef __cplusplus
 }

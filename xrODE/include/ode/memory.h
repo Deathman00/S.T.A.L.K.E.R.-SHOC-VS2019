@@ -28,29 +28,30 @@
 #include "config.h"
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-/* function types to allocate and free memory */
-typedef void * dAllocFunction (size_t size);
-typedef void * dReallocFunction (void *ptr, size_t oldsize, size_t newsize);
-typedef void dFreeFunction (void *ptr, size_t size);
+	/* function types to allocate and free memory */
+	typedef void* dAllocFunction(size_t size);
+	typedef void* dReallocFunction(void* ptr, size_t oldsize, size_t newsize);
+	typedef void dFreeFunction(void* ptr, size_t size);
 
-/* set new memory management functions. if fn is 0, the default handlers are
- * used. */
-void dSetAllocHandler (dAllocFunction *fn);
-void dSetReallocHandler (dReallocFunction *fn);
-void dSetFreeHandler (dFreeFunction *fn);
+	/* set new memory management functions. if fn is 0, the default handlers are
+	 * used. */
+	void dSetAllocHandler(dAllocFunction* fn);
+	void dSetReallocHandler(dReallocFunction* fn);
+	void dSetFreeHandler(dFreeFunction* fn);
 
-/* get current memory management functions */
-dAllocFunction *dGetAllocHandler ();
-dReallocFunction *dGetReallocHandler ();
-dFreeFunction *dGetFreeHandler ();
+	/* get current memory management functions */
+	dAllocFunction* dGetAllocHandler();
+	dReallocFunction* dGetReallocHandler();
+	dFreeFunction* dGetFreeHandler();
 
-/* allocate and free memory. */
-void * dAlloc (size_t size);
-void * dRealloc (void *ptr, size_t oldsize, size_t newsize);
-void dFree (void *ptr, size_t size);
+	/* allocate and free memory. */
+	void* dAlloc(size_t size);
+	void* dRealloc(void* ptr, size_t oldsize, size_t newsize);
+	void dFree(void* ptr, size_t size);
 
 #ifdef __cplusplus
 }

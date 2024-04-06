@@ -21,8 +21,8 @@
 #define new DEBUG_NEW
 #endif
 
-#define FIXED_FONT_HEIGHT             90
-#define DIALOG_FONT_HEIGHT            60
+#define FIXED_FONT_HEIGHT 90
+#define DIALOG_FONT_HEIGHT 60
 
 /**
  * @addtogroup ResManager Custom resource manager.
@@ -68,7 +68,7 @@ CResManager::CResManager(HWND hwndParent)
 	m_hDialogFont = CreateFontIndirect(&lf);
 
 	m_hHandCursor = LoadCursor(NULL, IDC_HAND);
-	if (! m_hHandCursor)
+	if (!m_hHandCursor)
 	{
 		// Thanks to Paul DiLascia.
 		TCHAR szWinHelpPath[MAX_PATH];
@@ -97,14 +97,17 @@ CResManager::CResManager(HWND hwndParent)
 
 	if (hwndParent != NULL)
 	{
-		__try {
+		__try
+		{
 			m_hBigAppIcon = (HICON)SendMessage(hwndParent, WM_GETICON, ICON_BIG, 0l);
 			if (m_hBigAppIcon == NULL)
 				m_hBigAppIcon = (HICON)GetClassLong(hwndParent, GCL_HICON);
 			m_hSmallAppIcon = (HICON)SendMessage(hwndParent, WM_GETICON, ICON_SMALL, 0l);
 			if (m_hSmallAppIcon == NULL)
 				m_hSmallAppIcon = (HICON)GetClassLong(hwndParent, GCL_HICONSM);
-		} __except (EXCEPTION_EXECUTE_HANDLER) {
+		}
+		__except (EXCEPTION_EXECUTE_HANDLER)
+		{
 			// ignore any exception in broken app...
 			m_hBigAppIcon = NULL;
 			m_hSmallAppIcon = NULL;
@@ -113,11 +116,13 @@ CResManager::CResManager(HWND hwndParent)
 	int nCXSmallIcon = GetSystemMetrics(SM_CXSMICON);
 	int nCYSmallIcon = GetSystemMetrics(SM_CYSMICON);
 	if (m_hSmallAppIcon == NULL)
-		m_hSmallAppIcon = (HICON)LoadImage(g_hInstance, MAKEINTRESOURCE(IDI_BUG), IMAGE_ICON, nCXSmallIcon, nCYSmallIcon, LR_DEFAULTCOLOR);
+		m_hSmallAppIcon = (HICON)LoadImage(g_hInstance, MAKEINTRESOURCE(IDI_BUG), IMAGE_ICON, nCXSmallIcon,
+										   nCYSmallIcon, LR_DEFAULTCOLOR);
 	int nCXIcon = GetSystemMetrics(SM_CXICON);
 	int nCYIcon = GetSystemMetrics(SM_CYICON);
 	if (m_hBigAppIcon == NULL)
-		m_hBigAppIcon = (HICON)LoadImage(g_hInstance, MAKEINTRESOURCE(IDI_BUG), IMAGE_ICON, nCXIcon, nCYIcon, LR_DEFAULTCOLOR);
+		m_hBigAppIcon =
+			(HICON)LoadImage(g_hInstance, MAKEINTRESOURCE(IDI_BUG), IMAGE_ICON, nCXIcon, nCYIcon, LR_DEFAULTCOLOR);
 	if (m_hBigAppIcon != NULL)
 	{
 		m_hDialogIcon = CreateCompatibleBitmap(hDisplayDC, nCXIcon, nCYIcon);
@@ -136,8 +141,10 @@ CResManager::CResManager(HWND hwndParent)
 			}
 		}
 	}
-	m_hCheckMark = (HBITMAP)LoadImage(g_hInstance, MAKEINTRESOURCE(IDB_CHECKMARK), IMAGE_BITMAP, 0, 0, LR_LOADMAP3DCOLORS);
-	m_hSortArrows = ImageList_LoadImage(g_hInstance, MAKEINTRESOURCE(IDB_SORTARROWS), 7, 0, RGB(0xFF, 0x00, 0xFF), IMAGE_BITMAP, LR_LOADMAP3DCOLORS);
+	m_hCheckMark =
+		(HBITMAP)LoadImage(g_hInstance, MAKEINTRESOURCE(IDB_CHECKMARK), IMAGE_BITMAP, 0, 0, LR_LOADMAP3DCOLORS);
+	m_hSortArrows = ImageList_LoadImage(g_hInstance, MAKEINTRESOURCE(IDB_SORTARROWS), 7, 0, RGB(0xFF, 0x00, 0xFF),
+										IMAGE_BITMAP, LR_LOADMAP3DCOLORS);
 
 	DeleteDC(hDisplayDC);
 }
@@ -150,15 +157,15 @@ CResManager::~CResManager(void)
 		DeleteFont(m_hUnderlinedFont);
 	if (m_hDialogFont)
 		DeleteFont(m_hDialogFont);
-/*
-	// System color brushes are owned by the system and must not be destroyed.
-	if (m_hbrWindowBrush)
-		DeleteBrush(m_hbrWindowBrush);
-	if (m_hbrButtonFaceBrush)
-		DeleteBrush(m_hbrButtonFaceBrush);
-	if (m_hbrControlLight)
-		DeleteBrush(m_hbrControlLight);
-*/
+	/*
+		// System color brushes are owned by the system and must not be destroyed.
+		if (m_hbrWindowBrush)
+			DeleteBrush(m_hbrWindowBrush);
+		if (m_hbrButtonFaceBrush)
+			DeleteBrush(m_hbrButtonFaceBrush);
+		if (m_hbrControlLight)
+			DeleteBrush(m_hbrControlLight);
+	*/
 	if (m_hBigAppIcon)
 		DestroyIcon(m_hBigAppIcon);
 	if (m_hSmallAppIcon)

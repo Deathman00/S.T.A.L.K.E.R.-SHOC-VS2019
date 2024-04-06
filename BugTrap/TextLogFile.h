@@ -24,7 +24,7 @@
  */
 class CTextLogFile : public CLogFile
 {
-public:
+  public:
 	/// Initialize the object.
 	CTextLogFile(void);
 	/// Load entries into memory.
@@ -32,9 +32,10 @@ public:
 	/// Save entries into disk.
 	virtual BOOL SaveEntries(bool bCrash);
 	/// Add new log entry.
-	virtual void WriteLogEntry(BUGTRAP_LOGLEVEL eLogLevel, ENTRY_MODE eEntryMode, CRITICAL_SECTION& rcsConsoleAccess, PCTSTR pszEntry);
+	virtual void WriteLogEntry(BUGTRAP_LOGLEVEL eLogLevel, ENTRY_MODE eEntryMode, CRITICAL_SECTION& rcsConsoleAccess,
+							   PCTSTR pszEntry);
 
-private:
+  private:
 	/// Log entry data.
 	struct CTextLogEntry : public CLogFile::CLogEntry
 	{
@@ -70,7 +71,8 @@ private:
 	CMemStream m_MemStream;
 };
 
-inline CTextLogFile::CTextLogFile(void) : CLogFile(sizeof(g_arrUTF8Preamble)), m_MemStream(1024), m_EncStream(&m_MemStream)
+inline CTextLogFile::CTextLogFile(void)
+	: CLogFile(sizeof(g_arrUTF8Preamble)), m_MemStream(1024), m_EncStream(&m_MemStream)
 {
 }
 

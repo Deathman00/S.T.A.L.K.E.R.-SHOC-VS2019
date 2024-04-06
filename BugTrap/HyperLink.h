@@ -17,7 +17,7 @@
 /// Hyper-link control class.
 class CHyperLink
 {
-public:
+  public:
 	/// Initialize the object.
 	CHyperLink(void);
 	/// Get link URL.
@@ -29,7 +29,7 @@ public:
 	/// Detach hyper-link object to window handle.
 	void Detach(void);
 
-private:
+  private:
 	/// Protect the class from being accidentally copied.
 	CHyperLink(const CHyperLink& rHyperLink);
 	/// Protect the class from being accidentally copied.

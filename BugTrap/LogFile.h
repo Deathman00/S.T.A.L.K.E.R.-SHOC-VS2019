@@ -23,7 +23,7 @@
  */
 class CLogFile
 {
-public:
+  public:
 	/// Entry mode.
 	enum ENTRY_MODE
 	{
@@ -70,17 +70,20 @@ public:
 	/// Free log entries.
 	void FreeEntries(void);
 	/// Add new log entry.
-	virtual void WriteLogEntry(BUGTRAP_LOGLEVEL eLogLevel, ENTRY_MODE eEntryMode, CRITICAL_SECTION& rcsConsoleAccess, PCTSTR pszEntry) = 0;
+	virtual void WriteLogEntry(BUGTRAP_LOGLEVEL eLogLevel, ENTRY_MODE eEntryMode, CRITICAL_SECTION& rcsConsoleAccess,
+							   PCTSTR pszEntry) = 0;
 	/// Add new log entry.
-	void WriteLogEntryF(BUGTRAP_LOGLEVEL eLogLevel, ENTRY_MODE eEntryMode, CRITICAL_SECTION& rcsConsoleAccess, PCTSTR pszFormat, ...);
+	void WriteLogEntryF(BUGTRAP_LOGLEVEL eLogLevel, ENTRY_MODE eEntryMode, CRITICAL_SECTION& rcsConsoleAccess,
+						PCTSTR pszFormat, ...);
 	/// Add new log entry.
-	void WriteLogEntryV(BUGTRAP_LOGLEVEL eLogLevel, ENTRY_MODE eEntryMode, CRITICAL_SECTION& rcsConsoleAccess, PCTSTR pszFormat, va_list argList);
+	void WriteLogEntryV(BUGTRAP_LOGLEVEL eLogLevel, ENTRY_MODE eEntryMode, CRITICAL_SECTION& rcsConsoleAccess,
+						PCTSTR pszFormat, va_list argList);
 	/// Get number of entries in a log.
 	DWORD GetNumEntries(void) const;
 	/// Get number of bytes in a log.
 	DWORD GetNumBytes(void) const;
 
-protected:
+  protected:
 	/// Log entry data.
 	struct CLogEntry
 	{
@@ -125,7 +128,7 @@ protected:
 	/// Get output console handle.
 	HANDLE GetConsoleHandle(void) const;
 
-private:
+  private:
 	/// Protects the class from being accidentally copied.
 	CLogFile(const CLogFile& rLogFile);
 	/// Protects the class from being accidentally copied.
@@ -215,7 +218,6 @@ inline void CLogFile::SetLogSizeInBytes(DWORD dwLogSizeInBytes)
 	m_dwLogSizeInBytes = dwLogSizeInBytes;
 }
 
-
 inline void CLogFile::CaptureObject(void)
 {
 	EnterCriticalSection(&m_csLogFile);
@@ -241,7 +243,6 @@ inline void CLogFile::SetLogFlags(DWORD dwLogFlags)
 {
 	m_dwLogFlags = dwLogFlags;
 }
-
 
 /**
  * @return minimal log level accepted by tracing functions.

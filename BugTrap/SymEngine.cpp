@@ -26,7 +26,7 @@
 #define new DEBUG_NEW
 #endif
 
-#define MAX_FRAME_COUNT   1000
+#define MAX_FRAME_COUNT 1000
 
 CSymEngine::CEngineParams::CEngineParams(void)
 {
@@ -169,7 +169,8 @@ void CSymEngine::SetEngineParameters(const CEngineParams& rParams)
 	m_dwLastError = rParams.m_dwLastError;
 	m_DateTime = rParams.m_DateTime;
 	m_eExceptionType = rParams.m_eExceptionType;
-	m_dwExceptionAddress = m_pExceptionPointers != NULL ? (DWORD64)m_pExceptionPointers->ExceptionRecord->ExceptionAddress : MAXULONG_PTR;
+	m_dwExceptionAddress =
+		m_pExceptionPointers != NULL ? (DWORD64)m_pExceptionPointers->ExceptionRecord->ExceptionAddress : MAXULONG_PTR;
 	m_pScreenShot = rParams.m_pScreenShot;
 	m_pErrorInfo = rParams.m_pErrorInfo;
 	AdjustExceptionStackFrame();
@@ -230,12 +231,12 @@ CSymEngine::CSymEngine(const CEngineParams& rParams)
 		FSymFromAddr = (PFSymFromAddr)GetProcAddress(m_hDbgHelpDll, "SymFromAddr");
 		FSymGetLineFromAddr64 = (PFSymGetLineFromAddr64)GetProcAddress(m_hDbgHelpDll, "SymGetLineFromAddr64");
 		FStackWalk64 = (PFStackWalk64)GetProcAddress(m_hDbgHelpDll, "StackWalk64");
-		FSymFunctionTableAccess64 = (PFSymFunctionTableAccess64)GetProcAddress(m_hDbgHelpDll, "SymFunctionTableAccess64");
+		FSymFunctionTableAccess64 =
+			(PFSymFunctionTableAccess64)GetProcAddress(m_hDbgHelpDll, "SymFunctionTableAccess64");
 		FMiniDumpWriteDump = (PFMiniDumpWriteDump)GetProcAddress(m_hDbgHelpDll, "MiniDumpWriteDump");
 
-		if (FSymGetOptions && FSymSetOptions && FSymInitialize && FSymCleanup &&
-		    FSymGetModuleBase64 && FSymFromAddr && FSymGetLineFromAddr64 &&
-		    FStackWalk64 && FSymFunctionTableAccess64 && FMiniDumpWriteDump)
+		if (FSymGetOptions && FSymSetOptions && FSymInitialize && FSymCleanup && FSymGetModuleBase64 && FSymFromAddr &&
+			FSymGetLineFromAddr64 && FStackWalk64 && FSymFunctionTableAccess64 && FMiniDumpWriteDump)
 		{
 			DWORD dwOptions = FSymGetOptions();
 			FSymSetOptions(dwOptions | SYMOPT_DEFERRED_LOADS | SYMOPT_LOAD_LINES | SYMOPT_UNDNAME);
@@ -299,17 +300,17 @@ CSymEngine::CScreenShot::CScreenShot(void)
 				WORD wPalSize, wBmpBits = bmpInfo.bmPlanes * bmpInfo.bmBitsPixel;
 				if (wBmpBits <= 1)
 				{
-					wBmpBits = 1;  // monochrome image
+					wBmpBits = 1; // monochrome image
 					wPalSize = 2;
 				}
 				else if (wBmpBits <= 4)
 				{
-					wBmpBits = 4;  // palette-based 4 bpp image
+					wBmpBits = 4; // palette-based 4 bpp image
 					wPalSize = 16;
 				}
 				else if (wBmpBits <= 8)
 				{
-					wBmpBits = 8;  // palette-based 8 bpp image
+					wBmpBits = 8; // palette-based 8 bpp image
 					wPalSize = 256;
 				}
 				else
@@ -319,7 +320,7 @@ CSymEngine::CScreenShot::CScreenShot(void)
 				}
 
 				m_dwBmpHdrSize = sizeof(BITMAPINFOHEADER) + wPalSize * sizeof(RGBQUAD);
-				m_pBmpInfo = (PBITMAPINFO)new BYTE[m_dwBmpHdrSize];
+				m_pBmpInfo = (PBITMAPINFO) new BYTE[m_dwBmpHdrSize];
 				if (m_pBmpInfo)
 				{
 					ZeroMemory(m_pBmpInfo, m_dwBmpHdrSize);
@@ -351,10 +352,10 @@ CSymEngine::CScreenShot::CScreenShot(void)
 		}
 		DeleteDC(hDisplayDC);
 	}
-	if (! bResult)
+	if (!bResult)
 	{
-		delete[] (PBYTE)m_pBitsArray;
-		delete[] (PBYTE)m_pBmpInfo;
+		delete[](PBYTE) m_pBitsArray;
+		delete[](PBYTE) m_pBmpInfo;
 		ZeroMemory(this, sizeof(*this));
 	}
 }
@@ -365,7 +366,7 @@ CSymEngine::CScreenShot::CScreenShot(void)
  */
 BOOL CSymEngine::CScreenShot::WriteScreenShot(PCTSTR pszFileName)
 {
-	if (! m_pBmpInfo)
+	if (!m_pBmpInfo)
 		return FALSE;
 	HANDLE hFile = CreateFile(pszFileName, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (hFile != INVALID_HANDLE_VALUE)
@@ -397,23 +398,17 @@ BOOL CSymEngine::AdjustExceptionStackFrame(void)
 	if (m_eExceptionType != WIN32_EXCEPTION)
 	{
 		STACKFRAME64 stFrame;
-		if (! InitStackTrace(&stFrame))
+		if (!InitStackTrace(&stFrame))
 			return FALSE;
 
 		HANDLE hThread = GetCurrentThread();
 		CONTEXT ctxSafe = m_StartExceptionContext;
 		for (;;)
 		{
-			BOOL bResult = FStackWalk64(IMAGE_FILE_MACHINE_I386,
-			                            m_hSymProcess,
-			                            hThread,
-			                            &stFrame,
-			                            &m_StartExceptionContext,
-			                            ReadProcessMemoryProc64,
-			                            FSymFunctionTableAccess64,
-			                            FSymGetModuleBase64,
-			                            NULL);
-			if (! bResult || ! stFrame.AddrFrame.Offset || bFoundThrowingFrame)
+			BOOL bResult =
+				FStackWalk64(IMAGE_FILE_MACHINE_I386, m_hSymProcess, hThread, &stFrame, &m_StartExceptionContext,
+							 ReadProcessMemoryProc64, FSymFunctionTableAccess64, FSymGetModuleBase64, NULL);
+			if (!bResult || !stFrame.AddrFrame.Offset || bFoundThrowingFrame)
 			{
 				if (bFoundThrowingFrame)
 					m_dwExceptionAddress = stFrame.AddrPC.Offset;
@@ -465,34 +460,36 @@ BOOL CSymEngine::AdjustExceptionStackFrame(void)
  */
 PCTSTR CSymEngine::ConvertExceptionCodeToString(DWORD dwException)
 {
-#define CONVERT_EXCEPTION_CODE_TO_STRING(exception) \
-	case EXCEPTION_##exception: return _T(#exception)
+#define CONVERT_EXCEPTION_CODE_TO_STRING(exception)                                                                    \
+	case EXCEPTION_##exception:                                                                                        \
+		return _T(#exception)
 
 	switch (dwException)
 	{
-	CONVERT_EXCEPTION_CODE_TO_STRING(ACCESS_VIOLATION);
-	CONVERT_EXCEPTION_CODE_TO_STRING(DATATYPE_MISALIGNMENT);
-	CONVERT_EXCEPTION_CODE_TO_STRING(BREAKPOINT);
-	CONVERT_EXCEPTION_CODE_TO_STRING(SINGLE_STEP);
-	CONVERT_EXCEPTION_CODE_TO_STRING(ARRAY_BOUNDS_EXCEEDED);
-	CONVERT_EXCEPTION_CODE_TO_STRING(FLT_DENORMAL_OPERAND);
-	CONVERT_EXCEPTION_CODE_TO_STRING(FLT_DIVIDE_BY_ZERO);
-	CONVERT_EXCEPTION_CODE_TO_STRING(FLT_INEXACT_RESULT);
-	CONVERT_EXCEPTION_CODE_TO_STRING(FLT_INVALID_OPERATION);
-	CONVERT_EXCEPTION_CODE_TO_STRING(FLT_OVERFLOW);
-	CONVERT_EXCEPTION_CODE_TO_STRING(FLT_STACK_CHECK);
-	CONVERT_EXCEPTION_CODE_TO_STRING(FLT_UNDERFLOW);
-	CONVERT_EXCEPTION_CODE_TO_STRING(INT_DIVIDE_BY_ZERO);
-	CONVERT_EXCEPTION_CODE_TO_STRING(INT_OVERFLOW);
-	CONVERT_EXCEPTION_CODE_TO_STRING(PRIV_INSTRUCTION);
-	CONVERT_EXCEPTION_CODE_TO_STRING(IN_PAGE_ERROR);
-	CONVERT_EXCEPTION_CODE_TO_STRING(ILLEGAL_INSTRUCTION);
-	CONVERT_EXCEPTION_CODE_TO_STRING(NONCONTINUABLE_EXCEPTION);
-	CONVERT_EXCEPTION_CODE_TO_STRING(STACK_OVERFLOW);
-	CONVERT_EXCEPTION_CODE_TO_STRING(INVALID_DISPOSITION);
-	CONVERT_EXCEPTION_CODE_TO_STRING(GUARD_PAGE);
-	CONVERT_EXCEPTION_CODE_TO_STRING(INVALID_HANDLE);
-	default: return NULL;
+		CONVERT_EXCEPTION_CODE_TO_STRING(ACCESS_VIOLATION);
+		CONVERT_EXCEPTION_CODE_TO_STRING(DATATYPE_MISALIGNMENT);
+		CONVERT_EXCEPTION_CODE_TO_STRING(BREAKPOINT);
+		CONVERT_EXCEPTION_CODE_TO_STRING(SINGLE_STEP);
+		CONVERT_EXCEPTION_CODE_TO_STRING(ARRAY_BOUNDS_EXCEEDED);
+		CONVERT_EXCEPTION_CODE_TO_STRING(FLT_DENORMAL_OPERAND);
+		CONVERT_EXCEPTION_CODE_TO_STRING(FLT_DIVIDE_BY_ZERO);
+		CONVERT_EXCEPTION_CODE_TO_STRING(FLT_INEXACT_RESULT);
+		CONVERT_EXCEPTION_CODE_TO_STRING(FLT_INVALID_OPERATION);
+		CONVERT_EXCEPTION_CODE_TO_STRING(FLT_OVERFLOW);
+		CONVERT_EXCEPTION_CODE_TO_STRING(FLT_STACK_CHECK);
+		CONVERT_EXCEPTION_CODE_TO_STRING(FLT_UNDERFLOW);
+		CONVERT_EXCEPTION_CODE_TO_STRING(INT_DIVIDE_BY_ZERO);
+		CONVERT_EXCEPTION_CODE_TO_STRING(INT_OVERFLOW);
+		CONVERT_EXCEPTION_CODE_TO_STRING(PRIV_INSTRUCTION);
+		CONVERT_EXCEPTION_CODE_TO_STRING(IN_PAGE_ERROR);
+		CONVERT_EXCEPTION_CODE_TO_STRING(ILLEGAL_INSTRUCTION);
+		CONVERT_EXCEPTION_CODE_TO_STRING(NONCONTINUABLE_EXCEPTION);
+		CONVERT_EXCEPTION_CODE_TO_STRING(STACK_OVERFLOW);
+		CONVERT_EXCEPTION_CODE_TO_STRING(INVALID_DISPOSITION);
+		CONVERT_EXCEPTION_CODE_TO_STRING(GUARD_PAGE);
+		CONVERT_EXCEPTION_CODE_TO_STRING(INVALID_HANDLE);
+	default:
+		return NULL;
 	}
 
 #undef CONVERT_EXCEPTION_CODE_TO_STRING
@@ -507,9 +504,9 @@ void CSymEngine::GetSysErrorInfo(CSysErrorInfo& rErrorInfo)
 	{
 		_stprintf_s(rErrorInfo.m_szErrorCode, countof(rErrorInfo.m_szErrorCode), _T("0x%08lX"), m_dwLastError);
 		_ASSERTE(rErrorInfo.m_pszMessageBuffer == NULL);
-		FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_FROM_SYSTEM,
-		              NULL, m_dwLastError, MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL),
-		              (PTSTR)&rErrorInfo.m_pszMessageBuffer, 0, NULL);
+		FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_FROM_SYSTEM, NULL,
+					  m_dwLastError, MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), (PTSTR)&rErrorInfo.m_pszMessageBuffer,
+					  0, NULL);
 		if (rErrorInfo.m_pszMessageBuffer)
 			TrimSpaces(rErrorInfo.m_pszMessageBuffer);
 	}
@@ -539,7 +536,7 @@ void CSymEngine::GetSysErrorString(CUTF8EncStream& rEncStream)
  */
 BOOL CSymEngine::GetComErrorInfo(CComErrorInfo& rErrorInfo)
 {
-	if (! m_pErrorInfo)
+	if (!m_pErrorInfo)
 		return FALSE;
 
 	BSTR bstrDescription = NULL;
@@ -591,7 +588,7 @@ BOOL CSymEngine::GetComErrorInfo(CComErrorInfo& rErrorInfo)
 void CSymEngine::GetComErrorString(CUTF8EncStream& rEncStream)
 {
 	CComErrorInfo ErrorInfo;
-	if (! GetComErrorInfo(ErrorInfo))
+	if (!GetComErrorInfo(ErrorInfo))
 		return;
 
 	static const CHAR szNewLine[] = "\r\n";
@@ -602,14 +599,14 @@ void CSymEngine::GetComErrorString(CUTF8EncStream& rEncStream)
 
 	BOOL bNotEmpty = FALSE;
 
-	if (! ErrorInfo.m_strDescription.IsEmpty())
+	if (!ErrorInfo.m_strDescription.IsEmpty())
 	{
 		bNotEmpty = TRUE;
 		rEncStream.WriteAscii(szDescriptionMsg);
 		rEncStream.WriteUTF8Bin(ErrorInfo.m_strDescription);
 	}
 
-	if (! ErrorInfo.m_strHelpFile.IsEmpty())
+	if (!ErrorInfo.m_strHelpFile.IsEmpty())
 	{
 		if (bNotEmpty)
 			rEncStream.WriteAscii(szNewLine);
@@ -619,7 +616,7 @@ void CSymEngine::GetComErrorString(CUTF8EncStream& rEncStream)
 		rEncStream.WriteUTF8Bin(ErrorInfo.m_strHelpFile);
 	}
 
-	if (! ErrorInfo.m_strSource.IsEmpty())
+	if (!ErrorInfo.m_strSource.IsEmpty())
 	{
 		if (bNotEmpty)
 			rEncStream.WriteAscii(szNewLine);
@@ -629,7 +626,7 @@ void CSymEngine::GetComErrorString(CUTF8EncStream& rEncStream)
 		rEncStream.WriteUTF8Bin(ErrorInfo.m_strSource);
 	}
 
-	if (! ErrorInfo.m_strGuid.IsEmpty())
+	if (!ErrorInfo.m_strGuid.IsEmpty())
 	{
 		if (bNotEmpty)
 			rEncStream.WriteAscii(szNewLine);
@@ -681,7 +678,7 @@ BOOL CSymEngine::GetErrorInfo(CErrorInfo& rErrorInfo)
 void CSymEngine::GetWin32ErrorString(CStrStream& rStream)
 {
 	CErrorInfo ErrorInfo;
-	if (! GetErrorInfo(ErrorInfo))
+	if (!GetErrorInfo(ErrorInfo))
 		return;
 
 	rStream << ErrorInfo.m_szProcessName;
@@ -789,8 +786,9 @@ void CSymEngine::GetRegistersValues(CRegistersValues& rRegVals)
 {
 	_ASSERTE(m_pExceptionPointers != NULL);
 
-#define CONVERT_REGISTER_VALUE_TO_STRING(reg, digits) \
-	_stprintf_s(rRegVals.m_sz##reg, countof(rRegVals.m_sz##reg), _T("0x%0") _T(#digits) _T("lX"), m_pExceptionPointers->ContextRecord->reg);
+#define CONVERT_REGISTER_VALUE_TO_STRING(reg, digits)                                                                  \
+	_stprintf_s(rRegVals.m_sz##reg, countof(rRegVals.m_sz##reg), _T("0x%0") _T(#digits) _T("lX"),                      \
+				m_pExceptionPointers->ContextRecord->reg);
 
 	CONVERT_REGISTER_VALUE_TO_STRING(Eax, 8);
 	CONVERT_REGISTER_VALUE_TO_STRING(Ebx, 8);
@@ -820,30 +818,23 @@ void CSymEngine::GetRegistersString(PTSTR pszRegString, DWORD dwRegStringSize)
 {
 	_ASSERTE(m_pExceptionPointers != NULL);
 	_stprintf_s(pszRegString, dwRegStringSize,
-	           _T("EAX=%08X  EBX=%08X  ECX=%08X  EDX=%08X\r\n")
-	           _T("ESI=%08X  EDI=%08X  FLG=%08X\r\n")
-	           _T("EBP=%08X  ESP=%08X  EIP=%08X\r\n")
-	           _T("CS=%04X  DS=%04X  SS=%04X  ES=%04X  FS=%04X  GS=%04X"),
+				_T("EAX=%08X  EBX=%08X  ECX=%08X  EDX=%08X\r\n")
+				_T("ESI=%08X  EDI=%08X  FLG=%08X\r\n")
+				_T("EBP=%08X  ESP=%08X  EIP=%08X\r\n")
+				_T("CS=%04X  DS=%04X  SS=%04X  ES=%04X  FS=%04X  GS=%04X"),
 
-	           m_pExceptionPointers->ContextRecord->Eax,
-	           m_pExceptionPointers->ContextRecord->Ebx,
-	           m_pExceptionPointers->ContextRecord->Ecx,
-	           m_pExceptionPointers->ContextRecord->Edx,
+				m_pExceptionPointers->ContextRecord->Eax, m_pExceptionPointers->ContextRecord->Ebx,
+				m_pExceptionPointers->ContextRecord->Ecx, m_pExceptionPointers->ContextRecord->Edx,
 
-	           m_pExceptionPointers->ContextRecord->Esi,
-	           m_pExceptionPointers->ContextRecord->Edi,
-	           m_pExceptionPointers->ContextRecord->EFlags,
+				m_pExceptionPointers->ContextRecord->Esi, m_pExceptionPointers->ContextRecord->Edi,
+				m_pExceptionPointers->ContextRecord->EFlags,
 
-	           m_pExceptionPointers->ContextRecord->Ebp,
-	           m_pExceptionPointers->ContextRecord->Esp,
-	           m_pExceptionPointers->ContextRecord->Eip,
+				m_pExceptionPointers->ContextRecord->Ebp, m_pExceptionPointers->ContextRecord->Esp,
+				m_pExceptionPointers->ContextRecord->Eip,
 
-	           m_pExceptionPointers->ContextRecord->SegCs,
-	           m_pExceptionPointers->ContextRecord->SegDs,
-	           m_pExceptionPointers->ContextRecord->SegSs,
-	           m_pExceptionPointers->ContextRecord->SegEs,
-	           m_pExceptionPointers->ContextRecord->SegFs,
-	           m_pExceptionPointers->ContextRecord->SegGs);
+				m_pExceptionPointers->ContextRecord->SegCs, m_pExceptionPointers->ContextRecord->SegDs,
+				m_pExceptionPointers->ContextRecord->SegSs, m_pExceptionPointers->ContextRecord->SegEs,
+				m_pExceptionPointers->ContextRecord->SegFs, m_pExceptionPointers->ContextRecord->SegGs);
 }
 
 /**
@@ -910,23 +901,29 @@ BOOL CSymEngine::GetCpuInfo(DWORD dwCpuNum, CCpuInfo& rCpuInfo)
 	if (g_bWinNT)
 	{
 		TCHAR szCentralProcessorPath[MAX_PATH];
-		_stprintf_s(szCentralProcessorPath, countof(szCentralProcessorPath), _T("HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\%lu"), dwCpuNum);
+		_stprintf_s(szCentralProcessorPath, countof(szCentralProcessorPath),
+					_T("HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\%lu"), dwCpuNum);
 		HKEY hKey;
 		if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, szCentralProcessorPath, 0l, KEY_READ, &hKey) == ERROR_SUCCESS)
 		{
 			DWORD dwValue, dwValueType, dwValueSize;
 			dwValueSize = sizeof(dwValue);
-			if (RegQueryValueEx(hKey, _T("~MHz"), NULL, &dwValueType, (PBYTE)&dwValue, &dwValueSize) == ERROR_SUCCESS && dwValueType == REG_DWORD)
+			if (RegQueryValueEx(hKey, _T("~MHz"), NULL, &dwValueType, (PBYTE)&dwValue, &dwValueSize) == ERROR_SUCCESS &&
+				dwValueType == REG_DWORD)
 				_ultot_s(dwValue, rCpuInfo.m_szCpuSpeed, countof(rCpuInfo.m_szCpuSpeed), 10);
 			else
 				*rCpuInfo.m_szCpuSpeed = _T('\0');
 			dwValueSize = sizeof(rCpuInfo.m_szCpuDescription);
-			if (RegQueryValueEx(hKey, _T("ProcessorNameString"), NULL, &dwValueType, (PBYTE)rCpuInfo.m_szCpuDescription, &dwValueSize) == ERROR_SUCCESS && dwValueType == REG_SZ)
+			if (RegQueryValueEx(hKey, _T("ProcessorNameString"), NULL, &dwValueType, (PBYTE)rCpuInfo.m_szCpuDescription,
+								&dwValueSize) == ERROR_SUCCESS &&
+				dwValueType == REG_SZ)
 				TrimSpaces(rCpuInfo.m_szCpuDescription);
 			else
 				*rCpuInfo.m_szCpuDescription = _T('\0');
 			dwValueSize = sizeof(rCpuInfo.m_szCpuId);
-			if (RegQueryValueEx(hKey, _T("Identifier"), NULL, &dwValueType, (PBYTE)rCpuInfo.m_szCpuId, &dwValueSize) == ERROR_SUCCESS && dwValueType == REG_SZ)
+			if (RegQueryValueEx(hKey, _T("Identifier"), NULL, &dwValueType, (PBYTE)rCpuInfo.m_szCpuId, &dwValueSize) ==
+					ERROR_SUCCESS &&
+				dwValueType == REG_SZ)
 				TrimSpaces(rCpuInfo.m_szCpuId);
 			else
 				*rCpuInfo.m_szCpuId = _T('\0');
@@ -1051,20 +1048,15 @@ void CSymEngine::GetOsString(PTSTR pszOSString, DWORD dwOSStringSize)
 	GetOsInfo(OsInfo);
 #ifdef _MANAGED
 	_stprintf_s(pszOSString, dwOSStringSize,
-	            _T("OS Version:    %s %s\r\n")
-	            _T("Build Number:  %s\r\n")
+				_T("OS Version:    %s %s\r\n")
+				_T("Build Number:  %s\r\n")
 				_T("CLR Version:   %s"),
-	            OsInfo.m_pszWinVersion,
-	            OsInfo.m_szSPVersion,
-	            OsInfo.m_szBuildNumber,
-				OsInfo.m_szNetVersion);
+				OsInfo.m_pszWinVersion, OsInfo.m_szSPVersion, OsInfo.m_szBuildNumber, OsInfo.m_szNetVersion);
 #else
 	_stprintf_s(pszOSString, dwOSStringSize,
-	            _T("OS Version:    %s %s\r\n")
-	            _T("Build Number:  %s"),
-	            OsInfo.m_pszWinVersion,
-	            OsInfo.m_szSPVersion,
-	            OsInfo.m_szBuildNumber);
+				_T("OS Version:    %s %s\r\n")
+				_T("Build Number:  %s"),
+				OsInfo.m_pszWinVersion, OsInfo.m_szSPVersion, OsInfo.m_szBuildNumber);
 #endif
 }
 
@@ -1101,16 +1093,13 @@ void CSymEngine::GetMemString(PTSTR pszMemString, DWORD dwMemStringSize)
 	MEMORYSTATUS ms;
 	GlobalMemoryStatus(&ms);
 	_stprintf_s(pszMemString, dwMemStringSize,
-	            _T("Current Memory Load:         %lu%%\r\n")
-	            _T("Total Physical Memory:       %lu MB\r\n")
-	            _T("Available Physical Memory:   %lu MB\r\n")
-	            _T("Total Page File Memory:      %lu MB\r\n")
-	            _T("Available Page File Memory:  %lu MB"),
-	            ms.dwMemoryLoad,
-	            ms.dwTotalPhys / (1024 * 1024),
-	            ms.dwAvailPhys / (1024 * 1024),
-	            ms.dwTotalPageFile / (1024 * 1024),
-	            ms.dwAvailPageFile / (1024 * 1024));
+				_T("Current Memory Load:         %lu%%\r\n")
+				_T("Total Physical Memory:       %lu MB\r\n")
+				_T("Available Physical Memory:   %lu MB\r\n")
+				_T("Total Page File Memory:      %lu MB\r\n")
+				_T("Available Page File Memory:  %lu MB"),
+				ms.dwMemoryLoad, ms.dwTotalPhys / (1024 * 1024), ms.dwAvailPhys / (1024 * 1024),
+				ms.dwTotalPageFile / (1024 * 1024), ms.dwAvailPageFile / (1024 * 1024));
 }
 
 /**
@@ -1130,10 +1119,13 @@ void CSymEngine::GetMemString(CUTF8EncStream& rEncStream)
  */
 void CSymEngine::SafeCopy(PVOID pDestination, PVOID pSource, DWORD dwSize)
 {
-	__try {
+	__try
+	{
 		for (DWORD dwBytePos = 0; dwBytePos < dwSize; ++dwBytePos)
 			((PBYTE)pDestination)[dwBytePos] = ((PBYTE)pSource)[dwBytePos];
-	} __except (EXCEPTION_EXECUTE_HANDLER) {
+	}
+	__except (EXCEPTION_EXECUTE_HANDLER)
+	{
 		// do nothing - just ignore the exception...
 	}
 }
@@ -1159,12 +1151,12 @@ BOOL CSymEngine::InitStackTrace(LPSTACKFRAME64 pStackFrame)
 	}
 	else
 	{
-/*
-		HANDLE hThread = GetCurrentThread();
-		m_StartExceptionContext.ContextFlags = CONTEXT_FULL;
-		if (! GetThreadContext(hThread, &m_StartExceptionContext))
-			return FALSE;
-*/
+		/*
+				HANDLE hThread = GetCurrentThread();
+				m_StartExceptionContext.ContextFlags = CONTEXT_FULL;
+				if (! GetThreadContext(hThread, &m_StartExceptionContext))
+					return FALSE;
+		*/
 		__asm
 		{
 			push eax
@@ -1173,28 +1165,28 @@ BOOL CSymEngine::InitStackTrace(LPSTACKFRAME64 pStackFrame)
 			push es
 			push ecx
 
-			// EDI = &m_StartExceptionContext
+				  // EDI = &m_StartExceptionContext
 			mov edi, [this]
 			add edi, [m_StartExceptionContext]
-			// ES = DS
+		  // ES = DS
 			push ds
 			pop es
-			// ECX = sizeof(m_StartExceptionContext)
+			  // ECX = sizeof(m_StartExceptionContext)
 			mov ecx, size m_StartExceptionContext
-			// EAX = 0
+			  // EAX = 0
 			xor eax, eax
-			// store EDI
+			  // store EDI
 			push edi
-			// ZeroMemory(&m_StartExceptionContext, sizeof(m_StartExceptionContext))
+				  // ZeroMemory(&m_StartExceptionContext, sizeof(m_StartExceptionContext))
 			cld
 			rep stosb
-			// restore EDI
+					  // restore EDI
 			pop edi
 
 			pop ecx
 			pop es
 
-			// fill m_StartExceptionContext
+							  // fill m_StartExceptionContext
 			mov dword ptr [edi] CONTEXT.ContextFlags, CONTEXT_FULL
 			mov dword ptr [edi] CONTEXT.Eax, eax
 			mov dword ptr [edi] CONTEXT.Ecx, ecx
@@ -1208,10 +1200,10 @@ BOOL CSymEngine::InitStackTrace(LPSTACKFRAME64 pStackFrame)
 			mov word ptr [edi] CONTEXT.SegEs, es
 			mov word ptr [edi] CONTEXT.SegFs, fs
 			mov word ptr [edi] CONTEXT.SegGs, gs
-			// m_StartExceptionContext.EFlags = flags
+			  // m_StartExceptionContext.EFlags = flags
 			pushfd
 			pop [edi] CONTEXT.EFlags
-			// extract caller's EBP, IP (return address) and ESP
+				  // extract caller's EBP, IP (return address) and ESP
 			mov eax, [ebp]
 			mov dword ptr [edi] CONTEXT.Ebp, eax
 			mov eax, [ebp + 4]
@@ -1243,7 +1235,7 @@ BOOL CSymEngine::InitStackTrace(LPSTACKFRAME64 pStackFrame)
  */
 BOOL CSymEngine::InitStackTrace(HANDLE hThread)
 {
-	if (! hThread)
+	if (!hThread)
 	{
 		hThread = GetCurrentThread();
 		// It's necessary to make a copy of CONTEXT structure because StackWalk64() changes it.
@@ -1266,7 +1258,7 @@ BOOL CSymEngine::InitStackTrace(HANDLE hThread)
 	else
 	{
 		m_swContext.m_context.ContextFlags = CONTEXT_FULL;
-		if (! GetThreadContext(hThread, &m_swContext.m_context))
+		if (!GetThreadContext(hThread, &m_swContext.m_context))
 			return FALSE;
 	}
 	m_swContext.m_hThread = hThread;
@@ -1288,7 +1280,7 @@ BOOL CSymEngine::InitStackTrace(HANDLE hThread)
 BOOL CSymEngine::GetNextWin32StackTraceString(CUTF8EncStream& rEncStream)
 {
 	CStackTraceEntry Entry;
-	if (! GetNextStackTraceEntry(Entry))
+	if (!GetNextStackTraceEntry(Entry))
 		return FALSE;
 
 	if (*Entry.m_szModule)
@@ -1363,11 +1355,12 @@ void CSymEngine::GetEnvironmentStrings(CXmlWriter& rXmlWriter)
 			{
 				pchEnd = _tcschr(pchEquation, _T('\0'));
 				TCHAR szVariableName[MAX_PATH];
-				_tcsncpy_s(szVariableName, countof(szVariableName), pchEnvironmentPair, pchEquation - pchEnvironmentPair);
-				rXmlWriter.WriteStartElement(_T("variable")); // <variable>
-				 rXmlWriter.WriteElementString(_T("name"), szVariableName); // <name>...</name>
-				 rXmlWriter.WriteElementString(_T("value"), pchEquation + 1); // <value>...</value>
-				rXmlWriter.WriteEndElement(); // </variable>
+				_tcsncpy_s(szVariableName, countof(szVariableName), pchEnvironmentPair,
+						   pchEquation - pchEnvironmentPair);
+				rXmlWriter.WriteStartElement(_T("variable"));				 // <variable>
+				rXmlWriter.WriteElementString(_T("name"), szVariableName);	 // <name>...</name>
+				rXmlWriter.WriteElementString(_T("value"), pchEquation + 1); // <value>...</value>
+				rXmlWriter.WriteEndElement();								 // </variable>
 			}
 			else
 				pchEnd = _tcschr(pchEnvironmentPair, _T('\0'));
@@ -1437,8 +1430,7 @@ void CSymEngine::GetAssemblyList(CUTF8EncStream& rEncStream)
 			rEncStream.WriteUTF8Bin(AssemblyInfo.m_szCodeBase);
 
 			rEncStream.WriteAscii(szNewLine);
-		}
-		while (NetAssemblies.GetNextAssembly(AssemblyInfo));
+		} while (NetAssemblies.GetNextAssembly(AssemblyInfo));
 	}
 	else
 		rEncStream.WriteAscii(szNewLine);
@@ -1455,28 +1447,28 @@ void CSymEngine::GetAssemblyList(CXmlWriter& rXmlWriter)
 	TCHAR szAppDomainID[32];
 	_ultot_s(dwAppDomainID, szAppDomainID, countof(szAppDomainID), 10);
 
-	rXmlWriter.WriteStartElement(_T("app-domain")); // <app-domain>
-	 rXmlWriter.WriteElementString(_T("name"), szAppDomainName); // <name>...</name>
-	 rXmlWriter.WriteElementString(_T("id"), szAppDomainID); // <id>...</id>
-	 rXmlWriter.WriteStartElement(_T("assemblies")); // <assemblies>
+	rXmlWriter.WriteStartElement(_T("app-domain"));				// <app-domain>
+	rXmlWriter.WriteElementString(_T("name"), szAppDomainName); // <name>...</name>
+	rXmlWriter.WriteElementString(_T("id"), szAppDomainID);		// <id>...</id>
+	rXmlWriter.WriteStartElement(_T("assemblies"));				// <assemblies>
 
-	 CNetAssemblies NetAssemblies;
-	 CNetAssemblies::CAssemblyInfo AssemblyInfo;
-	 if (NetAssemblies.GetFirstAssembly(AssemblyInfo))
-	 {
-		 do
-		 {
-			 rXmlWriter.WriteStartElement(_T("assembly")); // <assembly>
-			  rXmlWriter.WriteElementString(_T("name"), AssemblyInfo.m_szName); // <name>...</name>
-			  rXmlWriter.WriteElementString(_T("version"), AssemblyInfo.m_szVersion); // <version>...</version>
-			  rXmlWriter.WriteElementString(_T("file-version"), AssemblyInfo.m_szFileVersion); // <file-version>...</file-version>
-			  rXmlWriter.WriteElementString(_T("code-base"), AssemblyInfo.m_szCodeBase); // <code-base>...</code-base>
-			 rXmlWriter.WriteEndElement(); // </assembly>
-		 }
-		 while (NetAssemblies.GetNextAssembly(AssemblyInfo));
-	 }
+	CNetAssemblies NetAssemblies;
+	CNetAssemblies::CAssemblyInfo AssemblyInfo;
+	if (NetAssemblies.GetFirstAssembly(AssemblyInfo))
+	{
+		do
+		{
+			rXmlWriter.WriteStartElement(_T("assembly"));							// <assembly>
+			rXmlWriter.WriteElementString(_T("name"), AssemblyInfo.m_szName);		// <name>...</name>
+			rXmlWriter.WriteElementString(_T("version"), AssemblyInfo.m_szVersion); // <version>...</version>
+			rXmlWriter.WriteElementString(_T("file-version"),
+										  AssemblyInfo.m_szFileVersion); // <file-version>...</file-version>
+			rXmlWriter.WriteElementString(_T("code-base"), AssemblyInfo.m_szCodeBase); // <code-base>...</code-base>
+			rXmlWriter.WriteEndElement();											   // </assembly>
+		} while (NetAssemblies.GetNextAssembly(AssemblyInfo));
+	}
 
-	 rXmlWriter.WriteEndElement(); // </assemblies>
+	rXmlWriter.WriteEndElement(); // </assemblies>
 	rXmlWriter.WriteEndElement(); // </app-domain>
 }
 
@@ -1487,7 +1479,8 @@ void CSymEngine::GetAssemblyList(CXmlWriter& rXmlWriter)
  * @param pEnumProcess - pointer to the process enumerator;
  * @param rProcEntry - process entry.
  */
-void CSymEngine::GetModuleList(CUTF8EncStream& rEncStream, CEnumProcess* pEnumProcess, CEnumProcess::CProcessEntry& rProcEntry)
+void CSymEngine::GetModuleList(CUTF8EncStream& rEncStream, CEnumProcess* pEnumProcess,
+							   CEnumProcess::CProcessEntry& rProcEntry)
 {
 	_ASSERTE(pEnumProcess != NULL);
 
@@ -1529,8 +1522,7 @@ void CSymEngine::GetModuleList(CUTF8EncStream& rEncStream, CEnumProcess* pEnumPr
 			sprintf_s(szTempBuf, countof(szTempBuf), "%08lX", (DWORD)ModuleEntry.m_dwModuleSize);
 			rEncStream.WriteAscii(szTempBuf);
 			rEncStream.WriteAscii(szNewLine);
-		}
-		while (pEnumProcess->GetModuleNext(rProcEntry.m_dwProcessID, ModuleEntry));
+		} while (pEnumProcess->GetModuleNext(rProcEntry.m_dwProcessID, ModuleEntry));
 	}
 	else
 		rEncStream.WriteAscii(szNewLine);
@@ -1541,36 +1533,37 @@ void CSymEngine::GetModuleList(CUTF8EncStream& rEncStream, CEnumProcess* pEnumPr
  * @param pEnumProcess - pointer to the process enumerator;
  * @param rProcEntry - process entry.
  */
-void CSymEngine::GetModuleList(CXmlWriter& rXmlWriter, CEnumProcess* pEnumProcess, CEnumProcess::CProcessEntry& rProcEntry)
+void CSymEngine::GetModuleList(CXmlWriter& rXmlWriter, CEnumProcess* pEnumProcess,
+							   CEnumProcess::CProcessEntry& rProcEntry)
 {
 	_ASSERTE(pEnumProcess != NULL);
 
-	rXmlWriter.WriteStartElement(_T("process")); // <process>
-	 rXmlWriter.WriteElementString(_T("name"), rProcEntry.m_szProcessName); // <name>...</name>
-	 TCHAR szTempBuf[64];
-	 _ultot_s(rProcEntry.m_dwProcessID, szTempBuf, countof(szTempBuf), 10);
-	 rXmlWriter.WriteElementString(_T("id"), szTempBuf); // <id>...</id>
-	 rXmlWriter.WriteStartElement(_T("modules")); // <modules>
+	rXmlWriter.WriteStartElement(_T("process"));						   // <process>
+	rXmlWriter.WriteElementString(_T("name"), rProcEntry.m_szProcessName); // <name>...</name>
+	TCHAR szTempBuf[64];
+	_ultot_s(rProcEntry.m_dwProcessID, szTempBuf, countof(szTempBuf), 10);
+	rXmlWriter.WriteElementString(_T("id"), szTempBuf); // <id>...</id>
+	rXmlWriter.WriteStartElement(_T("modules"));		// <modules>
 
-	 CEnumProcess::CModuleEntry ModuleEntry;
-	 BOOL bContinue = pEnumProcess->GetModuleFirst(rProcEntry.m_dwProcessID, ModuleEntry);
-	 while (bContinue)
-	 {
-		 rXmlWriter.WriteStartElement(_T("module")); // <module>
-		  rXmlWriter.WriteElementString(_T("name"), ModuleEntry.m_szModuleName); // <name>...</name>
-		  TCHAR szVersionString[64];
-		  if (! GetVersionString(ModuleEntry.m_szModuleName, szVersionString, countof(szVersionString)))
-			  *szVersionString = _T('\0');
-		  rXmlWriter.WriteElementString(_T("version"), szVersionString); // <version>...</version>
-		  _stprintf_s(szTempBuf, countof(szTempBuf), _T("0x%08lX"), (DWORD)ModuleEntry.m_pLoadBase);
-		  rXmlWriter.WriteElementString(_T("base"), szTempBuf); // <base>...</base>
-		  _stprintf_s(szTempBuf, countof(szTempBuf), _T("0x%08lX"), (DWORD)ModuleEntry.m_dwModuleSize);
-		  rXmlWriter.WriteElementString(_T("size"), szTempBuf); // <size>...</size>
-		 rXmlWriter.WriteEndElement(); // </module>
-		 bContinue = pEnumProcess->GetModuleNext(rProcEntry.m_dwProcessID, ModuleEntry);
-	 }
+	CEnumProcess::CModuleEntry ModuleEntry;
+	BOOL bContinue = pEnumProcess->GetModuleFirst(rProcEntry.m_dwProcessID, ModuleEntry);
+	while (bContinue)
+	{
+		rXmlWriter.WriteStartElement(_T("module"));							   // <module>
+		rXmlWriter.WriteElementString(_T("name"), ModuleEntry.m_szModuleName); // <name>...</name>
+		TCHAR szVersionString[64];
+		if (!GetVersionString(ModuleEntry.m_szModuleName, szVersionString, countof(szVersionString)))
+			*szVersionString = _T('\0');
+		rXmlWriter.WriteElementString(_T("version"), szVersionString); // <version>...</version>
+		_stprintf_s(szTempBuf, countof(szTempBuf), _T("0x%08lX"), (DWORD)ModuleEntry.m_pLoadBase);
+		rXmlWriter.WriteElementString(_T("base"), szTempBuf); // <base>...</base>
+		_stprintf_s(szTempBuf, countof(szTempBuf), _T("0x%08lX"), (DWORD)ModuleEntry.m_dwModuleSize);
+		rXmlWriter.WriteElementString(_T("size"), szTempBuf); // <size>...</size>
+		rXmlWriter.WriteEndElement();						  // </module>
+		bContinue = pEnumProcess->GetModuleNext(rProcEntry.m_dwProcessID, ModuleEntry);
+	}
 
-	 rXmlWriter.WriteEndElement(); // </modules>
+	rXmlWriter.WriteEndElement(); // </modules>
 	rXmlWriter.WriteEndElement(); // </process>
 }
 
@@ -1666,33 +1659,33 @@ void CSymEngine::GetWin32StackTrace(CXmlWriter& rXmlWriter, DWORD dwThreadID, HA
 {
 	rXmlWriter.WriteStartElement(_T("thread")); // <thread>
 
-	 TCHAR szThreadID[32];
-	 _ultot_s(dwThreadID, szThreadID, countof(szThreadID), 10);
-	 rXmlWriter.WriteElementString(_T("id"), szThreadID); // <id>...</id>
-	 rXmlWriter.WriteElementString(_T("status"), pszThreadStatus); // <status>...</status>
-	 rXmlWriter.WriteStartElement(_T("stack")); // <stack>
+	TCHAR szThreadID[32];
+	_ultot_s(dwThreadID, szThreadID, countof(szThreadID), 10);
+	rXmlWriter.WriteElementString(_T("id"), szThreadID);		  // <id>...</id>
+	rXmlWriter.WriteElementString(_T("status"), pszThreadStatus); // <status>...</status>
+	rXmlWriter.WriteStartElement(_T("stack"));					  // <stack>
 
-	  CStackTraceEntry Entry;
-	  BOOL bContinue = GetFirstStackTraceEntry(Entry, hThread);
-	  while (bContinue)
-	  {
-		  rXmlWriter.WriteStartElement(_T("frame")); // <frame>
-		   rXmlWriter.WriteElementString(_T("module"), Entry.m_szModule); // <module>...</module>
-		   rXmlWriter.WriteElementString(_T("address"), Entry.m_szAddress); // <address>...</address>
-		   rXmlWriter.WriteStartElement(_T("function")); // <function>
-		    rXmlWriter.WriteElementString(_T("name"), Entry.m_szFunctionName); // <name>...</name>
-		    rXmlWriter.WriteElementString(_T("offset"), Entry.m_szFunctionOffset); // <offset>...</offset>
-		   rXmlWriter.WriteEndElement(); // </function>
-		   rXmlWriter.WriteElementString(_T("file"), Entry.m_szSourceFile); // <file>...</file>
-		   rXmlWriter.WriteStartElement(_T("line")); // <line>
-		    rXmlWriter.WriteElementString(_T("number"), Entry.m_szLineNumber); // <number>...</number>
-		   rXmlWriter.WriteElementString(_T("offset"), Entry.m_szLineOffset); // <offset>...</offset>
-		   rXmlWriter.WriteEndElement(); // </line>
-		  rXmlWriter.WriteEndElement(); // </frame>
-		  bContinue = GetNextStackTraceEntry(Entry);
-	  }
+	CStackTraceEntry Entry;
+	BOOL bContinue = GetFirstStackTraceEntry(Entry, hThread);
+	while (bContinue)
+	{
+		rXmlWriter.WriteStartElement(_T("frame"));							   // <frame>
+		rXmlWriter.WriteElementString(_T("module"), Entry.m_szModule);		   // <module>...</module>
+		rXmlWriter.WriteElementString(_T("address"), Entry.m_szAddress);	   // <address>...</address>
+		rXmlWriter.WriteStartElement(_T("function"));						   // <function>
+		rXmlWriter.WriteElementString(_T("name"), Entry.m_szFunctionName);	   // <name>...</name>
+		rXmlWriter.WriteElementString(_T("offset"), Entry.m_szFunctionOffset); // <offset>...</offset>
+		rXmlWriter.WriteEndElement();										   // </function>
+		rXmlWriter.WriteElementString(_T("file"), Entry.m_szSourceFile);	   // <file>...</file>
+		rXmlWriter.WriteStartElement(_T("line"));							   // <line>
+		rXmlWriter.WriteElementString(_T("number"), Entry.m_szLineNumber);	   // <number>...</number>
+		rXmlWriter.WriteElementString(_T("offset"), Entry.m_szLineOffset);	   // <offset>...</offset>
+		rXmlWriter.WriteEndElement();										   // </line>
+		rXmlWriter.WriteEndElement();										   // </frame>
+		bContinue = GetNextStackTraceEntry(Entry);
+	}
 
-	 rXmlWriter.WriteEndElement(); // </stack>
+	rXmlWriter.WriteEndElement(); // </stack>
 	rXmlWriter.WriteEndElement(); // </thread>
 }
 
@@ -1756,31 +1749,32 @@ void CSymEngine::GetNetStackTrace(CXmlWriter& rXmlWriter)
 	DWORD dwThreadID;
 	WCHAR szThreadName[128];
 	NetThunks::GetThreadInfo(dwThreadID, szThreadName, countof(szThreadName));
-	 rXmlWriter.WriteElementString(_T("name"), szThreadName); // <name>...</name>
-	 TCHAR szThreadID[32];
-	 _ultot_s(dwThreadID, szThreadID, countof(szThreadID), 10);
-	 rXmlWriter.WriteElementString(_T("id"), szThreadID); // <id>...</id>
-	 rXmlWriter.WriteElementString(_T("status"), pszThreadStatus); // <status>...</status>
-	 rXmlWriter.WriteStartElement(_T("stack")); // <stack>
+	rXmlWriter.WriteElementString(_T("name"), szThreadName); // <name>...</name>
+	TCHAR szThreadID[32];
+	_ultot_s(dwThreadID, szThreadID, countof(szThreadID), 10);
+	rXmlWriter.WriteElementString(_T("id"), szThreadID);		  // <id>...</id>
+	rXmlWriter.WriteElementString(_T("status"), pszThreadStatus); // <status>...</status>
+	rXmlWriter.WriteStartElement(_T("stack"));					  // <stack>
 
-	  CNetStackTrace::CNetStackTraceEntry Entry;
-	  BOOL bContinue = m_pNetStackTrace->GetFirstStackTraceEntry(Entry);
-	  while (bContinue)
-	  {
-		  rXmlWriter.WriteStartElement(_T("frame")); // <frame>
-		   rXmlWriter.WriteElementString(_T("assembly"), Entry.m_szAssembly); // <assembly>...</assembly>
-		   rXmlWriter.WriteElementString(_T("native-offset"), Entry.m_szNativeOffset); // <native-offset>...</native-offset>
-		   rXmlWriter.WriteElementString(_T("il-offset"), Entry.m_szILOffset); // <il-offset>...</il-offset>
-		   rXmlWriter.WriteElementString(_T("type"), Entry.m_szType); // <type>...</type>
-		   rXmlWriter.WriteElementString(_T("method"), Entry.m_szMethod); // <method>...</method>
-		   rXmlWriter.WriteElementString(_T("file"), Entry.m_szSourceFile); // <file>...</file>
-		   rXmlWriter.WriteElementString(_T("line"), Entry.m_szLineNumber); // <line>...</line>
-		   rXmlWriter.WriteElementString(_T("column"), Entry.m_szColumnNumber); // <column>...</column>
-		  rXmlWriter.WriteEndElement(); // </frame>
-		  bContinue = m_pNetStackTrace->GetNextStackTraceEntry(Entry);
-	  }
+	CNetStackTrace::CNetStackTraceEntry Entry;
+	BOOL bContinue = m_pNetStackTrace->GetFirstStackTraceEntry(Entry);
+	while (bContinue)
+	{
+		rXmlWriter.WriteStartElement(_T("frame"));						   // <frame>
+		rXmlWriter.WriteElementString(_T("assembly"), Entry.m_szAssembly); // <assembly>...</assembly>
+		rXmlWriter.WriteElementString(_T("native-offset"),
+									  Entry.m_szNativeOffset);				 // <native-offset>...</native-offset>
+		rXmlWriter.WriteElementString(_T("il-offset"), Entry.m_szILOffset);	 // <il-offset>...</il-offset>
+		rXmlWriter.WriteElementString(_T("type"), Entry.m_szType);			 // <type>...</type>
+		rXmlWriter.WriteElementString(_T("method"), Entry.m_szMethod);		 // <method>...</method>
+		rXmlWriter.WriteElementString(_T("file"), Entry.m_szSourceFile);	 // <file>...</file>
+		rXmlWriter.WriteElementString(_T("line"), Entry.m_szLineNumber);	 // <line>...</line>
+		rXmlWriter.WriteElementString(_T("column"), Entry.m_szColumnNumber); // <column>...</column>
+		rXmlWriter.WriteEndElement();										 // </frame>
+		bContinue = m_pNetStackTrace->GetNextStackTraceEntry(Entry);
+	}
 
-	 rXmlWriter.WriteEndElement(); // </stack>
+	rXmlWriter.WriteEndElement(); // </stack>
 	rXmlWriter.WriteEndElement(); // </clr-thread>
 }
 
@@ -1793,7 +1787,7 @@ void CSymEngine::GetNetStackTrace(CXmlWriter& rXmlWriter)
 void CSymEngine::GetWin32ThreadsList(CUTF8EncStream& rEncStream, CEnumProcess* pEnumProcess)
 {
 	_ASSERTE(pEnumProcess != NULL);
-	if (! FOpenThread)
+	if (!FOpenThread)
 		return;
 
 	static const CHAR szSuspendedStateMsg[] = "Suspended Thread";
@@ -1820,7 +1814,8 @@ void CSymEngine::GetWin32ThreadsList(CUTF8EncStream& rEncStream, CEnumProcess* p
 			}
 			else
 			{
-				HANDLE hThread = FOpenThread(THREAD_GET_CONTEXT | THREAD_QUERY_INFORMATION | THREAD_SUSPEND_RESUME, FALSE, thr.m_dwThreadID);
+				HANDLE hThread = FOpenThread(THREAD_GET_CONTEXT | THREAD_QUERY_INFORMATION | THREAD_SUSPEND_RESUME,
+											 FALSE, thr.m_dwThreadID);
 				if (hThread == NULL)
 					continue;
 				pszThreadStatus = SuspendThread(hThread) ? szSuspendedStateMsg : szRunningStateMsg;
@@ -1829,8 +1824,7 @@ void CSymEngine::GetWin32ThreadsList(CUTF8EncStream& rEncStream, CEnumProcess* p
 					ResumeThread(hThread);
 				CloseHandle(hThread);
 			}
-		}
-		while (pEnumProcess->GetThreadNext(dwCurrentProcessID, thr));
+		} while (pEnumProcess->GetThreadNext(dwCurrentProcessID, thr));
 	}
 }
 
@@ -1841,7 +1835,7 @@ void CSymEngine::GetWin32ThreadsList(CUTF8EncStream& rEncStream, CEnumProcess* p
 void CSymEngine::GetWin32ThreadsList(CXmlWriter& rXmlWriter, CEnumProcess* pEnumProcess)
 {
 	_ASSERTE(pEnumProcess != NULL);
-	if (! FOpenThread)
+	if (!FOpenThread)
 		return;
 
 	static const TCHAR szSuspendedState[] = _T("suspended");
@@ -1867,7 +1861,8 @@ void CSymEngine::GetWin32ThreadsList(CXmlWriter& rXmlWriter, CEnumProcess* pEnum
 			}
 			else
 			{
-				HANDLE hThread = FOpenThread(THREAD_GET_CONTEXT | THREAD_QUERY_INFORMATION | THREAD_SUSPEND_RESUME, FALSE, thr.m_dwThreadID);
+				HANDLE hThread = FOpenThread(THREAD_GET_CONTEXT | THREAD_QUERY_INFORMATION | THREAD_SUSPEND_RESUME,
+											 FALSE, thr.m_dwThreadID);
 				if (hThread == NULL)
 					continue;
 				pszThreadStatus = SuspendThread(hThread) ? szSuspendedState : szRunningState;
@@ -1876,8 +1871,7 @@ void CSymEngine::GetWin32ThreadsList(CXmlWriter& rXmlWriter, CEnumProcess* pEnum
 					ResumeThread(hThread);
 				CloseHandle(hThread);
 			}
-		}
-		while (pEnumProcess->GetThreadNext(dwCurrentProcessID, thr));
+		} while (pEnumProcess->GetThreadNext(dwCurrentProcessID, thr));
 	}
 }
 
@@ -1906,12 +1900,9 @@ BOOL CSymEngine::GetVersionString(PCTSTR pszModuleName, PTSTR pszVersionString, 
 		VerQueryValue(pVersionInfo, _T("\\"), (PVOID*)&pFileVerInfo, &uLength))
 	{
 		_ASSERTE(uLength == sizeof(*pFileVerInfo));
-		_stprintf_s(pszVersionString, dwVersionStringSize,
-			        _T("%lu.%lu.%lu.%lu"),
-			        HIWORD(pFileVerInfo->dwFileVersionMS),
-			        LOWORD(pFileVerInfo->dwFileVersionMS),
-			        HIWORD(pFileVerInfo->dwFileVersionLS),
-			        LOWORD(pFileVerInfo->dwFileVersionLS));
+		_stprintf_s(pszVersionString, dwVersionStringSize, _T("%lu.%lu.%lu.%lu"), HIWORD(pFileVerInfo->dwFileVersionMS),
+					LOWORD(pFileVerInfo->dwFileVersionMS), HIWORD(pFileVerInfo->dwFileVersionLS),
+					LOWORD(pFileVerInfo->dwFileVersionLS));
 		bResult = TRUE;
 	}
 	delete[] pVersionInfo;
@@ -1927,10 +1918,12 @@ void CSymEngine::GetDateTime(PTSTR pszDateTime, DWORD dwDateTimeSize)
 	_ASSERTE(dwDateTimeSize > 0);
 	// Computers use different locales, so it's desirable to use universal date and time format.
 	const LCID lcidEnglishUS = MAKELCID(MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), SORT_DEFAULT);
-	DWORD dwOutputSize = GetDateFormat(lcidEnglishUS, LOCALE_USE_CP_ACP | DATE_LONGDATE | LOCALE_NOUSEROVERRIDE, &m_DateTime, NULL, pszDateTime, dwDateTimeSize);
+	DWORD dwOutputSize = GetDateFormat(lcidEnglishUS, LOCALE_USE_CP_ACP | DATE_LONGDATE | LOCALE_NOUSEROVERRIDE,
+									   &m_DateTime, NULL, pszDateTime, dwDateTimeSize);
 	if (dwOutputSize < dwDateTimeSize)
 		pszDateTime[dwOutputSize - 1] = _T(' ');
-	GetTimeFormat(lcidEnglishUS, LOCALE_USE_CP_ACP | LOCALE_NOUSEROVERRIDE, &m_DateTime, NULL, pszDateTime + dwOutputSize, dwDateTimeSize - dwOutputSize);
+	GetTimeFormat(lcidEnglishUS, LOCALE_USE_CP_ACP | LOCALE_NOUSEROVERRIDE, &m_DateTime, NULL,
+				  pszDateTime + dwOutputSize, dwDateTimeSize - dwOutputSize);
 }
 
 /**
@@ -2022,7 +2015,7 @@ void CSymEngine::GetErrorLog(CUTF8EncStream& rEncStream, CEnumProcess* pEnumProc
 		GetErrorString(rEncStream);
 	}
 
-	if (! g_strUserMessage.IsEmpty())
+	if (!g_strUserMessage.IsEmpty())
 	{
 		rEncStream.WriteAscii(szUserMsg);
 		rEncStream.WriteAscii(szDividerMsg);
@@ -2057,7 +2050,7 @@ void CSymEngine::GetErrorLog(CUTF8EncStream& rEncStream, CEnumProcess* pEnumProc
 #ifdef _MANAGED
 		&& bNativeInfo
 #endif
-		)
+	)
 	{
 		rEncStream.WriteAscii(szRegistersMsg);
 		rEncStream.WriteAscii(szDividerMsg);
@@ -2140,29 +2133,30 @@ void CSymEngine::GetErrorReason(CXmlWriter& rXmlWriter)
 		CNetStackTrace::CNetErrorInfo ErrorInfo;
 		m_pNetStackTrace->GetErrorInfo(ErrorInfo);
 
-		rXmlWriter.WriteStartElement(_T("error")); // <error>
-		 rXmlWriter.WriteElementString(_T("what"), _T("MANAGED_EXCEPTION")); // <what>...</what>
-		 rXmlWriter.WriteStartElement(_T("exception")); // <exception>
-		  rXmlWriter.WriteElementString(_T("type"), ErrorInfo.m_szException); // <type>...</type>
-		  rXmlWriter.WriteElementString(_T("message"), ErrorInfo.m_szMessage); // <message>...</message>
-		 rXmlWriter.WriteEndElement(); // </exception>
-		 rXmlWriter.WriteStartElement(_T("process")); // <process>
-		  rXmlWriter.WriteElementString(_T("name"), ErrorInfo.m_szProcessName); // <name>...</name>
-		  rXmlWriter.WriteElementString(_T("id"), ErrorInfo.m_szProcessID); // <id>...</id>
-		 rXmlWriter.WriteEndElement(); // </process>
-		 rXmlWriter.WriteStartElement(_T("app-domain")); // <app-domain>
-		  rXmlWriter.WriteElementString(_T("name"), ErrorInfo.m_szAppDomainName); // <name>...</name>
-		  rXmlWriter.WriteElementString(_T("id"), ErrorInfo.m_szAppDomainID); // <id>...</id>
-		 rXmlWriter.WriteEndElement(); // </app-domain>
-		 rXmlWriter.WriteElementString(_T("assembly"), ErrorInfo.m_szAssembly); // <assembly>...</assembly>
-		 rXmlWriter.WriteElementString(_T("native-offset"), ErrorInfo.m_szNativeOffset); // <native-offset>...</native-offset>
-		 rXmlWriter.WriteElementString(_T("il-offset"), ErrorInfo.m_szILOffset); // <il-offset>...</il-offset>
-		 rXmlWriter.WriteElementString(_T("type"), ErrorInfo.m_szType); // <type>...</type>
-		 rXmlWriter.WriteElementString(_T("method"), ErrorInfo.m_szMethod); // <method>...</method>
-		 rXmlWriter.WriteElementString(_T("file"), ErrorInfo.m_szSourceFile); // <file>...</file>
-		 rXmlWriter.WriteElementString(_T("line"), ErrorInfo.m_szLineNumber); // <line>...</line>
-		 rXmlWriter.WriteElementString(_T("column"), ErrorInfo.m_szColumnNumber); // <column>...</column>
-		rXmlWriter.WriteEndElement(); // </error>
+		rXmlWriter.WriteStartElement(_T("error"));								// <error>
+		rXmlWriter.WriteElementString(_T("what"), _T("MANAGED_EXCEPTION"));		// <what>...</what>
+		rXmlWriter.WriteStartElement(_T("exception"));							// <exception>
+		rXmlWriter.WriteElementString(_T("type"), ErrorInfo.m_szException);		// <type>...</type>
+		rXmlWriter.WriteElementString(_T("message"), ErrorInfo.m_szMessage);	// <message>...</message>
+		rXmlWriter.WriteEndElement();											// </exception>
+		rXmlWriter.WriteStartElement(_T("process"));							// <process>
+		rXmlWriter.WriteElementString(_T("name"), ErrorInfo.m_szProcessName);	// <name>...</name>
+		rXmlWriter.WriteElementString(_T("id"), ErrorInfo.m_szProcessID);		// <id>...</id>
+		rXmlWriter.WriteEndElement();											// </process>
+		rXmlWriter.WriteStartElement(_T("app-domain"));							// <app-domain>
+		rXmlWriter.WriteElementString(_T("name"), ErrorInfo.m_szAppDomainName); // <name>...</name>
+		rXmlWriter.WriteElementString(_T("id"), ErrorInfo.m_szAppDomainID);		// <id>...</id>
+		rXmlWriter.WriteEndElement();											// </app-domain>
+		rXmlWriter.WriteElementString(_T("assembly"), ErrorInfo.m_szAssembly);	// <assembly>...</assembly>
+		rXmlWriter.WriteElementString(_T("native-offset"),
+									  ErrorInfo.m_szNativeOffset);				 // <native-offset>...</native-offset>
+		rXmlWriter.WriteElementString(_T("il-offset"), ErrorInfo.m_szILOffset);	 // <il-offset>...</il-offset>
+		rXmlWriter.WriteElementString(_T("type"), ErrorInfo.m_szType);			 // <type>...</type>
+		rXmlWriter.WriteElementString(_T("method"), ErrorInfo.m_szMethod);		 // <method>...</method>
+		rXmlWriter.WriteElementString(_T("file"), ErrorInfo.m_szSourceFile);	 // <file>...</file>
+		rXmlWriter.WriteElementString(_T("line"), ErrorInfo.m_szLineNumber);	 // <line>...</line>
+		rXmlWriter.WriteElementString(_T("column"), ErrorInfo.m_szColumnNumber); // <column>...</column>
+		rXmlWriter.WriteEndElement();											 // </error>
 	}
 	else
 	{
@@ -2170,24 +2164,24 @@ void CSymEngine::GetErrorReason(CXmlWriter& rXmlWriter)
 		CErrorInfo ErrorInfo;
 		GetErrorInfo(ErrorInfo);
 
-		rXmlWriter.WriteStartElement(_T("error")); // <error>
-		 rXmlWriter.WriteElementString(_T("what"), ErrorInfo.m_pszWhat); // <what>...</what>
-		 rXmlWriter.WriteStartElement(_T("process")); // <process>
-		  rXmlWriter.WriteElementString(_T("name"), ErrorInfo.m_szProcessName); // <name>...</name>
-		  rXmlWriter.WriteElementString(_T("id"), ErrorInfo.m_szProcessID); // <id>...</id>
-		 rXmlWriter.WriteEndElement(); // </process>
-		 rXmlWriter.WriteElementString(_T("module"), ErrorInfo.m_szModule); // <module>...</module>
-		 rXmlWriter.WriteElementString(_T("address"), ErrorInfo.m_szAddress); // <address>...</address>
-		 rXmlWriter.WriteStartElement(_T("function")); // <function>
-		  rXmlWriter.WriteElementString(_T("name"), ErrorInfo.m_szFunctionName); // <name>...</name>
-		  rXmlWriter.WriteElementString(_T("offset"), ErrorInfo.m_szFunctionOffset); // <offset>...</offset>
-		 rXmlWriter.WriteEndElement(); // </function>
-		 rXmlWriter.WriteElementString(_T("file"), ErrorInfo.m_szSourceFile); // <file>...</file>
-		 rXmlWriter.WriteStartElement(_T("line")); // <line>
-		  rXmlWriter.WriteElementString(_T("number"), ErrorInfo.m_szLineNumber); // <number>...</number>
-		  rXmlWriter.WriteElementString(_T("offset"), ErrorInfo.m_szLineOffset); // <offset>...</offset>
-		 rXmlWriter.WriteEndElement(); // </line>
-		rXmlWriter.WriteEndElement(); // </error>
+		rXmlWriter.WriteStartElement(_T("error"));								   // <error>
+		rXmlWriter.WriteElementString(_T("what"), ErrorInfo.m_pszWhat);			   // <what>...</what>
+		rXmlWriter.WriteStartElement(_T("process"));							   // <process>
+		rXmlWriter.WriteElementString(_T("name"), ErrorInfo.m_szProcessName);	   // <name>...</name>
+		rXmlWriter.WriteElementString(_T("id"), ErrorInfo.m_szProcessID);		   // <id>...</id>
+		rXmlWriter.WriteEndElement();											   // </process>
+		rXmlWriter.WriteElementString(_T("module"), ErrorInfo.m_szModule);		   // <module>...</module>
+		rXmlWriter.WriteElementString(_T("address"), ErrorInfo.m_szAddress);	   // <address>...</address>
+		rXmlWriter.WriteStartElement(_T("function"));							   // <function>
+		rXmlWriter.WriteElementString(_T("name"), ErrorInfo.m_szFunctionName);	   // <name>...</name>
+		rXmlWriter.WriteElementString(_T("offset"), ErrorInfo.m_szFunctionOffset); // <offset>...</offset>
+		rXmlWriter.WriteEndElement();											   // </function>
+		rXmlWriter.WriteElementString(_T("file"), ErrorInfo.m_szSourceFile);	   // <file>...</file>
+		rXmlWriter.WriteStartElement(_T("line"));								   // <line>
+		rXmlWriter.WriteElementString(_T("number"), ErrorInfo.m_szLineNumber);	   // <number>...</number>
+		rXmlWriter.WriteElementString(_T("offset"), ErrorInfo.m_szLineOffset);	   // <offset>...</offset>
+		rXmlWriter.WriteEndElement();											   // </line>
+		rXmlWriter.WriteEndElement();											   // </error>
 #ifdef _MANAGED
 	}
 #endif
@@ -2201,24 +2195,24 @@ void CSymEngine::GetRegistersInfo(CXmlWriter& rXmlWriter)
 	_ASSERTE(m_pExceptionPointers != NULL);
 	CRegistersValues RegVals;
 	GetRegistersValues(RegVals);
-	rXmlWriter.WriteStartElement(_T("registers")); // <registers>
-	 rXmlWriter.WriteElementString(_T("eax"), RegVals.m_szEax); // <eax>...</eax>
-	 rXmlWriter.WriteElementString(_T("ebx"), RegVals.m_szEbx); // <ebx>...</ebx>
-	 rXmlWriter.WriteElementString(_T("ecx"), RegVals.m_szEcx); // <ecx>...</ecx>
-	 rXmlWriter.WriteElementString(_T("edx"), RegVals.m_szEdx); // <edx>...</edx>
-	 rXmlWriter.WriteElementString(_T("esi"), RegVals.m_szEsi); // <esi>...</esi>
-	 rXmlWriter.WriteElementString(_T("edi"), RegVals.m_szEdi); // <edi>...</edi>
-	 rXmlWriter.WriteElementString(_T("esp"), RegVals.m_szEsp); // <esp>...</esp>
-	 rXmlWriter.WriteElementString(_T("ebp"), RegVals.m_szEbp); // <ebp>...</ebp>
-	 rXmlWriter.WriteElementString(_T("eip"), RegVals.m_szEip); // <eip>...</eip>
-	 rXmlWriter.WriteElementString(_T("cs"), RegVals.m_szSegCs); // <cs>...</cs>
-	 rXmlWriter.WriteElementString(_T("ds"), RegVals.m_szSegDs); // <ds>...</ds>
-	 rXmlWriter.WriteElementString(_T("ss"), RegVals.m_szSegSs); // <ss>...</ss>
-	 rXmlWriter.WriteElementString(_T("es"), RegVals.m_szSegEs); // <es>...</es>
-	 rXmlWriter.WriteElementString(_T("fs"), RegVals.m_szSegFs); // <fs>...</fs>
-	 rXmlWriter.WriteElementString(_T("gs"), RegVals.m_szSegGs); // <gs>...</gs>
-	 rXmlWriter.WriteElementString(_T("eflags"), RegVals.m_szEFlags); // <eflags>...</eflags>
-	rXmlWriter.WriteEndElement(); // </registers>
+	rXmlWriter.WriteStartElement(_T("registers"));					 // <registers>
+	rXmlWriter.WriteElementString(_T("eax"), RegVals.m_szEax);		 // <eax>...</eax>
+	rXmlWriter.WriteElementString(_T("ebx"), RegVals.m_szEbx);		 // <ebx>...</ebx>
+	rXmlWriter.WriteElementString(_T("ecx"), RegVals.m_szEcx);		 // <ecx>...</ecx>
+	rXmlWriter.WriteElementString(_T("edx"), RegVals.m_szEdx);		 // <edx>...</edx>
+	rXmlWriter.WriteElementString(_T("esi"), RegVals.m_szEsi);		 // <esi>...</esi>
+	rXmlWriter.WriteElementString(_T("edi"), RegVals.m_szEdi);		 // <edi>...</edi>
+	rXmlWriter.WriteElementString(_T("esp"), RegVals.m_szEsp);		 // <esp>...</esp>
+	rXmlWriter.WriteElementString(_T("ebp"), RegVals.m_szEbp);		 // <ebp>...</ebp>
+	rXmlWriter.WriteElementString(_T("eip"), RegVals.m_szEip);		 // <eip>...</eip>
+	rXmlWriter.WriteElementString(_T("cs"), RegVals.m_szSegCs);		 // <cs>...</cs>
+	rXmlWriter.WriteElementString(_T("ds"), RegVals.m_szSegDs);		 // <ds>...</ds>
+	rXmlWriter.WriteElementString(_T("ss"), RegVals.m_szSegSs);		 // <ss>...</ss>
+	rXmlWriter.WriteElementString(_T("es"), RegVals.m_szSegEs);		 // <es>...</es>
+	rXmlWriter.WriteElementString(_T("fs"), RegVals.m_szSegFs);		 // <fs>...</fs>
+	rXmlWriter.WriteElementString(_T("gs"), RegVals.m_szSegGs);		 // <gs>...</gs>
+	rXmlWriter.WriteElementString(_T("eflags"), RegVals.m_szEFlags); // <eflags>...</eflags>
+	rXmlWriter.WriteEndElement();									 // </registers>
 }
 
 /**
@@ -2228,11 +2222,11 @@ void CSymEngine::GetSysErrorInfo(CXmlWriter& rXmlWriter)
 {
 	CSysErrorInfo SysErrorInfo;
 	GetSysErrorInfo(SysErrorInfo);
-	rXmlWriter.WriteStartElement(_T("syserror")); // <syserror>
-	 rXmlWriter.WriteElementString(_T("code"), SysErrorInfo.m_szErrorCode); // <code>...</code>
-	 PCTSTR pszMessageBuffer = SysErrorInfo.m_pszMessageBuffer ? SysErrorInfo.m_pszMessageBuffer : _T("");
-	 rXmlWriter.WriteElementString(_T("description"), pszMessageBuffer); // <description>...</description>
-	rXmlWriter.WriteEndElement(); // </syserror>
+	rXmlWriter.WriteStartElement(_T("syserror"));						   // <syserror>
+	rXmlWriter.WriteElementString(_T("code"), SysErrorInfo.m_szErrorCode); // <code>...</code>
+	PCTSTR pszMessageBuffer = SysErrorInfo.m_pszMessageBuffer ? SysErrorInfo.m_pszMessageBuffer : _T("");
+	rXmlWriter.WriteElementString(_T("description"), pszMessageBuffer); // <description>...</description>
+	rXmlWriter.WriteEndElement();										// </syserror>
 }
 
 /**
@@ -2242,12 +2236,12 @@ void CSymEngine::GetComErrorInfo(CXmlWriter& rXmlWriter)
 {
 	CComErrorInfo ComErrorInfo;
 	GetComErrorInfo(ComErrorInfo);
-	rXmlWriter.WriteStartElement(_T("comerror")); // <comerror>
-	 rXmlWriter.WriteElementString(_T("description"), ComErrorInfo.m_strDescription); // <description>...</description>
-	 rXmlWriter.WriteElementString(_T("helpfile"), ComErrorInfo.m_strHelpFile); // <helpfile>...</helpfile>
-	 rXmlWriter.WriteElementString(_T("source"), ComErrorInfo.m_strSource); // <source>...</source>
-	 rXmlWriter.WriteElementString(_T("guid"), ComErrorInfo.m_strGuid); // <guid>...</guid>
-	rXmlWriter.WriteEndElement(); // </comerror>
+	rXmlWriter.WriteStartElement(_T("comerror"));									 // <comerror>
+	rXmlWriter.WriteElementString(_T("description"), ComErrorInfo.m_strDescription); // <description>...</description>
+	rXmlWriter.WriteElementString(_T("helpfile"), ComErrorInfo.m_strHelpFile);		 // <helpfile>...</helpfile>
+	rXmlWriter.WriteElementString(_T("source"), ComErrorInfo.m_strSource);			 // <source>...</source>
+	rXmlWriter.WriteElementString(_T("guid"), ComErrorInfo.m_strGuid);				 // <guid>...</guid>
+	rXmlWriter.WriteEndElement();													 // </comerror>
 }
 
 /**
@@ -2258,22 +2252,23 @@ void CSymEngine::GetCpusInfo(CXmlWriter& rXmlWriter)
 	CCpusInfo CpusInfo;
 	GetCpusInfo(CpusInfo);
 	rXmlWriter.WriteStartElement(_T("cpus")); // <cpus>
-	 TCHAR szNumCpus[16];
-	 _ultot_s(CpusInfo.m_dwNumCpus, szNumCpus, countof(szNumCpus), 10);
-	 rXmlWriter.WriteElementString(_T("number"), szNumCpus); // <number>...</number>
-	 rXmlWriter.WriteElementString(_T("architecture"), CpusInfo.m_pszCpuArch); // <architecture>...</architecture>
-	 for (DWORD dwCpuNum = 0; dwCpuNum < CpusInfo.m_dwNumCpus; ++dwCpuNum)
-	 {
-	 	CCpuInfo CpuInfo;
-	 	if (GetCpuInfo(dwCpuNum, CpuInfo))
-	 	{
-	 		rXmlWriter.WriteStartElement(_T("cpu")); // <cpu>
-	 		 rXmlWriter.WriteElementString(_T("id"), CpuInfo.m_szCpuId); // <id>...</id>
-	 		 rXmlWriter.WriteElementString(_T("speed"), CpuInfo.m_szCpuSpeed); // <speed>...</speed>
-	 		 rXmlWriter.WriteElementString(_T("description"), CpuInfo.m_szCpuDescription); // <description>...</description>
-	 		rXmlWriter.WriteEndElement(); // </cpu>
-	 	}
-	 }
+	TCHAR szNumCpus[16];
+	_ultot_s(CpusInfo.m_dwNumCpus, szNumCpus, countof(szNumCpus), 10);
+	rXmlWriter.WriteElementString(_T("number"), szNumCpus);					  // <number>...</number>
+	rXmlWriter.WriteElementString(_T("architecture"), CpusInfo.m_pszCpuArch); // <architecture>...</architecture>
+	for (DWORD dwCpuNum = 0; dwCpuNum < CpusInfo.m_dwNumCpus; ++dwCpuNum)
+	{
+		CCpuInfo CpuInfo;
+		if (GetCpuInfo(dwCpuNum, CpuInfo))
+		{
+			rXmlWriter.WriteStartElement(_T("cpu"));						  // <cpu>
+			rXmlWriter.WriteElementString(_T("id"), CpuInfo.m_szCpuId);		  // <id>...</id>
+			rXmlWriter.WriteElementString(_T("speed"), CpuInfo.m_szCpuSpeed); // <speed>...</speed>
+			rXmlWriter.WriteElementString(_T("description"),
+										  CpuInfo.m_szCpuDescription); // <description>...</description>
+			rXmlWriter.WriteEndElement();							   // </cpu>
+		}
+	}
 	rXmlWriter.WriteEndElement(); // </cpus>
 }
 
@@ -2284,12 +2279,12 @@ void CSymEngine::GetOsInfo(CXmlWriter& rXmlWriter)
 {
 	COsInfo OsInfo;
 	GetOsInfo(OsInfo);
-	rXmlWriter.WriteStartElement(_T("os")); // <os>
-	 rXmlWriter.WriteElementString(_T("version"), OsInfo.m_pszWinVersion); // <version>...</version>
-	 rXmlWriter.WriteElementString(_T("spack"), OsInfo.m_szSPVersion); // <spack>...</spack>
-	 rXmlWriter.WriteElementString(_T("build"), OsInfo.m_szBuildNumber); // <build>...</build>
+	rXmlWriter.WriteStartElement(_T("os"));								  // <os>
+	rXmlWriter.WriteElementString(_T("version"), OsInfo.m_pszWinVersion); // <version>...</version>
+	rXmlWriter.WriteElementString(_T("spack"), OsInfo.m_szSPVersion);	  // <spack>...</spack>
+	rXmlWriter.WriteElementString(_T("build"), OsInfo.m_szBuildNumber);	  // <build>...</build>
 #ifdef _MANAGED
-	 rXmlWriter.WriteElementString(_T("clr-version"), OsInfo.m_szNetVersion); // <clr-version>...</clr-version>
+	rXmlWriter.WriteElementString(_T("clr-version"), OsInfo.m_szNetVersion); // <clr-version>...</clr-version>
 #endif
 	rXmlWriter.WriteEndElement(); // </os>
 }
@@ -2301,13 +2296,13 @@ void CSymEngine::GetMemInfo(CXmlWriter& rXmlWriter)
 {
 	CMemInfo MemInfo;
 	GetMemInfo(MemInfo);
-	rXmlWriter.WriteStartElement(_T("memory")); // <memory>
-	 rXmlWriter.WriteElementString(_T("load"), MemInfo.m_szMemoryLoad); // <load>...</load>
-	 rXmlWriter.WriteElementString(_T("totalphys"), MemInfo.m_szTotalPhys); // <totalphys>...</totalphys>
-	 rXmlWriter.WriteElementString(_T("availphys"), MemInfo.m_szAvailPhys); // <availphys>...</availphys>
-	 rXmlWriter.WriteElementString(_T("totalpage"), MemInfo.m_szTotalPageFile); // <totalpage>...</totalpage>
-	 rXmlWriter.WriteElementString(_T("availpage"), MemInfo.m_szAvailPageFile); // <availpage>...</availpage>
-	rXmlWriter.WriteEndElement(); // </memory>
+	rXmlWriter.WriteStartElement(_T("memory"));								   // <memory>
+	rXmlWriter.WriteElementString(_T("load"), MemInfo.m_szMemoryLoad);		   // <load>...</load>
+	rXmlWriter.WriteElementString(_T("totalphys"), MemInfo.m_szTotalPhys);	   // <totalphys>...</totalphys>
+	rXmlWriter.WriteElementString(_T("availphys"), MemInfo.m_szAvailPhys);	   // <availphys>...</availphys>
+	rXmlWriter.WriteElementString(_T("totalpage"), MemInfo.m_szTotalPageFile); // <totalpage>...</totalpage>
+	rXmlWriter.WriteElementString(_T("availpage"), MemInfo.m_szAvailPageFile); // <availpage>...</availpage>
+	rXmlWriter.WriteEndElement();											   // </memory>
 }
 
 /**
@@ -2325,105 +2320,106 @@ void CSymEngine::GetErrorLog(CXmlWriter& rXmlWriter, CEnumProcess* pEnumProcess)
 
 	rXmlWriter.SetIndentation(_T(' '), 2);
 	rXmlWriter.WriteStartDocument();
-	 TCHAR szDateTime[64];
-	 GetDateTime(szDateTime, countof(szDateTime));
-	 TCHAR szHeader[256];
-	 _stprintf_s(szHeader, countof(szHeader), _T("\r\n")
-	             _T(" This %s was automatically generated\r\n")
-				 _T(" by ") BUGTRAP_TITLE _T(" on %s\r\n"),
-				 m_pExceptionPointers != NULL ? _T("error report") : _T("snapshot"), szDateTime);
-	 rXmlWriter.WriteComment(szHeader); // <!--...-->
+	TCHAR szDateTime[64];
+	GetDateTime(szDateTime, countof(szDateTime));
+	TCHAR szHeader[256];
+	_stprintf_s(szHeader, countof(szHeader),
+				_T("\r\n")
+				_T(" This %s was automatically generated\r\n")
+				_T(" by ") BUGTRAP_TITLE _T(" on %s\r\n"),
+				m_pExceptionPointers != NULL ? _T("error report") : _T("snapshot"), szDateTime);
+	rXmlWriter.WriteComment(szHeader); // <!--...-->
 
-	 rXmlWriter.WriteStartElement(_T("report")); // <report>
-	  rXmlWriter.WriteAttributeString(_T("version"), _T("1"));
+	rXmlWriter.WriteStartElement(_T("report")); // <report>
+	rXmlWriter.WriteAttributeString(_T("version"), _T("1"));
 #ifdef _MANAGED
-	  rXmlWriter.WriteElementString(_T("platform"), _T(".NET")); // <platform>...</platform>
+	rXmlWriter.WriteElementString(_T("platform"), _T(".NET")); // <platform>...</platform>
 #else
-	  rXmlWriter.WriteElementString(_T("platform"), _T("Win32")); // <platform>...</platform>
+	rXmlWriter.WriteElementString(_T("platform"), _T("Win32")); // <platform>...</platform>
 #endif
-	  rXmlWriter.WriteElementString(_T("application"), g_szAppName); // <application>...</application>
-	  rXmlWriter.WriteElementString(_T("version"), g_szAppVersion); // <version>...</version>
+	rXmlWriter.WriteElementString(_T("application"), g_szAppName); // <application>...</application>
+	rXmlWriter.WriteElementString(_T("version"), g_szAppVersion);  // <version>...</version>
 
-	  TCHAR szComputerName[MAX_COMPUTERNAME_LENGTH + 1];
-	  DWORD dwSize = countof(szComputerName);
-	  if (! GetComputerName(szComputerName, &dwSize))
-		  *szComputerName = _T('\0');
-	  rXmlWriter.WriteElementString(_T("computer"), szComputerName); // <computer>...</computer>
+	TCHAR szComputerName[MAX_COMPUTERNAME_LENGTH + 1];
+	DWORD dwSize = countof(szComputerName);
+	if (!GetComputerName(szComputerName, &dwSize))
+		*szComputerName = _T('\0');
+	rXmlWriter.WriteElementString(_T("computer"), szComputerName); // <computer>...</computer>
 
-	  TCHAR szUserName[UNLEN + 1];
-	  dwSize = countof(szUserName);
-	  if (! GetUserName(szUserName, &dwSize))
-		  *szUserName = _T('\0');
-	  rXmlWriter.WriteElementString(_T("user"), szUserName); // <user>...</user>
+	TCHAR szUserName[UNLEN + 1];
+	dwSize = countof(szUserName);
+	if (!GetUserName(szUserName, &dwSize))
+		*szUserName = _T('\0');
+	rXmlWriter.WriteElementString(_T("user"), szUserName); // <user>...</user>
 
-	  TCHAR szTimeStamp[64];
-	  GetTimeStamp(szTimeStamp, countof(szTimeStamp));
-	  rXmlWriter.WriteElementString(_T("timestamp"), szTimeStamp); // <timestamp>...</timestamp>
+	TCHAR szTimeStamp[64];
+	GetTimeStamp(szTimeStamp, countof(szTimeStamp));
+	rXmlWriter.WriteElementString(_T("timestamp"), szTimeStamp); // <timestamp>...</timestamp>
 
-	  if (m_pExceptionPointers != NULL)
+	if (m_pExceptionPointers != NULL)
 		GetErrorReason(rXmlWriter);
 
-	  rXmlWriter.WriteElementString(_T("usermsg"), g_strUserMessage); // <usermsg>...</usermsg>
+	rXmlWriter.WriteElementString(_T("usermsg"), g_strUserMessage); // <usermsg>...</usermsg>
 
-	  GetSysErrorInfo(rXmlWriter);
-	  GetComErrorInfo(rXmlWriter);
-	  if (m_pExceptionPointers != NULL
+	GetSysErrorInfo(rXmlWriter);
+	GetComErrorInfo(rXmlWriter);
+	if (m_pExceptionPointers != NULL
 #ifdef _MANAGED
 		&& bNativeInfo
 #endif
-		)
-	  {
-		  GetRegistersInfo(rXmlWriter);
-	  }
-	  GetCpusInfo(rXmlWriter);
-	  GetOsInfo(rXmlWriter);
-	  GetMemInfo(rXmlWriter);
+	)
+	{
+		GetRegistersInfo(rXmlWriter);
+	}
+	GetCpusInfo(rXmlWriter);
+	GetOsInfo(rXmlWriter);
+	GetMemInfo(rXmlWriter);
 
 #ifdef _MANAGED
-	  if (m_pNetStackTrace != NULL)
-	  {
-		  rXmlWriter.WriteStartElement(_T("clr-threads")); // <clr-threads>
-		   GetNetStackTrace(rXmlWriter);
-		   GetNetThreadsList(rXmlWriter);
-		  rXmlWriter.WriteEndElement(); // </clr-threads>
-	  }
+	if (m_pNetStackTrace != NULL)
+	{
+		rXmlWriter.WriteStartElement(_T("clr-threads")); // <clr-threads>
+		GetNetStackTrace(rXmlWriter);
+		GetNetThreadsList(rXmlWriter);
+		rXmlWriter.WriteEndElement(); // </clr-threads>
+	}
 
-	  if (bNativeInfo)
-	  {
+	if (bNativeInfo)
+	{
 #endif
-		  rXmlWriter.WriteStartElement(_T("threads")); // <threads>
-		   if (m_pExceptionPointers != NULL)
-		   {
-			   DWORD dwCurrentThreadID = GetCurrentThreadId();
-			   GetWin32StackTrace(rXmlWriter, dwCurrentThreadID, NULL, szInterruptedState);
-		   }
-		   if (pEnumProcess != NULL)
-			   GetWin32ThreadsList(rXmlWriter, pEnumProcess);
-		  rXmlWriter.WriteEndElement(); // </threads>
+		rXmlWriter.WriteStartElement(_T("threads")); // <threads>
+		if (m_pExceptionPointers != NULL)
+		{
+			DWORD dwCurrentThreadID = GetCurrentThreadId();
+			GetWin32StackTrace(rXmlWriter, dwCurrentThreadID, NULL, szInterruptedState);
+		}
+		if (pEnumProcess != NULL)
+			GetWin32ThreadsList(rXmlWriter, pEnumProcess);
+		rXmlWriter.WriteEndElement(); // </threads>
 #ifdef _MANAGED
-	  }
+	}
 #endif
 
-	  PCTSTR pszCommandLine = GetCommandLine();
-	  _ASSERTE(pszCommandLine != NULL);
-	  rXmlWriter.WriteElementString(_T("cmdline"), pszCommandLine); // <cmdline>...</cmdline>
+	PCTSTR pszCommandLine = GetCommandLine();
+	_ASSERTE(pszCommandLine != NULL);
+	rXmlWriter.WriteElementString(_T("cmdline"), pszCommandLine); // <cmdline>...</cmdline>
 
-	  TCHAR szCurrentDirectory[MAX_PATH];
-	  if (GetCurrentDirectory(countof(szCurrentDirectory), szCurrentDirectory) <= 0)
-		  *szCurrentDirectory = _T('\0');
-	  rXmlWriter.WriteElementString(_T("curdir"), szCurrentDirectory); // <curdir>...</curdir>
-	  GetEnvironmentStrings(rXmlWriter);
+	TCHAR szCurrentDirectory[MAX_PATH];
+	if (GetCurrentDirectory(countof(szCurrentDirectory), szCurrentDirectory) <= 0)
+		*szCurrentDirectory = _T('\0');
+	rXmlWriter.WriteElementString(_T("curdir"), szCurrentDirectory); // <curdir>...</curdir>
+	GetEnvironmentStrings(rXmlWriter);
 
 #ifdef _MANAGED
-	  GetAssemblyList(rXmlWriter);
-	  if (bNativeInfo)
-	  {
-		  if (pEnumProcess != NULL)
-			  GetProcessList(rXmlWriter, pEnumProcess);
-	  }
+	GetAssemblyList(rXmlWriter);
+	if (bNativeInfo)
+	{
+		if (pEnumProcess != NULL)
+			GetProcessList(rXmlWriter, pEnumProcess);
+	}
 #endif
 
-	 rXmlWriter.WriteEndElement(); // </report>
+	rXmlWriter.WriteEndElement(); // </report>
 	rXmlWriter.WriteEndDocument();
 }
 
@@ -2444,7 +2440,8 @@ BOOL CSymEngine::AddFileToArchive(zipFile hZipFile, PCTSTR pszFilePath, PCTSTR p
 	pszFileNameA = pszFileName;
 #endif
 	BOOL bResult = FALSE;
-	HANDLE hFile = CreateFile(pszFilePath, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	HANDLE hFile =
+		CreateFile(pszFilePath, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (hFile != INVALID_HANDLE_VALUE)
 	{
 		DWORD dwFileSize = GetFileSize(hFile, NULL);
@@ -2452,17 +2449,18 @@ BOOL CSymEngine::AddFileToArchive(zipFile hZipFile, PCTSTR pszFilePath, PCTSTR p
 		PBYTE pFileBuffer = new BYTE[dwBufferSize];
 		if (pFileBuffer)
 		{
-			if (zipOpenNewFileInZip(hZipFile, pszFileNameA, NULL, NULL, 0, NULL, 0, NULL, Z_DEFLATED, Z_BEST_COMPRESSION) == Z_OK)
+			if (zipOpenNewFileInZip(hZipFile, pszFileNameA, NULL, NULL, 0, NULL, 0, NULL, Z_DEFLATED,
+									Z_BEST_COMPRESSION) == Z_OK)
 			{
 				bResult = TRUE;
 				for (;;)
 				{
 					DWORD dwProcessedNumber = 0;
 					bResult = ReadFile(hFile, pFileBuffer, dwBufferSize, &dwProcessedNumber, NULL);
-					if (! bResult || dwProcessedNumber == 0)
+					if (!bResult || dwProcessedNumber == 0)
 						break;
 					bResult = zipWriteInFileInZip(hZipFile, pFileBuffer, dwProcessedNumber) == Z_OK;
-					if (! bResult)
+					if (!bResult)
 						break;
 				}
 				if (zipCloseFileInZip(hZipFile) != Z_OK)
@@ -2475,8 +2473,7 @@ BOOL CSymEngine::AddFileToArchive(zipFile hZipFile, PCTSTR pszFilePath, PCTSTR p
 	else
 	{
 		DWORD dwLastError = GetLastError();
-		if (dwLastError == ERROR_FILE_NOT_FOUND ||
-			dwLastError == ERROR_PATH_NOT_FOUND ||
+		if (dwLastError == ERROR_FILE_NOT_FOUND || dwLastError == ERROR_PATH_NOT_FOUND ||
 			GetFileAttributes(pszFilePath) == INVALID_FILE_ATTRIBUTES)
 		{
 			bResult = TRUE; // ignore missing files
@@ -2511,7 +2508,7 @@ BOOL CSymEngine::WriteDump(PCTSTR pszFileName)
 	else
 		bResult = FMiniDumpWriteDump(hProcess, dwProcessID, hFile, g_eDumpType, NULL, NULL, NULL);
 	CloseHandle(hFile);
-	if (! bResult)
+	if (!bResult)
 		DeleteFile(pszFileName);
 	return bResult;
 }
@@ -2531,14 +2528,14 @@ BOOL CSymEngine::WriteReportFiles(PCTSTR pszFolderName, CEnumProcess* pEnumProce
 	_stprintf_s(szLogFileName, countof(szLogFileName), _T("errorlog.%s"), pszLogExtension);
 	TCHAR szFullLogFileName[MAX_PATH];
 	PathCombine(szFullLogFileName, pszFolderName, szLogFileName);
-	if (! WriteLog(szFullLogFileName, pEnumProcess))
+	if (!WriteLog(szFullLogFileName, pEnumProcess))
 		return FALSE;
 
 	if (g_eDumpType != MiniDumpNoDump)
 	{
 		TCHAR szFullDumpFileName[MAX_PATH];
 		PathCombine(szFullDumpFileName, pszFolderName, _T("crashdump.dmp"));
-		if (FMiniDumpWriteDump != NULL && ! WriteDump(szFullDumpFileName))
+		if (FMiniDumpWriteDump != NULL && !WriteDump(szFullDumpFileName))
 			return FALSE;
 	}
 
@@ -2546,7 +2543,7 @@ BOOL CSymEngine::WriteReportFiles(PCTSTR pszFolderName, CEnumProcess* pEnumProce
 	{
 		TCHAR szFullScreenShotFileName[MAX_PATH];
 		PathCombine(szFullScreenShotFileName, pszFolderName, _T("screenshot.bmp"));
-		if (! m_pScreenShot->WriteScreenShot(szFullScreenShotFileName))
+		if (!m_pScreenShot->WriteScreenShot(szFullScreenShotFileName))
 			return FALSE;
 	}
 
@@ -2569,7 +2566,7 @@ BOOL CSymEngine::ArchiveReportFiles(PCTSTR pszReportFolder, PCTSTR pszArchiveFil
 	pszArchiveFileNameA = pszArchiveFileName;
 #endif
 	zipFile hZipFile = zipOpen(pszArchiveFileNameA, FALSE);
-	if (! hZipFile)
+	if (!hZipFile)
 		return FALSE;
 
 	BOOL bResult = TRUE;
@@ -2587,7 +2584,7 @@ BOOL CSymEngine::ArchiveReportFiles(PCTSTR pszReportFolder, PCTSTR pszArchiveFil
 				TCHAR szFilePath[MAX_PATH];
 				PathCombine(szFilePath, pszReportFolder, FindData.cFileName);
 				bResult = AddFileToArchive(hZipFile, szFilePath, FindData.cFileName);
-				if (! bResult)
+				if (!bResult)
 					break;
 			}
 			bMore = FindNextFile(hFindFile, &FindData);
@@ -2606,14 +2603,14 @@ BOOL CSymEngine::ArchiveReportFiles(PCTSTR pszReportFolder, PCTSTR pszArchiveFil
 			PCTSTR pszFileName = PathFindFileName(pszFilePath);
 			_ASSERTE(pszFileName != NULL);
 			bResult = AddFileToArchive(hZipFile, pszFilePath, pszFileName);
-			if (! bResult)
+			if (!bResult)
 				break;
 		}
 	}
 
 	if (zipClose(hZipFile, NULL) != ZIP_OK)
 		bResult = FALSE;
-	if (! bResult)
+	if (!bResult)
 		DeleteFile(pszArchiveFileName);
 	return bResult;
 }
@@ -2628,8 +2625,7 @@ BOOL CSymEngine::WriteReportArchive(PCTSTR pszArchiveFileName, CEnumProcess* pEn
 {
 	TCHAR szTempPath[MAX_PATH];
 	CreateTempFolder(szTempPath, countof(szTempPath));
-	BOOL bResult = WriteReportFiles(szTempPath, pEnumProcess) &&
-	               ArchiveReportFiles(szTempPath, pszArchiveFileName);
+	BOOL bResult = WriteReportFiles(szTempPath, pEnumProcess) && ArchiveReportFiles(szTempPath, pszArchiveFileName);
 	DeleteFolder(szTempPath);
 	return bResult;
 }
@@ -2649,12 +2645,10 @@ void CSymEngine::GetReportFileName(PCTSTR pszExtension, PTSTR pszFileName, DWORD
 		pszFileName[dwFileNameLen++] = _T('_');
 		pszFileName[dwFileNameLen] = _T('\0');
 	}
-	_stprintf_s(pszFileName + dwFileNameLen, dwBufferSize - dwFileNameLen,
-	            _T("%s_%02d%02d%02d-%02d%02d%02d.%s"),
-				m_pExceptionPointers != NULL ? _T("error_report") : _T("snapshot"),
-	            m_DateTime.wYear % 100, m_DateTime.wMonth, m_DateTime.wDay,
-	            m_DateTime.wHour, m_DateTime.wMinute, m_DateTime.wSecond,
-	            pszExtension);
+	_stprintf_s(pszFileName + dwFileNameLen, dwBufferSize - dwFileNameLen, _T("%s_%02d%02d%02d-%02d%02d%02d.%s"),
+				m_pExceptionPointers != NULL ? _T("error_report") : _T("snapshot"), m_DateTime.wYear % 100,
+				m_DateTime.wMonth, m_DateTime.wDay, m_DateTime.wHour, m_DateTime.wMinute, m_DateTime.wSecond,
+				pszExtension);
 }
 
 /**
@@ -2666,7 +2660,7 @@ void CSymEngine::GetReportFileName(PCTSTR pszExtension, PTSTR pszFileName, DWORD
 BOOL CSymEngine::WriteLog(PCTSTR pszFileName, CEnumProcess* pEnumProcess)
 {
 	CFileStream FileStream(1024);
-	if (! FileStream.Open(pszFileName, CREATE_ALWAYS, GENERIC_WRITE))
+	if (!FileStream.Open(pszFileName, CREATE_ALWAYS, GENERIC_WRITE))
 		return FALSE;
 	if (g_eReportFormat == BTRF_TEXT)
 	{
@@ -2699,16 +2693,10 @@ BOOL CSymEngine::GetNextStackTraceEntry(CStackTraceEntry& rEntry)
 	if (++m_dwFrameCount > MAX_FRAME_COUNT)
 		return FALSE;
 
-	BOOL bResult = FStackWalk64(IMAGE_FILE_MACHINE_I386,
-	                            m_hSymProcess,
-	                            m_swContext.m_hThread,
-	                            &m_swContext.m_stFrame,
-	                            &m_swContext.m_context,
-	                            ReadProcessMemoryProc64,
-	                            FSymFunctionTableAccess64,
-	                            FSymGetModuleBase64,
-	                            NULL);
-	if (! bResult || ! m_swContext.m_stFrame.AddrFrame.Offset)
+	BOOL bResult = FStackWalk64(IMAGE_FILE_MACHINE_I386, m_hSymProcess, m_swContext.m_hThread, &m_swContext.m_stFrame,
+								&m_swContext.m_context, ReadProcessMemoryProc64, FSymFunctionTableAccess64,
+								FSymGetModuleBase64, NULL);
+	if (!bResult || !m_swContext.m_stFrame.AddrFrame.Offset)
 		return FALSE;
 
 	HINSTANCE hModule = (HINSTANCE)FSymGetModuleBase64(m_hSymProcess, m_swContext.m_stFrame.AddrPC.Offset);
@@ -2716,9 +2704,9 @@ BOOL CSymEngine::GetNextStackTraceEntry(CStackTraceEntry& rEntry)
 		GetModuleFileName(hModule, rEntry.m_szModule, countof(rEntry.m_szModule));
 	DWORD64 dwExceptionAddress = m_swContext.m_stFrame.AddrPC.Offset;
 	WORD wExceptionSegment; // wExceptionSegment = m_swContext.m_stFrame.AddrPC.Segment;
-	__asm { mov word ptr [wExceptionSegment], cs }
-	_stprintf_s(rEntry.m_szAddress, countof(rEntry.m_szAddress),
-	            _T("%04lX:%08lX"), wExceptionSegment, dwExceptionAddress);
+	__asm { mov word ptr [wExceptionSegment], cs}
+	_stprintf_s(rEntry.m_szAddress, countof(rEntry.m_szAddress), _T("%04lX:%08lX"), wExceptionSegment,
+				dwExceptionAddress);
 
 	BYTE arrSymBuffer[512];
 	ZeroMemory(arrSymBuffer, sizeof(arrSymBuffer));
@@ -2736,7 +2724,8 @@ BOOL CSymEngine::GetNextStackTraceEntry(CStackTraceEntry& rEntry)
 		if (dwDisplacement64)
 		{
 			_ui64tot_s(dwDisplacement64, rEntry.m_szFunctionOffset, countof(rEntry.m_szFunctionOffset), 10);
-			_stprintf_s(rEntry.m_szFunctionInfo, countof(rEntry.m_szFunctionInfo), _T("%s()+%s byte(s)"), rEntry.m_szFunctionName, rEntry.m_szFunctionOffset);
+			_stprintf_s(rEntry.m_szFunctionInfo, countof(rEntry.m_szFunctionInfo), _T("%s()+%s byte(s)"),
+						rEntry.m_szFunctionName, rEntry.m_szFunctionOffset);
 		}
 		else
 		{
@@ -2766,7 +2755,8 @@ BOOL CSymEngine::GetNextStackTraceEntry(CStackTraceEntry& rEntry)
 		if (dwDisplacement32)
 		{
 			_ultot_s(dwDisplacement32, rEntry.m_szLineOffset, countof(rEntry.m_szLineOffset), 10);
-			_stprintf_s(rEntry.m_szLineInfo, countof(rEntry.m_szLineInfo), _T("line %s+%s byte(s)"), rEntry.m_szLineNumber, rEntry.m_szLineOffset);
+			_stprintf_s(rEntry.m_szLineInfo, countof(rEntry.m_szLineInfo), _T("line %s+%s byte(s)"),
+						rEntry.m_szLineNumber, rEntry.m_szLineOffset);
 		}
 		else
 		{
@@ -2786,16 +2776,15 @@ BOOL CSymEngine::GetNextStackTraceEntry(CStackTraceEntry& rEntry)
 }
 
 /**
-* @param pszFileName - report file name.
-* @param pEnumProcess - pointer to the process enumerator;
-* pass NULL pointer if you want to skip process and module list.
-* @return true if crash information has been archived successfully.
-*/
+ * @param pszFileName - report file name.
+ * @param pEnumProcess - pointer to the process enumerator;
+ * pass NULL pointer if you want to skip process and module list.
+ * @return true if crash information has been archived successfully.
+ */
 BOOL CSymEngine::WriteReport(PCTSTR pszFileName, CEnumProcess* pEnumProcess)
 {
-	return (g_dwFlags & BTF_DETAILEDMODE ?
-		WriteReportArchive(pszFileName, pEnumProcess) :
-		WriteLog(pszFileName, pEnumProcess));
+	return (g_dwFlags & BTF_DETAILEDMODE ? WriteReportArchive(pszFileName, pEnumProcess)
+										 : WriteLog(pszFileName, pEnumProcess));
 }
 
 /**
@@ -2805,19 +2794,19 @@ BOOL CSymEngine::WriteReport(PCTSTR pszFileName, CEnumProcess* pEnumProcess)
  */
 BOOL CSymEngine::GetFirstWin32StackTraceString(CUTF8EncStream& rEncStream, HANDLE hThread)
 {
-	if (! InitStackTrace(hThread))
+	if (!InitStackTrace(hThread))
 		return FALSE;
 	return GetNextWin32StackTraceString(rEncStream);
 }
 
 /**
-* @param rEntry - stack entry information.
-* @param hThread - handle of examined thread; pass NULL if you want to get exception stack trace.
-* @return true if there is information about stack entry.
-*/
+ * @param rEntry - stack entry information.
+ * @param hThread - handle of examined thread; pass NULL if you want to get exception stack trace.
+ * @return true if there is information about stack entry.
+ */
 BOOL CSymEngine::GetFirstStackTraceEntry(CStackTraceEntry& rEntry, HANDLE hThread)
 {
-	if (! InitStackTrace(hThread))
+	if (!InitStackTrace(hThread))
 		return FALSE;
 	return GetNextStackTraceEntry(rEntry);
 }

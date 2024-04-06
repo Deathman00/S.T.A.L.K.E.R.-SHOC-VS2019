@@ -20,7 +20,7 @@
 /// Log file descriptor.
 class CLogLink
 {
-public:
+  public:
 	/// Initialize the object.
 	CLogLink(void);
 	/// Initialize the object.
@@ -40,7 +40,7 @@ public:
 	/// Object comparison.
 	friend bool operator!=(const CLogLink& rLogLink1, const CLogLink& rLogLink2);
 
-protected:
+  protected:
 	/// Custom log file name.
 	TCHAR m_szLogFileName[MAX_PATH];
 };
@@ -96,7 +96,7 @@ inline void CLogLink::SaveEntries(bool /*bCrash*/)
 /// Reg file descriptor.
 class CRegLink : public CLogLink
 {
-public:
+  public:
 	/// Object constructor.
 	CRegLink(void);
 	/// Object constructor.
@@ -112,7 +112,7 @@ public:
 	/// Set registry key path.
 	void SetRegKey(PCTSTR pszRegKey);
 
-protected:
+  protected:
 	/// Registry key path.
 	TCHAR m_szRegKey[MAX_PATH];
 };

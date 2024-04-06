@@ -30,7 +30,7 @@ int COutputStream::WriteBytes(const unsigned char* arrBytes, int nCount)
 	int nNumWritten = 0;
 	while (nNumWritten < nCount)
 	{
-		if (! WriteByte(arrBytes[nNumWritten]))
+		if (!WriteByte(arrBytes[nNumWritten]))
 			break;
 		++nNumWritten;
 	}
@@ -47,7 +47,7 @@ int COutputStream::WriteByte(unsigned char bValue, int nCount)
 	int nNumWritten = 0;
 	while (nNumWritten < nCount)
 	{
-		if (! WriteByte(bValue))
+		if (!WriteByte(bValue))
 			break;
 		++nNumWritten;
 	}

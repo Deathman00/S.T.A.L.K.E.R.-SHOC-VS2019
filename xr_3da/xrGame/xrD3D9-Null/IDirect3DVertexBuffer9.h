@@ -1,37 +1,39 @@
 
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-	class xrIDirect3DVertexBuffer9: public IDirect3DVertexBuffer9
+	class xrIDirect3DVertexBuffer9 : public IDirect3DVertexBuffer9
 	{
-	protected:
+	  protected:
+		LONG m_refCount;
+		BYTE* m_pBuffer;
+		IDirect3DDevice9* m_pIDirect3DDevice9;
 
-		LONG		m_refCount;
-		BYTE		*m_pBuffer;
-		IDirect3DDevice9*	m_pIDirect3DDevice9;
-	public:
-		xrIDirect3DVertexBuffer9(IDirect3DDevice9*	pIDirect3DDevice9, UINT iLength,DWORD iUsage,DWORD iFVF,D3DPOOL iPool);
+	  public:
+		xrIDirect3DVertexBuffer9(IDirect3DDevice9* pIDirect3DDevice9, UINT iLength, DWORD iUsage, DWORD iFVF,
+								 D3DPOOL iPool);
 		/*** IUnknown methods ***/
-		HRESULT			__stdcall	QueryInterface( REFIID riid, void** ppvObj) ;
-		ULONG			__stdcall	AddRef() ;
-		ULONG			__stdcall	Release() ;
+		HRESULT __stdcall QueryInterface(REFIID riid, void** ppvObj);
+		ULONG __stdcall AddRef();
+		ULONG __stdcall Release();
 
 		/*** IDirect3DResource9 methods ***/
-		HRESULT			__stdcall	GetDevice( IDirect3DDevice9** ppDevice) ;
-		HRESULT			__stdcall	SetPrivateData( REFGUID refguid,CONST void* pData,DWORD SizeOfData,DWORD Flags) ;
-		HRESULT			__stdcall	GetPrivateData( REFGUID refguid,void* pData,DWORD* pSizeOfData) ;
-		HRESULT			__stdcall	FreePrivateData( REFGUID refguid) ;
-		DWORD			__stdcall	SetPriority( DWORD PriorityNew) ;
-		DWORD			__stdcall	GetPriority() ;
-		void			__stdcall	PreLoad() ;
-		D3DRESOURCETYPE	__stdcall	GetType() ;
-		HRESULT			__stdcall	Lock( UINT OffsetToLock,UINT SizeToLock,void** ppbData,DWORD Flags) ;
-		HRESULT			__stdcall	Unlock() ;
-		HRESULT			__stdcall	GetDesc( D3DVERTEXBUFFER_DESC *pDesc) ;
+		HRESULT __stdcall GetDevice(IDirect3DDevice9** ppDevice);
+		HRESULT __stdcall SetPrivateData(REFGUID refguid, CONST void* pData, DWORD SizeOfData, DWORD Flags);
+		HRESULT __stdcall GetPrivateData(REFGUID refguid, void* pData, DWORD* pSizeOfData);
+		HRESULT __stdcall FreePrivateData(REFGUID refguid);
+		DWORD __stdcall SetPriority(DWORD PriorityNew);
+		DWORD __stdcall GetPriority();
+		void __stdcall PreLoad();
+		D3DRESOURCETYPE __stdcall GetType();
+		HRESULT __stdcall Lock(UINT OffsetToLock, UINT SizeToLock, void** ppbData, DWORD Flags);
+		HRESULT __stdcall Unlock();
+		HRESULT __stdcall GetDesc(D3DVERTEXBUFFER_DESC* pDesc);
 
-//#ifdef D3D_DEBUG_INFO
+		//#ifdef D3D_DEBUG_INFO
 		LPCWSTR Name;
 		UINT Length;
 		DWORD Usage;
@@ -40,7 +42,7 @@ extern "C" {
 		DWORD Priority;
 		UINT LockCount;
 		LPCWSTR CreationCallStack;
-//#endif
+		//#endif
 	};
 
 #ifdef __cplusplus

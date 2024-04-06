@@ -115,9 +115,9 @@ static void SaveReport(HWND hwndParent)
 }
 
 /**
-* @brief Initialize CPU registers message.
-* @param hwnd - parent window handle.
-*/
+ * @brief Initialize CPU registers message.
+ * @param hwnd - parent window handle.
+ */
 static void InitReg(HWND hwnd)
 {
 	HWND hwndReg = GetDlgItem(hwnd, IDC_REGISTER);
@@ -130,9 +130,9 @@ static void InitReg(HWND hwnd)
 }
 
 /**
-* @brief Initialize error reason message.
-* @param hwnd - parent window handle.
-*/
+ * @brief Initialize error reason message.
+ * @param hwnd - parent window handle.
+ */
 static void InitErrorInfo(HWND hwnd)
 {
 	HWND hwndError = GetDlgItem(hwnd, IDC_EXCEPTION);
@@ -191,8 +191,7 @@ static void InitStackTrace(HWND hwnd)
 				ListView_SetItemText(hwndStack, iItemPos, CID_NET_ENTRY_LINE, Entry.m_szLineInfo);
 				ListView_SetItemText(hwndStack, iItemPos, CID_NET_ENTRY_ASSEMBLY, Entry.m_szAssembly);
 				++iItemPos;
-			}
-			while (g_pSymEngine->GetNextStackTraceEntry(Entry));
+			} while (g_pSymEngine->GetNextStackTraceEntry(Entry));
 		}
 
 		ListView_SetColumnWidth(hwndStack, CID_NET_ENTRY_TYPE, LVSCW_AUTOSIZE_USEHEADER);
@@ -237,8 +236,7 @@ static void InitStackTrace(HWND hwnd)
 				ListView_SetItemText(hwndStack, iItemPos, CID_WIN32_ENTRY_LINE, Entry.m_szLineInfo);
 				ListView_SetItemText(hwndStack, iItemPos, CID_WIN32_ENTRY_MODULE, Entry.m_szModule);
 				++iItemPos;
-			}
-			while (g_pSymEngine->GetNextStackTraceEntry(Entry));
+			} while (g_pSymEngine->GetNextStackTraceEntry(Entry));
 		}
 
 		ListView_SetColumnWidth(hwndStack, CID_WIN32_ENTRY_ADDRESS, LVSCW_AUTOSIZE_USEHEADER);
@@ -249,7 +247,6 @@ static void InitStackTrace(HWND hwnd)
 #ifdef _MANAGED
 	}
 #endif
-
 }
 
 /**
@@ -261,7 +258,8 @@ static void InitStackTrace(HWND hwnd)
  */
 static void MainDlg_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
 {
-	codeNotify; hwndCtl;
+	codeNotify;
+	hwndCtl;
 
 	switch (id)
 	{
@@ -306,9 +304,9 @@ static void InitControls(HWND hwnd)
 	HWND hwndMachineInfo = GetDlgItem(hwnd, IDC_MACHINE_INFO);
 	HWND hwndMachineState = GetDlgItem(hwnd, IDC_MACHINE_STATE);
 
-	g_hwndToolTip = CreateWindowEx(WS_EX_TOOLWINDOW | WS_EX_TOPMOST, TOOLTIPS_CLASS, NULL, WS_POPUP | TTS_NOPREFIX,
-	                               CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
-	                               hwnd, NULL, g_hInstance, 0l);
+	g_hwndToolTip =
+		CreateWindowEx(WS_EX_TOOLWINDOW | WS_EX_TOPMOST, TOOLTIPS_CLASS, NULL, WS_POPUP | TTS_NOPREFIX, CW_USEDEFAULT,
+					   CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, hwnd, NULL, g_hInstance, 0l);
 	if (g_hwndToolTip)
 	{
 		RECT rcCtl;
@@ -376,7 +374,8 @@ static void InitControls(HWND hwnd)
  */
 static BOOL MainDlg_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 {
-	lParam; hwndFocus;
+	lParam;
+	hwndFocus;
 
 	InitControls(hwnd);
 	InitIntro(hwnd, g_hlURL);
@@ -402,10 +401,7 @@ static HBRUSH MainDlg_OnCtlColor(HWND hwnd, HDC hdc, HWND hwndChild, int type)
 	if (type == CTLCOLOR_STATIC)
 	{
 		int nChildID = GetDlgCtrlID(hwndChild);
-		if (nChildID == IDC_INTRO_BKGND ||
-			nChildID == IDC_INTRO1 ||
-			nChildID == IDC_INTRO2 ||
-			nChildID == IDC_URL ||
+		if (nChildID == IDC_INTRO_BKGND || nChildID == IDC_INTRO1 || nChildID == IDC_INTRO2 || nChildID == IDC_URL ||
 			nChildID == IDC_URL_PREFIX)
 		{
 			_ASSERTE(g_pResManager != NULL);
@@ -442,7 +438,8 @@ static void MainDlg_OnDestroy(HWND hwnd)
  */
 void MainDlg_OnSysCommand(HWND hwnd, UINT cmd, int x, int y)
 {
-	x; y;
+	x;
+	y;
 	if ((cmd & 0xFFF0) == IDM_ABOUTBOX)
 		DialogBox(g_hInstance, MAKEINTRESOURCE(IDD_ABOUT_BUGTRAP_DLG), hwnd, AboutDlgProc);
 }
@@ -459,12 +456,13 @@ INT_PTR CALLBACK MainDlgProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
 {
 	switch (uMsg)
 	{
-	HANDLE_MSG(hwndDlg, WM_INITDIALOG, MainDlg_OnInitDialog);
-	HANDLE_MSG(hwndDlg, WM_COMMAND, MainDlg_OnCommand);
-	HANDLE_MSG(hwndDlg, WM_SYSCOMMAND, MainDlg_OnSysCommand);
-	HANDLE_MSG(hwndDlg, WM_CTLCOLORSTATIC, MainDlg_OnCtlColor);
-	HANDLE_MSG(hwndDlg, WM_DESTROY, MainDlg_OnDestroy);
-	default: return FALSE;
+		HANDLE_MSG(hwndDlg, WM_INITDIALOG, MainDlg_OnInitDialog);
+		HANDLE_MSG(hwndDlg, WM_COMMAND, MainDlg_OnCommand);
+		HANDLE_MSG(hwndDlg, WM_SYSCOMMAND, MainDlg_OnSysCommand);
+		HANDLE_MSG(hwndDlg, WM_CTLCOLORSTATIC, MainDlg_OnCtlColor);
+		HANDLE_MSG(hwndDlg, WM_DESTROY, MainDlg_OnDestroy);
+	default:
+		return FALSE;
 	}
 }
 

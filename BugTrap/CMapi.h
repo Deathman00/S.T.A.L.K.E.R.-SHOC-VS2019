@@ -22,7 +22,7 @@
 /// Class which encapsulates a MAPI mail message.
 class CMapiMessage
 {
-public:
+  public:
 	/// Get message subject.
 	const CStrHolder& GetSubject(void) const;
 	/// Set message subject.
@@ -56,7 +56,7 @@ public:
 	/// Get message attachment titles.
 	const CArray<CStrHolder>& GetAttachmentTitles(void) const;
 
-private:
+  private:
 	/// The Subject of the message.
 	CStrHolder m_pszSubject;
 	/// The Body of the message.
@@ -78,7 +78,7 @@ private:
 /// The class which encapsulates the MAPI connection.
 class CMapiSession
 {
-public:
+  public:
 	/// Initialize the object.
 	CMapiSession(void);
 	/// Destroy the object.
@@ -103,7 +103,7 @@ public:
 	/// Get recent error code.
 	ULONG GetLastError(void) const;
 
-private:
+  private:
 	/// Protect the class from being accidentally copied.
 	CMapiSession(const CMapiSession& rMapiSession);
 	/// Protect the class from being accidentally copied.
@@ -120,7 +120,8 @@ private:
 	/// Initialize particular recipient record.
 	void InitRecipient(ULONG ulRecipClass, MapiRecipDesc& rRecipDesc, const CStrHolder& strName);
 	/// Initialize recipients list.
-	void InitRecipients(ULONG ulRecipClass, lpMapiRecipDesc lpRecips, int& nRecipIndex, const CArray<CStrHolder>& arrRecipients);
+	void InitRecipients(ULONG ulRecipClass, lpMapiRecipDesc lpRecips, int& nRecipIndex,
+						const CArray<CStrHolder>& arrRecipients);
 
 	/// Mapi session handle.
 	LHANDLE m_hSession;
@@ -197,8 +198,8 @@ inline CArray<CStrHolder>& CMapiMessage::GetTo(void)
 }
 
 /**
-* @return message recipients.
-*/
+ * @return message recipients.
+ */
 inline const CArray<CStrHolder>& CMapiMessage::GetTo(void) const
 {
 	return m_arrTo;

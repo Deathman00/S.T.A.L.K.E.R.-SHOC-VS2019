@@ -19,7 +19,7 @@ class CStrStream;
 /// Dynamic string holder.
 class CStrHolder
 {
-public:
+  public:
 	/// Initialize the object.
 	CStrHolder(void);
 	/// Destroy the object.
@@ -65,7 +65,7 @@ public:
 	/// Object comparison.
 	friend bool operator>=(const CStrHolder& rStrHolder1, const CStrHolder& rStrHolder2);
 
-private:
+  private:
 	/// Release string data.
 	void Release(void);
 	/// Initialize sting data.

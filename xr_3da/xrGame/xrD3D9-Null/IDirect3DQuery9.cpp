@@ -15,7 +15,7 @@ xrIDirect3DQuery9::xrIDirect3DQuery9(IDirect3DDevice9* pIDirect3DDevice9, D3DQUE
 };
 
 /*** IUnknown methods ***/
-HRESULT			xrIDirect3DQuery9::QueryInterface( REFIID riid, void** ppvObj)
+HRESULT xrIDirect3DQuery9::QueryInterface(REFIID riid, void** ppvObj)
 {
 	APIDEBUG("xrIDirect3DQuery9::QueryInterface");
 	if (riid == IID_IUnknown || riid == IID_IDirect3DQuery9)
@@ -27,14 +27,14 @@ HRESULT			xrIDirect3DQuery9::QueryInterface( REFIID riid, void** ppvObj)
 	return HRESULT_Proc(E_NOINTERFACE);
 }
 
-ULONG			xrIDirect3DQuery9::AddRef() 
+ULONG xrIDirect3DQuery9::AddRef()
 {
 	APIDEBUG("xrIDirect3DQuery9::AddRef");
 	m_refCount++;
 	return ULONG_Proc(m_refCount);
 }
 
-ULONG			xrIDirect3DQuery9::Release()
+ULONG xrIDirect3DQuery9::Release()
 {
 	APIDEBUG("xrIDirect3DQuery9::Release");
 	m_refCount--;
@@ -43,34 +43,34 @@ ULONG			xrIDirect3DQuery9::Release()
 		delete this;
 		return ULONG_Proc(-1);
 	}
-	
+
 	return ULONG_Proc(m_refCount);
 }
 
 /*** IDirect3DQuery9 methods ***/
-HRESULT				xrIDirect3DQuery9::GetDevice	( IDirect3DDevice9** ppDevice)						
+HRESULT xrIDirect3DQuery9::GetDevice(IDirect3DDevice9** ppDevice)
 {
 	APIDEBUG("xrIDirect3DQuery9::GetDevice");
 	m_pIDirect3DDevice9->AddRef();
 	*ppDevice = m_pIDirect3DDevice9;
 	return HRESULT_Proc(S_OK);
 };
-D3DQUERYTYPE		xrIDirect3DQuery9::GetType		()													
+D3DQUERYTYPE xrIDirect3DQuery9::GetType()
 {
 	APIDEBUG("xrIDirect3DQuery9::GetType");
 	return Type;
 };
-DWORD				xrIDirect3DQuery9::GetDataSize	()													
+DWORD xrIDirect3DQuery9::GetDataSize()
 {
 	APIDEBUG("xrIDirect3DQuery9::GetDataSize");
 	return DWORD_Proc(DataSize);
 };
-HRESULT				xrIDirect3DQuery9::Issue		( DWORD dwIssueFlags)								
+HRESULT xrIDirect3DQuery9::Issue(DWORD dwIssueFlags)
 {
 	APIDEBUG("xrIDirect3DQuery9::Issue");
 	return HRESULT_Proc(S_OK);
 };
-HRESULT				xrIDirect3DQuery9::GetData		( void* pData,DWORD dwSize,DWORD dwGetDataFlags)	
+HRESULT xrIDirect3DQuery9::GetData(void* pData, DWORD dwSize, DWORD dwGetDataFlags)
 {
 	APIDEBUG("xrIDirect3DQuery9::GetData");
 	dwSize = 0;

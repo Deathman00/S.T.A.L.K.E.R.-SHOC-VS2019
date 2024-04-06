@@ -23,7 +23,7 @@ using namespace IntelleSoft::BugTrap;
 
 class CNetStackTrace
 {
-public:
+  public:
 	struct CNetStackTraceEntry
 	{
 		CNetStackTraceEntry(void);
@@ -51,7 +51,7 @@ public:
 	};
 
 	CNetStackTrace(void);
-	CNetStackTrace(gcroot<Thread^> thread);
+	CNetStackTrace(gcroot<Thread ^> thread);
 	void InitStackTrace(void);
 	bool GetFirstStackTraceEntry(CNetStackTraceEntry& rEntry);
 	bool GetNextStackTraceEntry(CNetStackTraceEntry& rEntry);
@@ -61,17 +61,17 @@ public:
 	void GetErrorString(CStrStream& rStream);
 	void GetErrorString(CUTF8EncStream& rEncStream);
 
-private:
+  private:
 	CNetStackTrace(const CNetStackTrace& rStackTrace);
 	CNetStackTrace& operator=(const CNetStackTrace& rStackTrace);
 	void GetStackTraceString(const CNetStackTraceEntry& rEntry, CUTF8EncStream& rEncStream);
 
-	gcroot<StackFrameEnumerator^> m_gcStackFrameEnumerator;
+	gcroot<StackFrameEnumerator ^> m_gcStackFrameEnumerator;
 };
 
 class CNetAssemblies
 {
-public:
+  public:
 	struct CAssemblyInfo
 	{
 		CAssemblyInfo(void);
@@ -86,8 +86,8 @@ public:
 	bool GetFirstAssembly(CNetAssemblies::CAssemblyInfo& rAssemblyInfo);
 	bool GetNextAssembly(CNetAssemblies::CAssemblyInfo& rAssemblyInfo);
 
-private:
-	gcroot<AssemblyEnumerator^> m_gcAssemblyEnumerator;
+  private:
+	gcroot<AssemblyEnumerator ^> m_gcAssemblyEnumerator;
 };
 
 #pragma managed /////////////////////////////////////////////////////////////////////////////////
@@ -95,63 +95,64 @@ private:
 namespace NetThunks
 {
 
-	inline bool IsNetException(void)
-	{
-		return (ExceptionHandler::Exception != nullptr);
-	}
-
-	void GetThreadInfo(gcroot<Thread^> gcThread, DWORD& dwThreadID, PWSTR pszThreadName, DWORD dwThreadNameSize);
-
-	void GetAppDomainInfo(DWORD& dwAppDomainID, PWSTR pszAppDomainName, DWORD dwAppDomainSize);
-
-	inline void GetThreadInfo(DWORD& dwThreadID, PWSTR pszThreadName, DWORD dwThreadNameSize)
-	{
-		GetThreadInfo(Thread::CurrentThread, dwThreadID, pszThreadName, dwThreadNameSize);
-	}
-
-	gcroot<StackFrameEnumerator^> EnumStackFrames(void);
-
-	gcroot<StackFrameEnumerator^> EnumStackFrames(gcroot<Thread^> thread);
-
-	void InitStackTrace(gcroot<StackFrameEnumerator^> gcStackFrameEnumerator);
-
-	bool GetFirstStackTraceEntry(gcroot<StackFrameEnumerator^> gcStackFrameEnumerator, CNetStackTrace::CNetStackTraceEntry& rEntry);
-
-	bool GetNextStackTraceEntry(gcroot<StackFrameEnumerator^> gcStackFrameEnumerator, CNetStackTrace::CNetStackTraceEntry& rEntry);
-
-	bool GetErrorInfo(gcroot<StackFrameEnumerator^> gcStackFrameEnumerator, CNetStackTrace::CNetErrorInfo& rErrorInfo);
-
-	void GetNetVersion(PWSTR pszNetVersion, DWORD dwNetVersionSize);
-
-	gcroot<AssemblyEnumerator^> EnumAssemblies(void);
-
-	void InitAssemblies(gcroot<AssemblyEnumerator^> gcAssemblyEnumerator);
-
-	bool GetFirstAssembly(gcroot<AssemblyEnumerator^> gcAssemblyEnumerator, CNetAssemblies::CAssemblyInfo& rAssemblyInfo);
-
-	bool GetNextAssembly(gcroot<AssemblyEnumerator^> gcAssemblyEnumerator, CNetAssemblies::CAssemblyInfo& rAssemblyInfo);
-
-	bool ReadVersionInfo(void);
-
-	void FireBeforeUnhandledExceptionEvent(void);
-
-	void FireAfterUnhandledExceptionEvent(void);
-
-	void FlushTraceListeners(void);
-
-	gcroot<Thread^> GetCurrentThread(void);
-
+inline bool IsNetException(void)
+{
+	return (ExceptionHandler::Exception != nullptr);
 }
+
+void GetThreadInfo(gcroot<Thread ^> gcThread, DWORD& dwThreadID, PWSTR pszThreadName, DWORD dwThreadNameSize);
+
+void GetAppDomainInfo(DWORD& dwAppDomainID, PWSTR pszAppDomainName, DWORD dwAppDomainSize);
+
+inline void GetThreadInfo(DWORD& dwThreadID, PWSTR pszThreadName, DWORD dwThreadNameSize)
+{
+	GetThreadInfo(Thread::CurrentThread, dwThreadID, pszThreadName, dwThreadNameSize);
+}
+
+gcroot<StackFrameEnumerator ^> EnumStackFrames(void);
+
+gcroot<StackFrameEnumerator ^> EnumStackFrames(gcroot<Thread ^> thread);
+
+void InitStackTrace(gcroot<StackFrameEnumerator ^> gcStackFrameEnumerator);
+
+bool GetFirstStackTraceEntry(gcroot<StackFrameEnumerator ^> gcStackFrameEnumerator,
+							 CNetStackTrace::CNetStackTraceEntry& rEntry);
+
+bool GetNextStackTraceEntry(gcroot<StackFrameEnumerator ^> gcStackFrameEnumerator,
+							CNetStackTrace::CNetStackTraceEntry& rEntry);
+
+bool GetErrorInfo(gcroot<StackFrameEnumerator ^> gcStackFrameEnumerator, CNetStackTrace::CNetErrorInfo& rErrorInfo);
+
+void GetNetVersion(PWSTR pszNetVersion, DWORD dwNetVersionSize);
+
+gcroot<AssemblyEnumerator ^> EnumAssemblies(void);
+
+void InitAssemblies(gcroot<AssemblyEnumerator ^> gcAssemblyEnumerator);
+
+bool GetFirstAssembly(gcroot<AssemblyEnumerator ^> gcAssemblyEnumerator, CNetAssemblies::CAssemblyInfo& rAssemblyInfo);
+
+bool GetNextAssembly(gcroot<AssemblyEnumerator ^> gcAssemblyEnumerator, CNetAssemblies::CAssemblyInfo& rAssemblyInfo);
+
+bool ReadVersionInfo(void);
+
+void FireBeforeUnhandledExceptionEvent(void);
+
+void FireAfterUnhandledExceptionEvent(void);
+
+void FlushTraceListeners(void);
+
+gcroot<Thread ^> GetCurrentThread(void);
+
+} // namespace NetThunks
 
 #pragma unmanaged ///////////////////////////////////////////////////////////////////////////////
 
-inline CNetStackTrace::CNetStackTrace(void) :
-	m_gcStackFrameEnumerator(NetThunks::EnumStackFrames())
+inline CNetStackTrace::CNetStackTrace(void) : m_gcStackFrameEnumerator(NetThunks::EnumStackFrames())
 {
 }
 
-inline CNetStackTrace::CNetStackTrace(gcroot<Thread^> thread) :
-	m_gcStackFrameEnumerator(NetThunks::EnumStackFrames(thread))
+inline CNetStackTrace::CNetStackTrace(gcroot<Thread ^> thread)
+	: m_gcStackFrameEnumerator(NetThunks::EnumStackFrames(thread))
 {
 }
 
@@ -175,8 +176,7 @@ inline bool CNetStackTrace::GetErrorInfo(CNetErrorInfo& rErrorInfo)
 	return NetThunks::GetErrorInfo(m_gcStackFrameEnumerator, rErrorInfo);
 }
 
-inline CNetAssemblies::CNetAssemblies(void) :
-	m_gcAssemblyEnumerator(NetThunks::EnumAssemblies())
+inline CNetAssemblies::CNetAssemblies(void) : m_gcAssemblyEnumerator(NetThunks::EnumAssemblies())
 {
 }
 

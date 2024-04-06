@@ -51,16 +51,13 @@ enum PROCESS_MODULES_LIST_COLUMN_ID
 	CID_MODULE_BASE
 };
 
-
 /// Control layouts for Machine State dialog.
-static LAYOUT_INFO g_arrMachineStateLayout[] =
-{
-	LAYOUT_INFO(IDC_PROCESS_LIST_FRAME,        ALIGN_LEFT,  ALIGN_TOP,    ALIGN_RIGHT, ALIGN_CENTER),
-	LAYOUT_INFO(IDC_PROCESS_LIST,              ALIGN_LEFT,  ALIGN_TOP,    ALIGN_RIGHT, ALIGN_CENTER),
-	LAYOUT_INFO(IDC_PROCESS_MODULES_LIST_FRAME, ALIGN_LEFT,  ALIGN_CENTER, ALIGN_RIGHT, ALIGN_BOTTOM),
-	LAYOUT_INFO(IDC_PROCESS_MODULES_LIST,       ALIGN_LEFT,  ALIGN_CENTER, ALIGN_RIGHT, ALIGN_BOTTOM),
-	LAYOUT_INFO(IDCANCEL,                      ALIGN_RIGHT, ALIGN_TOP,    ALIGN_RIGHT, ALIGN_TOP)
-};
+static LAYOUT_INFO g_arrMachineStateLayout[] = {
+	LAYOUT_INFO(IDC_PROCESS_LIST_FRAME, ALIGN_LEFT, ALIGN_TOP, ALIGN_RIGHT, ALIGN_CENTER),
+	LAYOUT_INFO(IDC_PROCESS_LIST, ALIGN_LEFT, ALIGN_TOP, ALIGN_RIGHT, ALIGN_CENTER),
+	LAYOUT_INFO(IDC_PROCESS_MODULES_LIST_FRAME, ALIGN_LEFT, ALIGN_CENTER, ALIGN_RIGHT, ALIGN_BOTTOM),
+	LAYOUT_INFO(IDC_PROCESS_MODULES_LIST, ALIGN_LEFT, ALIGN_CENTER, ALIGN_RIGHT, ALIGN_BOTTOM),
+	LAYOUT_INFO(IDCANCEL, ALIGN_RIGHT, ALIGN_TOP, ALIGN_RIGHT, ALIGN_TOP)};
 
 /// Dialog layout manager.
 static CLayoutManager g_LayoutMgr;
@@ -102,7 +99,8 @@ static void MachineStateDlg_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT code
  */
 static BOOL MachineStateDlg_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 {
-	lParam; hwndFocus;
+	lParam;
+	hwndFocus;
 
 	_ASSERTE(g_pResManager != NULL);
 	if (g_pResManager->m_hBigAppIcon)
@@ -165,8 +163,7 @@ static BOOL MachineStateDlg_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lPara
 			ListView_InsertItem(hwndProcessList, &lvi);
 			ListView_SetItemText(hwndProcessList, iItemPos, CID_PROCESS_NAME, ProcEntry.m_szProcessName);
 			++iItemPos;
-		}
-		while (g_pEnumProc->GetProcessNext(ProcEntry));
+		} while (g_pEnumProc->GetProcessNext(ProcEntry));
 	}
 
 	// LVM_SETIMAGELIST resets header control image list
@@ -194,7 +191,10 @@ static void MachineStateDlg_OnDestroy(HWND hwnd)
  */
 static void MachineStateDlg_OnSize(HWND hwnd, UINT state, int cx, int cy)
 {
-	hwnd; cx; cy; state;
+	hwnd;
+	cx;
+	cy;
+	state;
 	g_LayoutMgr.ApplyLayout();
 }
 
@@ -219,106 +219,104 @@ static LRESULT MachineStateDlg_OnNotify(HWND hwnd, int idCtrl, LPNMHDR pnmh)
 {
 	switch (pnmh->code)
 	{
-	case LVN_ITEMCHANGED:
+	case LVN_ITEMCHANGED: {
+		if (idCtrl != IDC_PROCESS_LIST)
+			break;
+		LPNMLISTVIEW pnmv = (LPNMLISTVIEW)pnmh;
+		if ((pnmv->uNewState & LVIS_SELECTED) != (pnmv->uOldState & LVIS_SELECTED))
 		{
-			if (idCtrl != IDC_PROCESS_LIST)
-				break;
-			LPNMLISTVIEW pnmv = (LPNMLISTVIEW)pnmh;
-			if ((pnmv->uNewState & LVIS_SELECTED) != (pnmv->uOldState & LVIS_SELECTED))
+			if (pnmv->uNewState & LVIS_SELECTED)
 			{
-				if (pnmv->uNewState & LVIS_SELECTED)
+				CWaitCursor wait(true);
+				HWND hwndModuleList = GetDlgItem(hwnd, IDC_PROCESS_MODULES_LIST);
+				SendMessage(hwndModuleList, WM_SETREDRAW, FALSE, 0);
+				DisplayWaitBanner(hwndModuleList);
+
+				LVITEM lvi;
+				ZeroMemory(&lvi, sizeof(lvi));
+				lvi.mask = LVIF_TEXT;
+				CEnumProcess::CModuleEntry module;
+				if (g_pEnumProc->GetModuleFirst(pnmv->lParam, module))
 				{
-					CWaitCursor wait(true);
-					HWND hwndModuleList = GetDlgItem(hwnd, IDC_PROCESS_MODULES_LIST);
-					SendMessage(hwndModuleList, WM_SETREDRAW, FALSE, 0);
-					DisplayWaitBanner(hwndModuleList);
-
-					LVITEM lvi;
-					ZeroMemory(&lvi, sizeof(lvi));
-					lvi.mask = LVIF_TEXT;
-					CEnumProcess::CModuleEntry module;
-					if (g_pEnumProc->GetModuleFirst(pnmv->lParam, module))
+					int iItemPos = 0;
+					do
 					{
-						int iItemPos = 0;
-						do
-						{
-							lvi.iItem = iItemPos;
-							lvi.pszText = module.m_szModuleName;
-							ListView_InsertItem(hwndModuleList, &lvi);
-							TCHAR szVersionString[64];
-							if (CSymEngine::GetVersionString(module.m_szModuleName, szVersionString, countof(szVersionString)))
-								ListView_SetItemText(hwndModuleList, iItemPos, CID_MODULE_VERSION, szVersionString);
-							TCHAR szTempBuf[32];
-							_stprintf_s(szTempBuf, countof(szTempBuf), _T("%08X"), (DWORD)module.m_pLoadBase);
-							ListView_SetItemText(hwndModuleList, iItemPos, CID_MODULE_BASE, szTempBuf);
-							++iItemPos;
-						}
-						while (g_pEnumProc->GetModuleNext(pnmv->lParam, module));
-					}
-					else
-					{
-						TCHAR szMessage[100];
-						LoadString(g_hInstance, IDS_ERROR_NOT_AVAILABLE, szMessage, countof(szMessage));
-						lvi.iItem = 0;
-						lvi.pszText = szMessage;
+						lvi.iItem = iItemPos;
+						lvi.pszText = module.m_szModuleName;
 						ListView_InsertItem(hwndModuleList, &lvi);
-					}
-
-					SendMessage(hwndModuleList, WM_SETREDRAW, TRUE, 0);
-					InvalidateRect(hwndModuleList, NULL, TRUE);
+						TCHAR szVersionString[64];
+						if (CSymEngine::GetVersionString(module.m_szModuleName, szVersionString,
+														 countof(szVersionString)))
+							ListView_SetItemText(hwndModuleList, iItemPos, CID_MODULE_VERSION, szVersionString);
+						TCHAR szTempBuf[32];
+						_stprintf_s(szTempBuf, countof(szTempBuf), _T("%08X"), (DWORD)module.m_pLoadBase);
+						ListView_SetItemText(hwndModuleList, iItemPos, CID_MODULE_BASE, szTempBuf);
+						++iItemPos;
+					} while (g_pEnumProc->GetModuleNext(pnmv->lParam, module));
 				}
 				else
 				{
-					HWND hwndModuleList = GetDlgItem(hwnd, IDC_PROCESS_MODULES_LIST);
-					ListView_DeleteAllItems(hwndModuleList);
+					TCHAR szMessage[100];
+					LoadString(g_hInstance, IDS_ERROR_NOT_AVAILABLE, szMessage, countof(szMessage));
+					lvi.iItem = 0;
+					lvi.pszText = szMessage;
+					ListView_InsertItem(hwndModuleList, &lvi);
 				}
+
+				SendMessage(hwndModuleList, WM_SETREDRAW, TRUE, 0);
+				InvalidateRect(hwndModuleList, NULL, TRUE);
 			}
-		}
-		break;
-	case LVN_COLUMNCLICK:
-		{
-			LPNMLISTVIEW pnmv = (LPNMLISTVIEW)pnmh;
-			if (idCtrl == IDC_PROCESS_LIST)
-			{
-				HWND hwndProcessList = GetDlgItem(hwnd, IDC_PROCESS_LIST);
-				g_ProcessListOrder.ToggleSortParams(hwndProcessList, pnmv->iSubItem);
-				LISTVIEW_SORT_PARAMS lvSortParams;
-				lvSortParams.hwndList = hwndProcessList;
-				lvSortParams.iColumnNumber = pnmv->iSubItem;
-				lvSortParams.bAscending = g_ProcessListOrder.GetSortOrder();
-				switch (pnmv->iSubItem)
-				{
-				case CID_PROCESS_ID:
-					lvSortParams.eCompareType = LISTVIEW_SORT_PARAMS::ICT_INTEGER;
-					break;
-				case CID_PROCESS_NAME:
-					lvSortParams.eCompareType = LISTVIEW_SORT_PARAMS::ICT_STRING;
-					break;
-				}
-				ListView_SortItemsEx(hwndProcessList, &ListViewCompareFunc, (LPARAM)&lvSortParams);
-			}
-			else if (idCtrl == IDC_PROCESS_MODULES_LIST)
+			else
 			{
 				HWND hwndModuleList = GetDlgItem(hwnd, IDC_PROCESS_MODULES_LIST);
-				g_ModulesListOrder.ToggleSortParams(hwndModuleList, pnmv->iSubItem);
-				LISTVIEW_SORT_PARAMS lvSortParams;
-				lvSortParams.hwndList = hwndModuleList;
-				lvSortParams.iColumnNumber = pnmv->iSubItem;
-				lvSortParams.bAscending = g_ModulesListOrder.GetSortOrder();
-				switch (pnmv->iSubItem)
-				{
-				case CID_MODULE_NAME:
-				case CID_MODULE_VERSION:
-					lvSortParams.eCompareType = LISTVIEW_SORT_PARAMS::ICT_STRING;
-					break;
-				case CID_MODULE_BASE:
-					lvSortParams.eCompareType = LISTVIEW_SORT_PARAMS::ICT_HEXADECIMAL;
-					break;
-				}
-				ListView_SortItemsEx(hwndModuleList, &ListViewCompareFunc, (LPARAM)&lvSortParams);
+				ListView_DeleteAllItems(hwndModuleList);
 			}
 		}
-		break;
+	}
+	break;
+	case LVN_COLUMNCLICK: {
+		LPNMLISTVIEW pnmv = (LPNMLISTVIEW)pnmh;
+		if (idCtrl == IDC_PROCESS_LIST)
+		{
+			HWND hwndProcessList = GetDlgItem(hwnd, IDC_PROCESS_LIST);
+			g_ProcessListOrder.ToggleSortParams(hwndProcessList, pnmv->iSubItem);
+			LISTVIEW_SORT_PARAMS lvSortParams;
+			lvSortParams.hwndList = hwndProcessList;
+			lvSortParams.iColumnNumber = pnmv->iSubItem;
+			lvSortParams.bAscending = g_ProcessListOrder.GetSortOrder();
+			switch (pnmv->iSubItem)
+			{
+			case CID_PROCESS_ID:
+				lvSortParams.eCompareType = LISTVIEW_SORT_PARAMS::ICT_INTEGER;
+				break;
+			case CID_PROCESS_NAME:
+				lvSortParams.eCompareType = LISTVIEW_SORT_PARAMS::ICT_STRING;
+				break;
+			}
+			ListView_SortItemsEx(hwndProcessList, &ListViewCompareFunc, (LPARAM)&lvSortParams);
+		}
+		else if (idCtrl == IDC_PROCESS_MODULES_LIST)
+		{
+			HWND hwndModuleList = GetDlgItem(hwnd, IDC_PROCESS_MODULES_LIST);
+			g_ModulesListOrder.ToggleSortParams(hwndModuleList, pnmv->iSubItem);
+			LISTVIEW_SORT_PARAMS lvSortParams;
+			lvSortParams.hwndList = hwndModuleList;
+			lvSortParams.iColumnNumber = pnmv->iSubItem;
+			lvSortParams.bAscending = g_ModulesListOrder.GetSortOrder();
+			switch (pnmv->iSubItem)
+			{
+			case CID_MODULE_NAME:
+			case CID_MODULE_VERSION:
+				lvSortParams.eCompareType = LISTVIEW_SORT_PARAMS::ICT_STRING;
+				break;
+			case CID_MODULE_BASE:
+				lvSortParams.eCompareType = LISTVIEW_SORT_PARAMS::ICT_HEXADECIMAL;
+				break;
+			}
+			ListView_SortItemsEx(hwndModuleList, &ListViewCompareFunc, (LPARAM)&lvSortParams);
+		}
+	}
+	break;
 	}
 	return FALSE;
 }
@@ -335,13 +333,14 @@ INT_PTR CALLBACK MachineStateDlgProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
 {
 	switch (uMsg)
 	{
-	HANDLE_MSG(hwndDlg, WM_INITDIALOG, MachineStateDlg_OnInitDialog);
-	HANDLE_MSG(hwndDlg, WM_DESTROY, MachineStateDlg_OnDestroy);
-	HANDLE_MSG(hwndDlg, WM_COMMAND, MachineStateDlg_OnCommand);
-	HANDLE_MSG(hwndDlg, WM_SIZE, MachineStateDlg_OnSize);
-	HANDLE_MSG(hwndDlg, WM_GETMINMAXINFO, MachineStateDlg_OnGetMinMaxInfo);
-	HANDLE_MSG(hwndDlg, WM_NOTIFY, MachineStateDlg_OnNotify);
-	default: return FALSE;
+		HANDLE_MSG(hwndDlg, WM_INITDIALOG, MachineStateDlg_OnInitDialog);
+		HANDLE_MSG(hwndDlg, WM_DESTROY, MachineStateDlg_OnDestroy);
+		HANDLE_MSG(hwndDlg, WM_COMMAND, MachineStateDlg_OnCommand);
+		HANDLE_MSG(hwndDlg, WM_SIZE, MachineStateDlg_OnSize);
+		HANDLE_MSG(hwndDlg, WM_GETMINMAXINFO, MachineStateDlg_OnGetMinMaxInfo);
+		HANDLE_MSG(hwndDlg, WM_NOTIFY, MachineStateDlg_OnNotify);
+	default:
+		return FALSE;
 	}
 }
 

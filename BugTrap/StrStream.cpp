@@ -62,7 +62,7 @@ void CStrStream::EnsureSize(int nSize, bool bAdaptiveGrowth)
 		if (bAdaptiveGrowth)
 			nSize *= 2;
 		PTSTR pszData = new TCHAR[nSize];
-		if (! pszData)
+		if (!pszData)
 			RaiseException(STATUS_NO_MEMORY, 0, 0, NULL);
 		if (m_pszData)
 		{
@@ -73,7 +73,6 @@ void CStrStream::EnsureSize(int nSize, bool bAdaptiveGrowth)
 		m_nSize = nSize;
 	}
 }
-
 
 /**
  * @param pszStrData - data source.

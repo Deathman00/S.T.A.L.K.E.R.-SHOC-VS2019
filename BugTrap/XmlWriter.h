@@ -21,7 +21,7 @@
 /// XML generator.
 class CXmlWriter
 {
-public:
+  public:
 	/// Initialize the object.
 	CXmlWriter(void);
 	/// Initialize the object.
@@ -73,7 +73,7 @@ public:
 	/// Writes the given text content.
 	BOOL WriteString(PCTSTR pszString);
 
-private:
+  private:
 	/// Object can't be copied.
 	CXmlWriter(const CXmlWriter& rWriter);
 	/// Object can't be copied.
@@ -83,9 +83,9 @@ private:
 	enum ESCAPE_FLAGS
 	{
 		/// Don't perform any special escaping.
-		EF_ESCAPENONE          = 0x00,
+		EF_ESCAPENONE = 0x00,
 		/// Escape quotation marks.
-		EF_ESCAPEQUOTMARKS     = 0x01,
+		EF_ESCAPEQUOTMARKS = 0x01,
 		/// Escape non-ASCII characters.
 		EF_ESCAPENONASCIICHARS = 0x02
 	};

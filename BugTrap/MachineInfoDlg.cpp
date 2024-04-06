@@ -37,7 +37,8 @@
  */
 static void MachineInfoDlg_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
 {
-	codeNotify; hwndCtl;
+	codeNotify;
+	hwndCtl;
 	switch (id)
 	{
 	case IDOK:
@@ -56,7 +57,8 @@ static void MachineInfoDlg_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeN
  */
 static BOOL MachineInfoDlg_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 {
-	lParam; hwndFocus;
+	lParam;
+	hwndFocus;
 	_ASSERTE(g_pResManager != NULL);
 	if (g_pResManager->m_hBigAppIcon)
 		SendMessage(hwnd, WM_SETICON, ICON_BIG, (LPARAM)g_pResManager->m_hBigAppIcon);
@@ -110,7 +112,8 @@ static BOOL MachineInfoDlg_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam
  */
 static HBRUSH MachineInfoDlg_OnCtlColor(HWND hwnd, HDC hdc, HWND hwndChild, int type)
 {
-	hwnd; hdc;
+	hwnd;
+	hdc;
 	if (type == CTLCOLOR_STATIC)
 	{
 		int nChildID = GetDlgCtrlID(hwndChild);
@@ -136,10 +139,11 @@ INT_PTR CALLBACK MachineInfoDlgProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPAR
 {
 	switch (uMsg)
 	{
-	HANDLE_MSG(hwndDlg, WM_INITDIALOG, MachineInfoDlg_OnInitDialog);
-	HANDLE_MSG(hwndDlg, WM_COMMAND, MachineInfoDlg_OnCommand);
-	HANDLE_MSG(hwndDlg, WM_CTLCOLORSTATIC, MachineInfoDlg_OnCtlColor);
-	default: return FALSE;
+		HANDLE_MSG(hwndDlg, WM_INITDIALOG, MachineInfoDlg_OnInitDialog);
+		HANDLE_MSG(hwndDlg, WM_COMMAND, MachineInfoDlg_OnCommand);
+		HANDLE_MSG(hwndDlg, WM_CTLCOLORSTATIC, MachineInfoDlg_OnCtlColor);
+	default:
+		return FALSE;
 	}
 }
 

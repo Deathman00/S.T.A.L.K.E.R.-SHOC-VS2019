@@ -19,17 +19,17 @@
 #define new DEBUG_NEW
 #endif
 
-#define CHECK_FILE_HANDLE(eResult) \
-	_ASSERTE(m_hFile != INVALID_HANDLE_VALUE); \
-	if (m_hFile == INVALID_HANDLE_VALUE) \
-	{ \
-		m_lLastError = ERROR_INVALID_HANDLE_STATE; \
-		return eResult; \
+#define CHECK_FILE_HANDLE(eResult)                                                                                     \
+	_ASSERTE(m_hFile != INVALID_HANDLE_VALUE);                                                                         \
+	if (m_hFile == INVALID_HANDLE_VALUE)                                                                               \
+	{                                                                                                                  \
+		m_lLastError = ERROR_INVALID_HANDLE_STATE;                                                                     \
+		return eResult;                                                                                                \
 	}
 
-#define CHECK_LAST_ERROR(eResult) \
-	m_lLastError = GetLastError(); \
-	if (m_lLastError != NOERROR) \
+#define CHECK_LAST_ERROR(eResult)                                                                                      \
+	m_lLastError = GetLastError();                                                                                     \
+	if (m_lLastError != NOERROR)                                                                                       \
 		return eResult;
 
 /**
@@ -70,7 +70,8 @@ void CFileStream::InitBuffer(int nBufferSize)
  * @param dwShareMode - the sharing mode of an object, which can be read, write, both, or none.
  * @param dwFlagsAndAttributes - the file attributes and flags.
  */
-bool CFileStream::Open(PCTSTR pszFileName, DWORD dwCreationDisposition, DWORD dwDesiredAccess, DWORD dwShareMode, DWORD dwFlagsAndAttributes)
+bool CFileStream::Open(PCTSTR pszFileName, DWORD dwCreationDisposition, DWORD dwDesiredAccess, DWORD dwShareMode,
+					   DWORD dwFlagsAndAttributes)
 {
 	_ASSERTE(m_hFile == INVALID_HANDLE_VALUE);
 	if (m_hFile != INVALID_HANDLE_VALUE)
@@ -78,7 +79,8 @@ bool CFileStream::Open(PCTSTR pszFileName, DWORD dwCreationDisposition, DWORD dw
 		m_lLastError = ERROR_INVALID_HANDLE_STATE;
 		return false;
 	}
-	m_hFile = CreateFile(pszFileName, dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, dwFlagsAndAttributes, NULL);
+	m_hFile =
+		CreateFile(pszFileName, dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, dwFlagsAndAttributes, NULL);
 	m_lLastError = GetLastError();
 	if (m_hFile != INVALID_HANDLE_VALUE)
 	{
@@ -141,7 +143,7 @@ int CFileStream::SetPosition(int nOffset, int nMoveMethod)
 	}
 	else
 	{
-		if (! FlushBuffer())
+		if (!FlushBuffer())
 			return -1;
 	}
 	DWORD dwFilePos = SetFilePointer(m_hFile, nOffset - nDeltaPos, NULL, nMoveMethod);
@@ -179,7 +181,7 @@ int CFileStream::SetLength(int nLength)
 	else
 	{
 		nDeltaPos = 0;
-		if (! FlushBuffer())
+		if (!FlushBuffer())
 			return -1;
 	}
 	m_bEndOfFile = false;
@@ -208,7 +210,7 @@ int CFileStream::ReadBytes(unsigned char* arrBytes, int nCount)
 	CHECK_FILE_HANDLE(-1);
 	if (m_pBuffer != NULL)
 	{
-		if (! FlushBuffer())
+		if (!FlushBuffer())
 			return -1;
 		int nTotalLength = 0;
 		for (;;)
@@ -258,7 +260,7 @@ int CFileStream::WriteBytes(const unsigned char* arrBytes, int nCount)
 	CHECK_FILE_HANDLE(-1);
 	if (m_pBuffer != NULL)
 	{
-		if (! SynchronizeBuffer())
+		if (!SynchronizeBuffer())
 			return -1;
 		int nTotalLength = 0;
 		for (;;)
@@ -303,7 +305,7 @@ void CFileStream::SetBufferSize(int nBufferSize)
 {
 	if (m_nBufferSize != nBufferSize)
 	{
-		if (! FlushBuffer())
+		if (!FlushBuffer())
 			return;
 		delete[] m_pBuffer;
 		InitBuffer(nBufferSize);

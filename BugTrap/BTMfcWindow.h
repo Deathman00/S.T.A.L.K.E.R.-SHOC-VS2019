@@ -18,15 +18,15 @@
 #pragma once
 
 #ifndef _BUGTRAP_H_
- #error Include BugTrap.h first
+#error Include BugTrap.h first
 #endif // _BUGTRAP_H_
 
 #ifndef __cplusplus
- #error C++ compiler is required
+#error C++ compiler is required
 #endif // __cplusplus
 
 #ifndef __AFX_H__
- #error This class cannot be used in non MFC applications
+#error This class cannot be used in non MFC applications
 #endif // __AFX_H__
 
 namespace MFC
@@ -37,34 +37,45 @@ namespace MFC
 /// This class substitutes default MFC error handling.
 /// Only one form of exception handling is permitted per function,
 /// therefore this class uses two functions to catch C++ and Windows errors.
-template <class BASE_CLASS>
-class BTWindow : public BASE_CLASS {
-protected:
+template <class BASE_CLASS> class BTWindow : public BASE_CLASS
+{
+  protected:
 	/// Object initialization (0 parameters).
-	BTWindow(void) _BTWND_INITIALIZER_ () { }
+	BTWindow(void) _BTWND_INITIALIZER_()
+	{
+	}
 	/// Object initialization (1 parameter).
-	template <typename T1>
-	explicit BTWindow(T1 param1) _BTWND_INITIALIZER_ (param1) { }
+	template <typename T1> explicit BTWindow(T1 param1) _BTWND_INITIALIZER_(param1)
+	{
+	}
 	/// Object initialization (2 parameters)
-	template <typename T1, typename T2>
-	BTWindow(T1 param1, T2 param2) _BTWND_INITIALIZER_ (param1, param2) { }
+	template <typename T1, typename T2> BTWindow(T1 param1, T2 param2) _BTWND_INITIALIZER_(param1, param2)
+	{
+	}
 	/// Object initialization (3 parameters).
 	template <typename T1, typename T2, typename T3>
-	BTWindow(T1 param1, T2 param2, T3 param3) _BTWND_INITIALIZER_ (param1, param2, param3) { }
+	BTWindow(T1 param1, T2 param2, T3 param3) _BTWND_INITIALIZER_(param1, param2, param3)
+	{
+	}
 	/// Object initialization (4 parameters).
 	template <typename T1, typename T2, typename T3, typename T4>
-	BTWindow(T1 param1, T2 param2, T3 param3, T4 param4) _BTWND_INITIALIZER_ (param1, param2, param3, param4) { }
+	BTWindow(T1 param1, T2 param2, T3 param3, T4 param4) _BTWND_INITIALIZER_(param1, param2, param3, param4)
+	{
+	}
 	/// Object initialization (5 parameters).
 	template <typename T1, typename T2, typename T3, typename T4, typename T5>
-	BTWindow(T1 param1, T2 param2, T3 param3, T4 param4, T5 param5) _BTWND_INITIALIZER_ (param1, param2, param3, param4, param5) { }
+	BTWindow(T1 param1, T2 param2, T3 param3, T4 param4, T5 param5)
+		_BTWND_INITIALIZER_(param1, param2, param3, param4, param5)
+	{
+	}
 	/// This window procedure uses SEH to intercept all unhandled exceptions.
 	virtual LRESULT WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-private:
+  private:
 	/// This window procedure intercepts MFC exceptions.
 	LRESULT PrivWindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
 	/// Exception filter.
-	LONG (CALLBACK * m_pfnFilter)(PEXCEPTION_POINTERS pExceptionPointers);
+	LONG(CALLBACK* m_pfnFilter)(PEXCEPTION_POINTERS pExceptionPointers);
 };
 
 #undef _BTWND_INITIALIZER_
@@ -75,11 +86,14 @@ private:
  * @param lParam - provides additional information used in processing the message.
  * @return the return value depends on the message.
  */
-template <class BASE_CLASS>
-LRESULT BTWindow<BASE_CLASS>::PrivWindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
-	try {
+template <class BASE_CLASS> LRESULT BTWindow<BASE_CLASS>::PrivWindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	try
+	{
 		return BASE_CLASS::WindowProc(uMsg, wParam, lParam);
-	} catch (CException* pException) {
+	}
+	catch (CException* pException)
+	{
 		ASSERT(pException->IsKindOf(RUNTIME_CLASS(CException)));
 		// extract error message
 		TCHAR szErrorMessage[512];
@@ -91,15 +105,18 @@ LRESULT BTWindow<BASE_CLASS>::PrivWindowProc(UINT uMsg, WPARAM wParam, LPARAM lP
 		throw;
 	}
 #ifdef _EXCEPTION_
-	catch (exception& rException) {
+	catch (exception& rException)
+	{
 		// extract error message
 		const CHAR* pszErrorMessageA = rException.what();
-		if (pszErrorMessageA != NULL && *pszErrorMessageA != '\0') {
+		if (pszErrorMessageA != NULL && *pszErrorMessageA != '\0')
+		{
 #ifdef _UNICODE
 			DWORD dwErrorMessageSizeW = MultiByteToWideChar(CP_ACP, 0, pszErrorMessageA, -1, NULL, 0);
 			// alloca() cannot be used in catch block
 			WCHAR* pszErrorMessageW = (WCHAR*)malloc(dwErrorMessageSizeW * sizeof(WCHAR));
-			if (pszErrorMessageW != NULL) {
+			if (pszErrorMessageW != NULL)
+			{
 				MultiByteToWideChar(CP_ACP, 0, pszErrorMessageA, -1, pszErrorMessageW, dwErrorMessageSizeW);
 				BT_SetUserMessage(pszErrorMessageW);
 				free(pszErrorMessageW);
@@ -121,20 +138,23 @@ LRESULT BTWindow<BASE_CLASS>::PrivWindowProc(UINT uMsg, WPARAM wParam, LPARAM lP
  * @param lParam - provides additional information used in processing the message.
  * @return the return value depends on the message.
  */
-template <class BASE_CLASS>
-LRESULT BTWindow<BASE_CLASS>::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
-	__try {
+template <class BASE_CLASS> LRESULT BTWindow<BASE_CLASS>::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	__try
+	{
 		return PrivWindowProc(uMsg, wParam, lParam);
-	} __except ((*m_pfnFilter)(GetExceptionInformation())) {
+	}
+	__except ((*m_pfnFilter)(GetExceptionInformation()))
+	{
 		m_pfnFilter = &BT_SehFilter;
 		return 0;
 	}
 }
 
-}
+} // namespace MFC
 
 #ifndef BT_DO_NOT_USE_DEFAULT_NAMESPACES
- using namespace MFC;
+using namespace MFC;
 #endif // BT_DO_NOT_USE_DEFAULT_NAMESPACES
 
 #endif // _BTMFCWINDOW_H_

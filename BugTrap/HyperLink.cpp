@@ -80,7 +80,7 @@ void CHyperLink::DrawHyperLink(HDC hdc) const
 	HFONT hOldFont = g_pResManager->m_hUnderlinedFont ? SelectFont(hdc, g_pResManager->m_hUnderlinedFont) : NULL;
 	HWND hwndParent = GetParent(m_hwnd);
 	HBRUSH hBrush = hwndParent ? FORWARD_WM_CTLCOLORSTATIC(hwndParent, hdc, m_hwnd, SendMessage) : NULL;
-	if (! hBrush)
+	if (!hBrush)
 		hBrush = g_pResManager->m_hbrButtonFaceBrush;
 	if (hBrush)
 	{
@@ -139,9 +139,9 @@ LRESULT CALLBACK CHyperLink::HyperLinkWndProc(HWND hwnd, UINT uMsg, WPARAM wPara
 	DWORD dwResult;
 	HDC hdc;
 
-	CHyperLink* _this  = (CHyperLink*)GetWindowLongPtr(hwnd, GWL_USERDATA);
+	CHyperLink* _this = (CHyperLink*)GetWindowLongPtr(hwnd, GWL_USERDATA);
 	_ASSERTE(_this != NULL);
-	switch(uMsg)
+	switch (uMsg)
 	{
 	case WM_NCHITTEST:
 		return HTCLIENT;
@@ -210,7 +210,8 @@ LRESULT CALLBACK CHyperLink::HyperLinkWndProc(HWND hwnd, UINT uMsg, WPARAM wPara
 			if (_this->m_nPrevDefButtonID < 0)
 			{
 				lResult = SendMessage(hwndParent, DM_GETDEFID, 0, 0);
-				_this->m_nPrevDefButtonID = HIWORD(lResult) == DC_HASDEFID && LOWORD(lResult) != nCtrlID ? LOWORD(lResult) : -1;
+				_this->m_nPrevDefButtonID =
+					HIWORD(lResult) == DC_HASDEFID && LOWORD(lResult) != nCtrlID ? LOWORD(lResult) : -1;
 			}
 			SendMessage(hwndParent, DM_SETDEFID, nCtrlID, 0);
 			if (_this->m_nPrevDefButtonID > 0)
@@ -230,7 +231,7 @@ LRESULT CALLBACK CHyperLink::HyperLinkWndProc(HWND hwnd, UINT uMsg, WPARAM wPara
 		hwndParent = GetParent(hwnd);
 		if (hwndParent && wParam && IsChild(hwndParent, (HWND)wParam))
 		{
-			if (! (SendMessage((HWND)wParam, WM_GETDLGCODE, 0, 0) & (DLGC_DEFPUSHBUTTON | DLGC_UNDEFPUSHBUTTON)))
+			if (!(SendMessage((HWND)wParam, WM_GETDLGCODE, 0, 0) & (DLGC_DEFPUSHBUTTON | DLGC_UNDEFPUSHBUTTON)))
 			{
 				if (_this->m_nPrevDefButtonID > 0)
 				{
@@ -260,7 +261,7 @@ LRESULT CALLBACK CHyperLink::HyperLinkWndProc(HWND hwnd, UINT uMsg, WPARAM wPara
 		return TRUE;
 	case WM_PAINT:
 		hdc = (HDC)wParam;
-		if (! hdc)
+		if (!hdc)
 		{
 			hdc = BeginPaint(hwnd, &ps);
 			if (hdc)
@@ -307,7 +308,7 @@ LRESULT CALLBACK CHyperLink::HyperLinkWndProc(HWND hwnd, UINT uMsg, WPARAM wPara
 			if (hwndParent)
 			{
 				HWND hwndCtl = GetDlgItem(hwndParent, IDCANCEL);
-				if (! hwndCtl || IsWindowEnabled(hwndCtl))
+				if (!hwndCtl || IsWindowEnabled(hwndCtl))
 					FORWARD_WM_COMMAND(hwndParent, IDCANCEL, hwndCtl, BN_CLICKED, PostMessage);
 			}
 			break;

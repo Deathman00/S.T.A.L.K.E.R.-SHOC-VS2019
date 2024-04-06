@@ -22,7 +22,7 @@
 /// Custom resources manager.
 class CResManager
 {
-public:
+  public:
 	/// Initialize custom resources.
 	explicit CResManager(HWND hwndParent);
 	/// Free custom resources.
@@ -67,7 +67,7 @@ public:
 	/// Sort arrows bitmap.
 	HIMAGELIST m_hSortArrows;
 
-private:
+  private:
 	/// Protects the class from being accidentally copied.
 	CResManager(const CResManager& rResManager);
 	/// Protects the class from being accidentally copied.

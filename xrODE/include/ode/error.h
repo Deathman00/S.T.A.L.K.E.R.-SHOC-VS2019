@@ -28,35 +28,36 @@
 #include "config.h"
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-/* all user defined error functions have this type. error and debug functions
- * should not return.
- */
-typedef void dMessageFunction (int errnum, const char *msg, va_list ap);
+	/* all user defined error functions have this type. error and debug functions
+	 * should not return.
+	 */
+	typedef void dMessageFunction(int errnum, const char* msg, va_list ap);
 
-/* set a new error, debug or warning handler. if fn is 0, the default handlers
- * are used.
- */
-void dSetErrorHandler (dMessageFunction *fn);
-void dSetDebugHandler (dMessageFunction *fn);
-void dSetMessageHandler (dMessageFunction *fn);
+	/* set a new error, debug or warning handler. if fn is 0, the default handlers
+	 * are used.
+	 */
+	void dSetErrorHandler(dMessageFunction* fn);
+	void dSetDebugHandler(dMessageFunction* fn);
+	void dSetMessageHandler(dMessageFunction* fn);
 
-/* return the current error, debug or warning handler. if the return value is
- * 0, the default handlers are in place.
- */
-dMessageFunction *dGetErrorHandler();
-dMessageFunction *dGetDebugHandler();
-dMessageFunction *dGetMessageHandler();
+	/* return the current error, debug or warning handler. if the return value is
+	 * 0, the default handlers are in place.
+	 */
+	dMessageFunction* dGetErrorHandler();
+	dMessageFunction* dGetDebugHandler();
+	dMessageFunction* dGetMessageHandler();
 
-/* generate a fatal error, debug trap or a message. */
-void _cdecl dError (int num, const char *msg, ...);
-void _cdecl dDebug (int num, const char *msg, ...);
-void _cdecl dMessage (int num, const char *msg, ...);
-//#define dError(a,b)
-//#define dDebug(a,b)
-//#define dMessage(a,b)
+	/* generate a fatal error, debug trap or a message. */
+	void _cdecl dError(int num, const char* msg, ...);
+	void _cdecl dDebug(int num, const char* msg, ...);
+	void _cdecl dMessage(int num, const char* msg, ...);
+	//#define dError(a,b)
+	//#define dDebug(a,b)
+	//#define dMessage(a,b)
 
 #ifdef __cplusplus
 }

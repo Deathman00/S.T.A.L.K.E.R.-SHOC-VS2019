@@ -21,14 +21,14 @@
 #endif
 
 /// Empty string data.
-CStrHolder::CStringData CStrHolder::m_sdEmptyData = { 0, 0, _T("") };
+CStrHolder::CStringData CStrHolder::m_sdEmptyData = {0, 0, _T("")};
 
 void CStrHolder::Release(void)
 {
 	if (m_pData != &m_sdEmptyData)
 	{
 		if (m_pData->m_nUsageCount == 1)
-			delete[] (PBYTE)m_pData;
+			delete[](PBYTE) m_pData;
 		else
 			--m_pData->m_nUsageCount;
 	}
@@ -44,7 +44,7 @@ void CStrHolder::InitData(PCSTR pszStrData)
 #ifdef _UNICODE
 		int nSize = MultiByteToWideChar(CP_ACP, 0, pszStrData, -1, NULL, 0);
 		m_pData = (CStringData*)new BYTE[sizeof(CStringData) + sizeof(WCHAR) * nSize];
-		if (! m_pData)
+		if (!m_pData)
 			RaiseException(STATUS_NO_MEMORY, 0, 0, NULL);
 		MultiByteToWideChar(CP_ACP, 0, pszStrData, -1, m_pData->m_szData, nSize);
 		m_pData->m_nLength = nSize - 1;
@@ -53,7 +53,7 @@ void CStrHolder::InitData(PCSTR pszStrData)
 		int nLength = strlen(pszStrData);
 		int nSize = nLength + 1;
 		m_pData = (CStringData*)new BYTE[sizeof(CStringData) + sizeof(CHAR) * nSize];
-		if (! m_pData)
+		if (!m_pData)
 			RaiseException(STATUS_NO_MEMORY, 0, 0, NULL);
 		strcpy_s(m_pData->m_szData, nSize, pszStrData);
 		m_pData->m_nLength = nLength;
@@ -75,7 +75,7 @@ void CStrHolder::InitData(PCWSTR pszStrData)
 		int nLength = wcslen(pszStrData);
 		int nSize = nLength + 1;
 		m_pData = (CStringData*)new BYTE[sizeof(CStringData) + sizeof(WCHAR) * nSize];
-		if (! m_pData)
+		if (!m_pData)
 			RaiseException(STATUS_NO_MEMORY, 0, 0, NULL);
 		wcscpy_s(m_pData->m_szData, nSize, pszStrData);
 		m_pData->m_nLength = nLength;
@@ -83,7 +83,7 @@ void CStrHolder::InitData(PCWSTR pszStrData)
 #else
 		int nSize = WideCharToMultiByte(CP_ACP, 0, pszStrData, -1, NULL, 0, NULL, NULL);
 		m_pData = (CStringData*)new BYTE[sizeof(CStringData) + sizeof(CHAR) * nSize];
-		if (! m_pData)
+		if (!m_pData)
 			RaiseException(STATUS_NO_MEMORY, 0, 0, NULL);
 		WideCharToMultiByte(CP_ACP, 0, pszStrData, -1, m_pData->m_szData, nSize, NULL, NULL);
 		m_pData->m_nLength = nSize - 1;
@@ -109,12 +109,12 @@ void CStrHolder::InitData(const CStrHolder& rStrHolder)
  */
 void CStrHolder::InitData(const CStrStream& rStrStream)
 {
-	if (! rStrStream.IsEmpty())
+	if (!rStrStream.IsEmpty())
 	{
 		int nLength = rStrStream.GetLength();
 		int nSize = nLength + 1;
 		m_pData = (CStringData*)new BYTE[sizeof(CStringData) + sizeof(WCHAR) * nSize];
-		if (! m_pData)
+		if (!m_pData)
 			RaiseException(STATUS_NO_MEMORY, 0, 0, NULL);
 		_tcscpy_s(m_pData->m_szData, nSize, (PCTSTR)rStrStream);
 		m_pData->m_nLength = nLength;

@@ -40,7 +40,8 @@ static CHyperLink g_hlEMail;
  */
 static void AboutDlg_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
 {
-	codeNotify; hwndCtl;
+	codeNotify;
+	hwndCtl;
 	switch (id)
 	{
 	case IDOK:
@@ -59,7 +60,8 @@ static void AboutDlg_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
  */
 static BOOL AboutDlg_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 {
-	lParam; hwndFocus;
+	lParam;
+	hwndFocus;
 
 	CenterWindow(hwnd, GetParent(hwnd));
 	HWND hwndCtl = GetDlgItem(hwnd, IDCANCEL);
@@ -97,10 +99,11 @@ INT_PTR CALLBACK AboutDlgProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
 {
 	switch (uMsg)
 	{
-	HANDLE_MSG(hwndDlg, WM_INITDIALOG, AboutDlg_OnInitDialog);
-	HANDLE_MSG(hwndDlg, WM_COMMAND, AboutDlg_OnCommand);
-	HANDLE_MSG(hwndDlg, WM_DESTROY, AboutDlg_OnDestroy);
-	default: return FALSE;
+		HANDLE_MSG(hwndDlg, WM_INITDIALOG, AboutDlg_OnInitDialog);
+		HANDLE_MSG(hwndDlg, WM_COMMAND, AboutDlg_OnCommand);
+		HANDLE_MSG(hwndDlg, WM_DESTROY, AboutDlg_OnDestroy);
+	default:
+		return FALSE;
 	}
 }
 

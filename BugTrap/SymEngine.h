@@ -27,32 +27,40 @@
 #endif
 
 /// Type definition of pointer to SymGetOptions() function.
-typedef DWORD (WINAPI *PFSymGetOptions)(VOID);
+typedef DWORD(WINAPI* PFSymGetOptions)(VOID);
 /// Type definition of pointer to SymSetOptions() function.
-typedef DWORD (WINAPI *PFSymSetOptions)(DWORD SymOptions);
+typedef DWORD(WINAPI* PFSymSetOptions)(DWORD SymOptions);
 /// Type definition of pointer to SymInitialize() function.
-typedef BOOL (WINAPI *PFSymInitialize)(HANDLE hProcess, PSTR UserSearchPath, BOOL fInvadeProcess);
+typedef BOOL(WINAPI* PFSymInitialize)(HANDLE hProcess, PSTR UserSearchPath, BOOL fInvadeProcess);
 /// Type definition of pointer to SymCleanup() function.
-typedef BOOL (WINAPI *PFSymCleanup)(HANDLE hProcess);
+typedef BOOL(WINAPI* PFSymCleanup)(HANDLE hProcess);
 /// Type definition of pointer to SymGetModuleBase64() function.
-typedef DWORD64 (WINAPI *PFSymGetModuleBase64)(HANDLE hProcess, DWORD64 dwAddr);
+typedef DWORD64(WINAPI* PFSymGetModuleBase64)(HANDLE hProcess, DWORD64 dwAddr);
 /// Type definition of pointer to SymFromAddr() function.
-typedef BOOL (WINAPI *PFSymFromAddr)(HANDLE hProcess, DWORD64 dwAddr, PDWORD64 pdwDisplacement, PSYMBOL_INFO Symbol);
+typedef BOOL(WINAPI* PFSymFromAddr)(HANDLE hProcess, DWORD64 dwAddr, PDWORD64 pdwDisplacement, PSYMBOL_INFO Symbol);
 /// Type definition of pointer to SymGetLineFromAddr64() function.
-typedef BOOL (WINAPI *PFSymGetLineFromAddr64)(HANDLE hProcess, DWORD64 dwAddr, PDWORD pdwDisplacement, PIMAGEHLP_LINE64 Line);
+typedef BOOL(WINAPI* PFSymGetLineFromAddr64)(HANDLE hProcess, DWORD64 dwAddr, PDWORD pdwDisplacement,
+											 PIMAGEHLP_LINE64 Line);
 /// Type definition of pointer to StackWalk64() function.
-typedef BOOL (WINAPI *PFStackWalk64)(DWORD dwMachineType, HANDLE hProcess, HANDLE hThread, LPSTACKFRAME64 StackFrame, PVOID ContextRecord, PREAD_PROCESS_MEMORY_ROUTINE64 ReadMemoryRoutine, PFUNCTION_TABLE_ACCESS_ROUTINE64 FunctionTableAccessRoutine, PGET_MODULE_BASE_ROUTINE64 GetModuleBaseRoutine, PTRANSLATE_ADDRESS_ROUTINE64 TranslateAddress);
+typedef BOOL(WINAPI* PFStackWalk64)(DWORD dwMachineType, HANDLE hProcess, HANDLE hThread, LPSTACKFRAME64 StackFrame,
+									PVOID ContextRecord, PREAD_PROCESS_MEMORY_ROUTINE64 ReadMemoryRoutine,
+									PFUNCTION_TABLE_ACCESS_ROUTINE64 FunctionTableAccessRoutine,
+									PGET_MODULE_BASE_ROUTINE64 GetModuleBaseRoutine,
+									PTRANSLATE_ADDRESS_ROUTINE64 TranslateAddress);
 /// Type definition of pointer to SymFunctionTableAccess64() function.
-typedef PVOID (WINAPI *PFSymFunctionTableAccess64)(HANDLE hProcess, DWORD64 AddrBase);
+typedef PVOID(WINAPI* PFSymFunctionTableAccess64)(HANDLE hProcess, DWORD64 AddrBase);
 /// Type definition of pointer to MiniDumpWriteDump() function.
-typedef BOOL (WINAPI *PFMiniDumpWriteDump)(HANDLE hProcess, DWORD ProcessId, HANDLE hFile, MINIDUMP_TYPE DumpType, CONST PMINIDUMP_EXCEPTION_INFORMATION ExceptionParam, CONST PMINIDUMP_USER_STREAM_INFORMATION UserEncoderParam, CONST PMINIDUMP_CALLBACK_INFORMATION CallbackParam);
+typedef BOOL(WINAPI* PFMiniDumpWriteDump)(HANDLE hProcess, DWORD ProcessId, HANDLE hFile, MINIDUMP_TYPE DumpType,
+										  CONST PMINIDUMP_EXCEPTION_INFORMATION ExceptionParam,
+										  CONST PMINIDUMP_USER_STREAM_INFORMATION UserEncoderParam,
+										  CONST PMINIDUMP_CALLBACK_INFORMATION CallbackParam);
 /// Opens an existing thread object.
-typedef HANDLE (WINAPI *PFOpenThread)(DWORD dwDesiredAccess, BOOL bInheritHandle, DWORD dwThreadId);
+typedef HANDLE(WINAPI* PFOpenThread)(DWORD dwDesiredAccess, BOOL bInheritHandle, DWORD dwThreadId);
 
 /// Low-level wrapper for Debug Help API.
 class CSymEngine
 {
-public:
+  public:
 	/// Type of exception.
 	enum EXCEPTION_TYPE
 	{
@@ -71,7 +79,7 @@ public:
 	/// Screen-shot object.
 	class CScreenShot
 	{
-	public:
+	  public:
 		/// Create the object.
 		CScreenShot(void);
 		/// Destroy the object.
@@ -79,7 +87,7 @@ public:
 		/// Write screen-shot to file.
 		BOOL WriteScreenShot(PCTSTR pszFileName);
 
-	private:
+	  private:
 		/// Protects the class from being accidentally copied.
 		CScreenShot(const CScreenShot& rScreenShot);
 		/// Protects the class from being accidentally copied.
@@ -96,12 +104,12 @@ public:
 	};
 
 	/// Smart pointer to the screen-shot.
-	typedef CSmartPtr<CScreenShot, CPtrLinkEngine<CScreenShot, CPtrTraits> > CScreenShotPtr;
+	typedef CSmartPtr<CScreenShot, CPtrLinkEngine<CScreenShot, CPtrTraits>> CScreenShotPtr;
 
 	/// Symbolic engine parameters.
 	class CEngineParams
 	{
-	public:
+	  public:
 		/// Initialize member variables.
 		CEngineParams(void);
 		/// Initialize member variables.
@@ -120,7 +128,7 @@ public:
 		/// Screen shot data.
 		CScreenShotPtr m_pScreenShot;
 
-	private:
+	  private:
 		/// Make a screen shot.
 		void MakeScreenShot(void);
 	};
@@ -150,7 +158,7 @@ public:
 		TCHAR m_szLineInfo[64];
 	};
 
-private:
+  private:
 	/// Context record of stack walk operations.
 	struct CStackWalkContext
 	{
@@ -238,7 +246,7 @@ private:
 	/// System error information.
 	struct CSysErrorInfo
 	{
-	public:
+	  public:
 		/// Initialize the object.
 		CSysErrorInfo(void);
 		/// De-initialize the object.
@@ -252,7 +260,7 @@ private:
 		/// Error description.
 		PTSTR m_pszMessageBuffer;
 
-	private:
+	  private:
 		/// Free member variables.
 		void FreeData(void);
 		/// Copy member variables.
@@ -369,7 +377,8 @@ private:
 	/// Get string representation of system exception code.
 	static PCTSTR ConvertExceptionCodeToString(DWORD dwException);
 	/// Adapter for ReadProcessMemory() function called from StackWalk64() function.
-	static BOOL CALLBACK ReadProcessMemoryProc64(HANDLE hProcess, DWORD64 pBaseAddress, PVOID pBuffer, DWORD nSize, PDWORD pNumberOfBytesRead);
+	static BOOL CALLBACK ReadProcessMemoryProc64(HANDLE hProcess, DWORD64 pBaseAddress, PVOID pBuffer, DWORD nSize,
+												 PDWORD pNumberOfBytesRead);
 	/// Safely copy memory blocks.
 	static void SafeCopy(PVOID pDestination, PVOID pSource, DWORD dwSize);
 	/// Add new file to zip archive.
@@ -492,7 +501,7 @@ private:
 	/// Protects the class from being accidentally copied.
 	CSymEngine& operator=(const CSymEngine& rSymEngine);
 
-public:
+  public:
 	/// Initialize the object.
 	explicit CSymEngine(const CEngineParams& rParams);
 	/// Destroy the object.
@@ -570,7 +579,8 @@ inline CSymEngine::CStackWalkContext::CStackWalkContext(void)
  * @param pNumberOfBytesRead - number of bytes read.
  * @return if the function succeeds, the return value is nonzero.
  */
-inline BOOL CALLBACK CSymEngine::ReadProcessMemoryProc64(HANDLE hProcess, DWORD64 pBaseAddress, PVOID pBuffer, DWORD nSize, PDWORD pNumberOfBytesRead)
+inline BOOL CALLBACK CSymEngine::ReadProcessMemoryProc64(HANDLE hProcess, DWORD64 pBaseAddress, PVOID pBuffer,
+														 DWORD nSize, PDWORD pNumberOfBytesRead)
 {
 	hProcess;
 	return ReadProcessMemory(GetCurrentProcess(), (PVOID)pBaseAddress, pBuffer, nSize, pNumberOfBytesRead);
@@ -586,8 +596,8 @@ inline BOOL CSymEngine::IsMiniDumpSupported(void) const
 
 inline CSymEngine::CScreenShot::~CScreenShot(void)
 {
-	delete[] (PBYTE)m_pBitsArray;
-	delete[] (PBYTE)m_pBmpInfo;
+	delete[](PBYTE) m_pBitsArray;
+	delete[](PBYTE) m_pBmpInfo;
 }
 
 inline CSymEngine::CSysErrorInfo::CSysErrorInfo(void)

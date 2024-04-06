@@ -32,18 +32,14 @@ some useful collision utility stuff.
 #include <ode/common.h>
 #include <ode/contact.h>
 
-
 // given a pointer `p' to a dContactGeom, return the dContactGeom at
 // p + skip bytes.
-#define CONTACT(p,skip) ((dContactGeom*) (((char*)p) + (skip)))
-
+#define CONTACT(p, skip) ((dContactGeom*)(((char*)p) + (skip)))
 
 // if the spheres (p1,r1) and (p2,r2) collide, set the contact `c' and
 // return 1, else return 0.
 
-int dCollideSpheres (dVector3 p1, dReal r1,
-		     dVector3 p2, dReal r2, dContactGeom *c);
-
+int dCollideSpheres(dVector3 p1, dReal r1, dVector3 p2, dReal r2, dContactGeom* c);
 
 // given two lines
 //    qa = pa + alpha* ua
@@ -52,10 +48,8 @@ int dCollideSpheres (dVector3 p1, dReal r1,
 // beta go from [-inf,inf], return alpha and beta such that qa and qb are
 // as close as possible
 
-void dLineClosestApproach (const dVector3 pa, const dVector3 ua,
-			   const dVector3 pb, const dVector3 ub,
-			   dReal *alpha, dReal *beta);
-
+void dLineClosestApproach(const dVector3 pa, const dVector3 ua, const dVector3 pb, const dVector3 ub, dReal* alpha,
+						  dReal* beta);
 
 // given a line segment p1-p2 and a box (center 'c', rotation 'R', side length
 // vector 'side'), compute the points of closest approach between the box
@@ -64,9 +58,7 @@ void dLineClosestApproach (const dVector3 pa, const dVector3 ua,
 // then the solution is not unique, but only one solution will be returned.
 // in this case the solution points will coincide.
 
-void dClosestLineBoxPoints (const dVector3 p1, const dVector3 p2,
-			    const dVector3 c, const dMatrix3 R,
-			    const dVector3 side,
-			    dVector3 lret, dVector3 bret);
+void dClosestLineBoxPoints(const dVector3 p1, const dVector3 p2, const dVector3 c, const dMatrix3 R,
+						   const dVector3 side, dVector3 lret, dVector3 bret);
 
 #endif

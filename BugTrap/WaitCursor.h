@@ -25,7 +25,7 @@
 /// Wait cursor class.
 class CWaitCursor
 {
-public:
+  public:
 	/// Initialize wait cursor.
 	CWaitCursor(void);
 	/// Initialize and immediately show wait cursor.
@@ -37,7 +37,7 @@ public:
 	/// Closes wait cursor.
 	void EndWait(void);
 
-private:
+  private:
 	/// Protect the class from being accidentally copied.
 	CWaitCursor(const CWaitCursor& rWaitCursor);
 	/// Protect the class from being accidentally copied.

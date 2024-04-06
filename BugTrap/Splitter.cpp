@@ -170,7 +170,8 @@ BOOL CSplitter::SetPanel(int iPanel, HWND hwndPanel)
 			CalcPanelRect(iPanel, rect, true);
 			HWND hwndPanelParent = GetParent(hwndPanel);
 			MapWindowRect(m_hwnd, hwndPanelParent, &rect);
-			SetWindowPos(hwndPanel, NULL, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, SWP_NOACTIVATE | SWP_NOOWNERZORDER | SWP_NOZORDER);
+			SetWindowPos(hwndPanel, NULL, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top,
+						 SWP_NOACTIVATE | SWP_NOOWNERZORDER | SWP_NOZORDER);
 		}
 		return TRUE;
 	}
@@ -251,7 +252,8 @@ void CSplitter::UpdateLayout(void)
 				CalcPanelRect(iPanel, rect, true);
 				HWND hwndPanelParent = GetParent(hwndPanel);
 				MapWindowRect(m_hwnd, hwndPanelParent, &rect);
-				DeferWindowPos(hdwp, hwndPanel, NULL, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, SWP_NOACTIVATE | SWP_NOOWNERZORDER | SWP_NOZORDER);
+				DeferWindowPos(hdwp, hwndPanel, NULL, rect.left, rect.top, rect.right - rect.left,
+							   rect.bottom - rect.top, SWP_NOACTIVATE | SWP_NOOWNERZORDER | SWP_NOZORDER);
 			}
 		}
 		EndDeferWindowPos(hdwp);
@@ -324,9 +326,9 @@ LRESULT CALLBACK CSplitter::SplitterWndProc(HWND hwnd, UINT uMsg, WPARAM wParam,
 	HDC hdc;
 	DWORD dwResult;
 
-	CSplitter* _this  = (CSplitter*)GetWindowLongPtr(hwnd, GWL_USERDATA);
+	CSplitter* _this = (CSplitter*)GetWindowLongPtr(hwnd, GWL_USERDATA);
 	_ASSERTE(_this != NULL);
-	switch(uMsg)
+	switch (uMsg)
 	{
 	case WM_NCHITTEST:
 		if (GetCapture() == hwnd)
@@ -342,7 +344,8 @@ LRESULT CALLBACK CSplitter::SplitterWndProc(HWND hwnd, UINT uMsg, WPARAM wParam,
 		point.y = GET_Y_LPARAM(dwResult);
 		ScreenToClient(hwnd, &point);
 		if (_this->HitTest(point))
-			hCursor = _this->m_eDirection == SD_VERTICAL ? g_pResManager->m_hUpDownCursor : g_pResManager->m_hLeftRightCursor;
+			hCursor =
+				_this->m_eDirection == SD_VERTICAL ? g_pResManager->m_hUpDownCursor : g_pResManager->m_hLeftRightCursor;
 		else
 			hCursor = g_pResManager->m_hArrowCursor;
 		if (hCursor)
@@ -381,7 +384,7 @@ LRESULT CALLBACK CSplitter::SplitterWndProc(HWND hwnd, UINT uMsg, WPARAM wParam,
 		return 0;
 	case WM_PAINT:
 		hdc = (HDC)wParam;
-		if (! hdc)
+		if (!hdc)
 		{
 			hdc = BeginPaint(hwnd, &ps);
 			if (hdc)

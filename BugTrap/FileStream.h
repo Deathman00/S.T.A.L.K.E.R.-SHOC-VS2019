@@ -19,11 +19,12 @@
 /// File stream class.
 class CFileStream : public CStream
 {
-public:
+  public:
 	/// Initialize the object.
 	explicit CFileStream(int nBufferSize = 1024);
 	/// Initialize the object.
-	CFileStream(PCTSTR pszFileName, DWORD dwCreationDisposition, DWORD dwDesiredAccess = GENERIC_READ | GENERIC_WRITE, DWORD dwShareMode = 0, DWORD dwFlagsAndAttributes = FILE_ATTRIBUTE_NORMAL, int nBufferSize = 1024);
+	CFileStream(PCTSTR pszFileName, DWORD dwCreationDisposition, DWORD dwDesiredAccess = GENERIC_READ | GENERIC_WRITE,
+				DWORD dwShareMode = 0, DWORD dwFlagsAndAttributes = FILE_ATTRIBUTE_NORMAL, int nBufferSize = 1024);
 	/// Initialize the object.
 	CFileStream(HANDLE hFile, int nBufferSize = 1024);
 	/// Destroy the object.
@@ -31,7 +32,8 @@ public:
 	/// Get list of supported features.
 	virtual unsigned GetFeatures(void) const;
 	/// Open a file.
-	bool Open(PCTSTR pszFileName, DWORD dwCreationDisposition, DWORD dwDesiredAccess = GENERIC_READ | GENERIC_WRITE, DWORD dwShareMode = 0, DWORD dwFlagsAndAttributes = FILE_ATTRIBUTE_NORMAL);
+	bool Open(PCTSTR pszFileName, DWORD dwCreationDisposition, DWORD dwDesiredAccess = GENERIC_READ | GENERIC_WRITE,
+			  DWORD dwShareMode = 0, DWORD dwFlagsAndAttributes = FILE_ATTRIBUTE_NORMAL);
 	/// Return true if stream is open.
 	virtual bool IsOpen(void) const;
 	/// Closes the stream.
@@ -63,7 +65,7 @@ public:
 	/// Get buffer size.
 	int GetBufferSize(void) const;
 
-private:
+  private:
 	/// Object can't be copied.
 	CFileStream(const CFileStream& rStream);
 	/// Object can't be copied.
@@ -128,7 +130,8 @@ inline CFileStream::CFileStream(int nBufferSize)
  * @param dwFlagsAndAttributes - the file attributes and flags.
  * @param nBufferSize - buffer size.
  */
-inline CFileStream::CFileStream(PCTSTR pszFileName, DWORD dwCreationDisposition, DWORD dwDesiredAccess, DWORD dwShareMode, DWORD dwFlagsAndAttributes, int nBufferSize)
+inline CFileStream::CFileStream(PCTSTR pszFileName, DWORD dwCreationDisposition, DWORD dwDesiredAccess,
+								DWORD dwShareMode, DWORD dwFlagsAndAttributes, int nBufferSize)
 {
 	InitVars(nBufferSize);
 	Open(pszFileName, dwCreationDisposition, dwDesiredAccess, dwShareMode, dwFlagsAndAttributes);
@@ -165,7 +168,8 @@ inline void CFileStream::InitVars(int nBufferSize)
  */
 inline unsigned CFileStream::GetFeatures(void) const
 {
-	return (SF_ISOPEN | SF_CLOSE | SF_GETNAME | SF_GETLASTERROR | SF_GETLENGTH | SF_SETLENGTH | SF_GETPOSITION | SF_SETPOSITION);
+	return (SF_ISOPEN | SF_CLOSE | SF_GETNAME | SF_GETLASTERROR | SF_GETLENGTH | SF_SETLENGTH | SF_GETPOSITION |
+			SF_SETPOSITION);
 }
 
 /**

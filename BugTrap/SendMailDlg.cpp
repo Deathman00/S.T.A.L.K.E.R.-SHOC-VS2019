@@ -31,15 +31,13 @@
  */
 
 /// Control layouts for Send Mail dialog.
-static LAYOUT_INFO g_arrSendMailLayout[] =
-{
-	LAYOUT_INFO(IDC_RECIPIENT,  ALIGN_LEFT,  ALIGN_TOP,    ALIGN_RIGHT, ALIGN_TOP),
-	LAYOUT_INFO(IDC_ATTACHMENT, ALIGN_LEFT,  ALIGN_TOP,    ALIGN_RIGHT, ALIGN_TOP),
-	LAYOUT_INFO(IDC_SUBJECT,    ALIGN_LEFT,  ALIGN_TOP,    ALIGN_RIGHT, ALIGN_TOP),
-	LAYOUT_INFO(IDC_BODY,       ALIGN_LEFT,  ALIGN_TOP,    ALIGN_RIGHT, ALIGN_BOTTOM),
-	LAYOUT_INFO(IDOK,           ALIGN_RIGHT, ALIGN_BOTTOM, ALIGN_RIGHT, ALIGN_BOTTOM),
-	LAYOUT_INFO(IDCANCEL,       ALIGN_RIGHT, ALIGN_BOTTOM, ALIGN_RIGHT, ALIGN_BOTTOM)
-};
+static LAYOUT_INFO g_arrSendMailLayout[] = {
+	LAYOUT_INFO(IDC_RECIPIENT, ALIGN_LEFT, ALIGN_TOP, ALIGN_RIGHT, ALIGN_TOP),
+	LAYOUT_INFO(IDC_ATTACHMENT, ALIGN_LEFT, ALIGN_TOP, ALIGN_RIGHT, ALIGN_TOP),
+	LAYOUT_INFO(IDC_SUBJECT, ALIGN_LEFT, ALIGN_TOP, ALIGN_RIGHT, ALIGN_TOP),
+	LAYOUT_INFO(IDC_BODY, ALIGN_LEFT, ALIGN_TOP, ALIGN_RIGHT, ALIGN_BOTTOM),
+	LAYOUT_INFO(IDOK, ALIGN_RIGHT, ALIGN_BOTTOM, ALIGN_RIGHT, ALIGN_BOTTOM),
+	LAYOUT_INFO(IDCANCEL, ALIGN_RIGHT, ALIGN_BOTTOM, ALIGN_RIGHT, ALIGN_BOTTOM)};
 
 /// Dialog layout manager.
 static CLayoutManager g_LayoutMgr;
@@ -64,21 +62,21 @@ static void SendMailDlg_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNoti
 			hwndCtl = GetDlgItem(hwnd, IDC_SUBJECT);
 			nTextLength = GetWindowTextLength(hwndCtl) + 1;
 			pszSubject = new TCHAR[nTextLength];
-			if (! pszSubject)
+			if (!pszSubject)
 				return;
 			GetWindowText(hwndCtl, pszSubject, nTextLength);
 
 			hwndCtl = GetDlgItem(hwnd, IDC_BODY);
 			nTextLength = GetWindowTextLength(hwndCtl) + 1;
 			pszMessage = new TCHAR[nTextLength];
-			if (! pszMessage)
+			if (!pszMessage)
 			{
 				delete[] pszSubject;
 				return;
 			}
 			GetWindowText(hwndCtl, pszMessage, nTextLength);
 
-			if (! SendEMail(hwnd, pszSubject, pszMessage))
+			if (!SendEMail(hwnd, pszSubject, pszMessage))
 			{
 				SetForegroundWindow(hwnd);
 				TCHAR szProjectName[32], szMessageText[128];
@@ -108,7 +106,8 @@ static void SendMailDlg_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNoti
  */
 static BOOL SendMailDlg_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 {
-	lParam; hwndFocus;
+	lParam;
+	hwndFocus;
 	HWND hwndCtl;
 	_ASSERTE(g_pResManager != NULL);
 	if (g_pResManager->m_hBigAppIcon)
@@ -148,7 +147,10 @@ static BOOL SendMailDlg_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
  */
 static void SendMailDlg_OnSize(HWND hwnd, UINT state, int cx, int cy)
 {
-	hwnd; cx; cy; state;
+	hwnd;
+	cx;
+	cy;
+	state;
 	g_LayoutMgr.ApplyLayout();
 }
 
@@ -175,11 +177,12 @@ INT_PTR CALLBACK SendMailDlgProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM 
 {
 	switch (uMsg)
 	{
-	HANDLE_MSG(hwndDlg, WM_INITDIALOG, SendMailDlg_OnInitDialog);
-	HANDLE_MSG(hwndDlg, WM_COMMAND, SendMailDlg_OnCommand);
-	HANDLE_MSG(hwndDlg, WM_SIZE, SendMailDlg_OnSize);
-	HANDLE_MSG(hwndDlg, WM_GETMINMAXINFO, SendMailDlg_OnGetMinMaxInfo);
-	default: return FALSE;
+		HANDLE_MSG(hwndDlg, WM_INITDIALOG, SendMailDlg_OnInitDialog);
+		HANDLE_MSG(hwndDlg, WM_COMMAND, SendMailDlg_OnCommand);
+		HANDLE_MSG(hwndDlg, WM_SIZE, SendMailDlg_OnSize);
+		HANDLE_MSG(hwndDlg, WM_GETMINMAXINFO, SendMailDlg_OnGetMinMaxInfo);
+	default:
+		return FALSE;
 	}
 }
 

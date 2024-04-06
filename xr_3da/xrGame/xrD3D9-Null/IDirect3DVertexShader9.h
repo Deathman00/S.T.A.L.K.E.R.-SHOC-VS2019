@@ -1,24 +1,26 @@
 
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-	class xrIDirect3DVertexShader9: public IDirect3DVertexShader9
+	class xrIDirect3DVertexShader9 : public IDirect3DVertexShader9
 	{
-	protected:
-		LONG		m_refCount;
-		IDirect3DDevice9*	m_pIDirect3DDevice9;
-	public:
-		xrIDirect3DVertexShader9(IDirect3DDevice9*	pIDirect3DDevice9);
+	  protected:
+		LONG m_refCount;
+		IDirect3DDevice9* m_pIDirect3DDevice9;
+
+	  public:
+		xrIDirect3DVertexShader9(IDirect3DDevice9* pIDirect3DDevice9);
 		/*** IUnknown methods ***/
-		HRESULT			__stdcall	QueryInterface(REFIID riid, void** ppvObj);
-		ULONG			__stdcall	AddRef();
-		ULONG			__stdcall	Release();
+		HRESULT __stdcall QueryInterface(REFIID riid, void** ppvObj);
+		ULONG __stdcall AddRef();
+		ULONG __stdcall Release();
 
 		/*** IDirect3DVertexDeclaration9 methods ***/
-		HRESULT			__stdcall	GetDevice( IDirect3DDevice9** ppDevice);
-		HRESULT			__stdcall	GetFunction(void*,UINT* pSizeOfData);		
+		HRESULT __stdcall GetDevice(IDirect3DDevice9** ppDevice);
+		HRESULT __stdcall GetFunction(void*, UINT* pSizeOfData);
 	};
 
 #ifdef __cplusplus

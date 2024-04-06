@@ -18,145 +18,172 @@
 #pragma once
 
 #ifndef _BUGTRAP_H_
- #error Include BugTrap.h first
+#error Include BugTrap.h first
 #endif // _BUGTRAP_H_
 
 #ifndef __cplusplus
- #error C++ compiler is required
+#error C++ compiler is required
 #endif // __cplusplus
 
 /// C++ wrapper for tracing API.
-class BTTrace {
-public:
+class BTTrace
+{
+  public:
 	/// Initialize the object.
-	BTTrace(void) {
+	BTTrace(void)
+	{
 		Detach();
 	}
 
 	/// Initialize the object.
-	BTTrace(INT_PTR iHandle) {
+	BTTrace(INT_PTR iHandle)
+	{
 		m_eDefaultLogLevel = BTLL_INFO;
 		m_iHandle = iHandle;
 	}
 
 	/// Initialize the object.
-	BTTrace(LPCTSTR pszLogFileName, BUGTRAP_LOGFORMAT eLogFormat) {
+	BTTrace(LPCTSTR pszLogFileName, BUGTRAP_LOGFORMAT eLogFormat)
+	{
 		m_eDefaultLogLevel = BTLL_INFO;
 		m_iHandle = BT_OpenLogFile(pszLogFileName, eLogFormat);
 	}
 
 	/// Destroy the object.
-	~BTTrace(void) {
+	~BTTrace(void)
+	{
 		Close();
 	}
 
 	/// Open log file.
-	INT_PTR Open(LPCTSTR pszLogFileName, BUGTRAP_LOGFORMAT eLogFormat) {
+	INT_PTR Open(LPCTSTR pszLogFileName, BUGTRAP_LOGFORMAT eLogFormat)
+	{
 		Close();
 		return (m_iHandle = BT_OpenLogFile(pszLogFileName, eLogFormat));
 	}
 
 	/// Attach log file handle.
-	void Attach(INT_PTR iHandle) {
+	void Attach(INT_PTR iHandle)
+	{
 		m_iHandle = iHandle;
 	}
 
 	/// Detach log file handle.
-	void Detach(void) {
+	void Detach(void)
+	{
 		m_eDefaultLogLevel = BTLL_INFO;
 		m_iHandle = NULL;
 	}
 
 	/// Close log file.
-	void Close(void) {
-		if (m_iHandle != NULL) {
+	void Close(void)
+	{
+		if (m_iHandle != NULL)
+		{
 			BT_CloseLogFile(m_iHandle);
 			Detach();
 		}
 	}
 
 	/// Get default log level.
-	BUGTRAP_LOGLEVEL GetDefaultLogLevel(void) const {
+	BUGTRAP_LOGLEVEL GetDefaultLogLevel(void) const
+	{
 		return m_eDefaultLogLevel;
 	}
 
 	/// Set default log level.
-	void SetDefaultLogLevel(BUGTRAP_LOGLEVEL eDefaultLogLevel) {
+	void SetDefaultLogLevel(BUGTRAP_LOGLEVEL eDefaultLogLevel)
+	{
 		m_eDefaultLogLevel = eDefaultLogLevel;
 	}
 
 	/// Flush contents of the log file.
-	void Flush(void) const {
+	void Flush(void) const
+	{
 		BT_FlushLogFile(m_iHandle);
 	}
 
 	/// Get custom log file handle.
-	INT_PTR GetHandle(void) const {
+	INT_PTR GetHandle(void) const
+	{
 		return m_iHandle;
 	}
 
 	/// Get custom log file name.
-	LPCTSTR GetFileName(void) const {
+	LPCTSTR GetFileName(void) const
+	{
 		return BT_GetLogFileName(m_iHandle);
 	}
 
 	/// Get custom log file size in records.
-	DWORD GetLogSizeInEntries(void) const {
+	DWORD GetLogSizeInEntries(void) const
+	{
 		return BT_GetLogSizeInEntries(m_iHandle);
 	}
 
 	/// Set custom log file size in records.
-	void SetLogSizeInEntries(DWORD dwSize) const {
+	void SetLogSizeInEntries(DWORD dwSize) const
+	{
 		BT_SetLogSizeInEntries(m_iHandle, dwSize);
 	}
 
 	/// Get custom log file size in bytes.
-	DWORD GetLogSizeInBytes(void) const {
+	DWORD GetLogSizeInBytes(void) const
+	{
 		return BT_GetLogSizeInBytes(m_iHandle);
 	}
 
 	/// Set custom log file size in bytes.
-	void SetLogSizeInBytes(DWORD dwSize) const {
+	void SetLogSizeInBytes(DWORD dwSize) const
+	{
 		BT_SetLogSizeInBytes(m_iHandle, dwSize);
 	}
 
 	/// Return current set of log flags.
-	DWORD GetLogFlags(void) const {
+	DWORD GetLogFlags(void) const
+	{
 		return BT_GetLogFlags(m_iHandle);
 	}
 
 	/// Set new set of log flags.
-	void SetLogFlags(DWORD dwLogFlags) const {
+	void SetLogFlags(DWORD dwLogFlags) const
+	{
 		BT_SetLogFlags(m_iHandle, dwLogFlags);
 	}
 
 	/// Return minimal log level accepted by tracing functions.
-	BUGTRAP_LOGLEVEL GetLogLevel(void) const {
+	BUGTRAP_LOGLEVEL GetLogLevel(void) const
+	{
 		return BT_GetLogLevel(m_iHandle);
 	}
 
 	/// Set minimal log level accepted by tracing functions.
-	void SetLogLevel(BUGTRAP_LOGLEVEL eLogLevel) const {
+	void SetLogLevel(BUGTRAP_LOGLEVEL eLogLevel) const
+	{
 		BT_SetLogLevel(m_iHandle, eLogLevel);
 	}
 
 	/// Get log echo mode.
-	DWORD GetLogEchoMode(void) const {
+	DWORD GetLogEchoMode(void) const
+	{
 		return BT_GetLogEchoMode(m_iHandle);
 	}
 
 	/// Set log echo mode.
-	void SetLogEchoMode(DWORD dwLogEchoMode) const {
+	void SetLogEchoMode(DWORD dwLogEchoMode) const
+	{
 		BT_SetLogEchoMode(m_iHandle, dwLogEchoMode);
 	}
 
 	/// Clear log file.
-	void Clear(void) const {
+	void Clear(void) const
+	{
 		BT_ClearLog(m_iHandle);
 	}
 
 	/// Insert entry into the beginning of custom log file.
-	void InsertF(BUGTRAP_LOGLEVEL eLogLevel, LPCTSTR pszFormat, ...) const {
+	void InsertF(BUGTRAP_LOGLEVEL eLogLevel, LPCTSTR pszFormat, ...) const
+	{
 		va_list argList;
 		va_start(argList, pszFormat);
 		BT_InsLogEntryV(m_iHandle, eLogLevel, pszFormat, argList);
@@ -164,7 +191,8 @@ public:
 	}
 
 	/// Insert entry into the beginning of custom log file.
-	void InsertF(LPCTSTR pszFormat, ...) const {
+	void InsertF(LPCTSTR pszFormat, ...) const
+	{
 		va_list argList;
 		va_start(argList, pszFormat);
 		BT_InsLogEntryV(m_iHandle, m_eDefaultLogLevel, pszFormat, argList);
@@ -172,27 +200,32 @@ public:
 	}
 
 	/// Insert entry into the beginning of custom log file.
-	void InsertV(BUGTRAP_LOGLEVEL eLogLevel, LPCTSTR pszFormat, va_list argList) const {
+	void InsertV(BUGTRAP_LOGLEVEL eLogLevel, LPCTSTR pszFormat, va_list argList) const
+	{
 		BT_InsLogEntryV(m_iHandle, eLogLevel, pszFormat, argList);
 	}
 
 	/// Insert entry into the beginning of custom log file.
-	void InsertV(LPCTSTR pszFormat, va_list argList) const {
+	void InsertV(LPCTSTR pszFormat, va_list argList) const
+	{
 		BT_InsLogEntryV(m_iHandle, m_eDefaultLogLevel, pszFormat, argList);
 	}
 
 	/// Insert entry into the beginning of custom log file.
-	void Insert(BUGTRAP_LOGLEVEL eLogLevel, LPCTSTR pszEntry) const {
+	void Insert(BUGTRAP_LOGLEVEL eLogLevel, LPCTSTR pszEntry) const
+	{
 		BT_InsLogEntry(m_iHandle, eLogLevel, pszEntry);
 	}
 
 	/// Insert entry into the beginning of custom log file.
-	void Insert(LPCTSTR pszEntry) const {
+	void Insert(LPCTSTR pszEntry) const
+	{
 		BT_InsLogEntry(m_iHandle, m_eDefaultLogLevel, pszEntry);
 	}
 
 	/// Append entry to the end of custom log file.
-	void AppendF(BUGTRAP_LOGLEVEL eLogLevel, LPCTSTR pszFormat, ...) const {
+	void AppendF(BUGTRAP_LOGLEVEL eLogLevel, LPCTSTR pszFormat, ...) const
+	{
 		va_list argList;
 		va_start(argList, pszFormat);
 		BT_AppLogEntryV(m_iHandle, eLogLevel, pszFormat, argList);
@@ -200,7 +233,8 @@ public:
 	}
 
 	/// Append entry to the end of custom log file.
-	void AppendF(LPCTSTR pszFormat, ...) const {
+	void AppendF(LPCTSTR pszFormat, ...) const
+	{
 		va_list argList;
 		va_start(argList, pszFormat);
 		BT_AppLogEntryV(m_iHandle, m_eDefaultLogLevel, pszFormat, argList);
@@ -208,26 +242,30 @@ public:
 	}
 
 	/// Append entry to the end of custom log file.
-	void AppendV(BUGTRAP_LOGLEVEL eLogLevel, LPCTSTR pszFormat, va_list argList) const {
+	void AppendV(BUGTRAP_LOGLEVEL eLogLevel, LPCTSTR pszFormat, va_list argList) const
+	{
 		BT_AppLogEntryV(m_iHandle, eLogLevel, pszFormat, argList);
 	}
 
 	/// Append entry to the end of custom log file.
-	void AppendV(LPCTSTR pszFormat, va_list argList) const {
+	void AppendV(LPCTSTR pszFormat, va_list argList) const
+	{
 		BT_AppLogEntryV(m_iHandle, m_eDefaultLogLevel, pszFormat, argList);
 	}
 
 	/// Append entry to the end of custom log file.
-	void Append(BUGTRAP_LOGLEVEL eLogLevel, LPCTSTR pszEntry) const {
+	void Append(BUGTRAP_LOGLEVEL eLogLevel, LPCTSTR pszEntry) const
+	{
 		BT_AppLogEntry(m_iHandle, eLogLevel, pszEntry);
 	}
 
 	/// Append entry to the end of custom log file.
-	void Append(LPCTSTR pszEntry) const {
+	void Append(LPCTSTR pszEntry) const
+	{
 		BT_AppLogEntry(m_iHandle, m_eDefaultLogLevel, pszEntry);
 	}
 
-private:
+  private:
 	/// Prevent object from being accidentally copied.
 	BTTrace(const BTTrace& rTrace);
 	/// Prevent object from being accidentally copied.

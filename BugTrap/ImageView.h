@@ -17,7 +17,7 @@
 /// Image view control class.
 class CImageView
 {
-public:
+  public:
 	/// Initialize the object.
 	CImageView(void);
 	/// De-initialize the object.
@@ -51,7 +51,7 @@ public:
 		CACHE_SIZE = LINE_WIDTH * NUMBER_OF_CACHED_LINES
 	};
 
-private:
+  private:
 	/// Protect the class from being accidentally copied.
 	CImageView(const CImageView& rImageView);
 	/// Protect the class from being accidentally copied.

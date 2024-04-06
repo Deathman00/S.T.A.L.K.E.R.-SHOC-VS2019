@@ -19,7 +19,7 @@ class CStrHolder;
 /// Dynamic string builder.
 class CStrStream
 {
-public:
+  public:
 	/// Initialize the object.
 	CStrStream(void);
 	/// Initialize the object.
@@ -107,7 +107,7 @@ public:
 	/// Object comparison.
 	friend bool operator>=(const CStrStream& rStrStream1, const CStrStream& rStrStream2);
 
-private:
+  private:
 	/// Clear internal data.
 	void InitBuffer(void);
 	/// Initialize new string.

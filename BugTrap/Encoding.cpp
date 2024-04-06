@@ -23,21 +23,21 @@
 #endif
 
 /// Maximal 7-bit ASCII value.
-#define ASCII_MAX              0x007F
+#define ASCII_MAX 0x007F
 /// Non-ASCII character value.
-#define NON_ASCII_CHAR         0x80
+#define NON_ASCII_CHAR 0x80
 /// Maximal UTF-8 2-byte sequence (32 * 64 = 2048).
-#define UTF8_2_MAX             0x07FF
+#define UTF8_2_MAX 0x07FF
 /// Maximal UTF-8 3-byte sequence (16 * 64 * 64 = 2048).
-#define UTF8_3_MAX             0xFFFF
+#define UTF8_3_MAX 0xFFFF
 /// Prefix of UTF-8 2-byte sequence.
-#define UTF8_1ST_OF_2          0xC0    // 110xxxxx
+#define UTF8_1ST_OF_2 0xC0 // 110xxxxx
 /// Prefix of UTF-8 3-byte sequence.
-#define UTF8_1ST_OF_3          0xE0    // 1110xxxx
+#define UTF8_1ST_OF_3 0xE0 // 1110xxxx
 /// Prefix of UTF-8 4-byte sequence.
-#define UTF8_1ST_OF_4          0xF0    // 11110xxx
+#define UTF8_1ST_OF_4 0xF0 // 11110xxx
 /// Prefix of UTF-8 bytes from sequence.
-#define UTF8_TRAIL             0x80    // 10xxxxxx
+#define UTF8_TRAIL 0x80 // 10xxxxxx
 
 /// Single object instance.
 CUTF8Decoder CUTF8Decoder::m_instance;
@@ -67,7 +67,8 @@ static DWORD GetUnicodeValue(const TCHAR* pchValue, int& nCharSize)
 	if ((HIGH_SURROGATE_START <= arrUnicodeChar[0] && arrUnicodeChar[0] <= HIGH_SURROGATE_END) &&
 		(LOW_SURROGATE_START <= arrUnicodeChar[1] && arrUnicodeChar[1] <= LOW_SURROGATE_END))
 	{
-		dwUnicodeChar = ((arrUnicodeChar[0] - HIGH_SURROGATE_START) << 10) + (arrUnicodeChar[1] - LOW_SURROGATE_START) + 0x10000;
+		dwUnicodeChar =
+			((arrUnicodeChar[0] - HIGH_SURROGATE_START) << 10) + (arrUnicodeChar[1] - LOW_SURROGATE_START) + 0x10000;
 #ifdef _UNICODE
 		nCharSize = 2;
 #endif
@@ -95,43 +96,43 @@ bool CUTF8EncStream::WriteUTF8Bin(DWORD dwUnicodeChar)
 	if (dwUnicodeChar <= ASCII_MAX)
 	{
 		// 7-bit ASCII data is stored as-is
-		if (! m_pOutputStream->WriteByte((BYTE)dwUnicodeChar))
+		if (!m_pOutputStream->WriteByte((BYTE)dwUnicodeChar))
 			return false;
 	}
 	else if (dwUnicodeChar <= UTF8_2_MAX)
 	{
 		// Use upper 5 bits in first byte
-		if (! m_pOutputStream->WriteByte((BYTE)(UTF8_1ST_OF_2 | ((dwUnicodeChar >> 6) & 0x1F))))
+		if (!m_pOutputStream->WriteByte((BYTE)(UTF8_1ST_OF_2 | ((dwUnicodeChar >> 6) & 0x1F))))
 			return false;
 		// Use lower 6 bits in second byte
-		if (! m_pOutputStream->WriteByte((BYTE)(UTF8_TRAIL | (dwUnicodeChar & 0x3F))))
+		if (!m_pOutputStream->WriteByte((BYTE)(UTF8_TRAIL | (dwUnicodeChar & 0x3F))))
 			return false;
 	}
 	else if (dwUnicodeChar <= UTF8_3_MAX)
 	{
 		// Use upper 4 bits in first byte
-		if (! m_pOutputStream->WriteByte((BYTE)(UTF8_1ST_OF_3 | ((dwUnicodeChar >> 12) & 0x0F))))
+		if (!m_pOutputStream->WriteByte((BYTE)(UTF8_1ST_OF_3 | ((dwUnicodeChar >> 12) & 0x0F))))
 			return false;
 		// Use middle 6 bits in second byte
-		if (! m_pOutputStream->WriteByte((BYTE)(UTF8_TRAIL | ((dwUnicodeChar >> 6) & 0x3F))))
+		if (!m_pOutputStream->WriteByte((BYTE)(UTF8_TRAIL | ((dwUnicodeChar >> 6) & 0x3F))))
 			return false;
 		// Use lower 6 bits in third byte
-		if (! m_pOutputStream->WriteByte((BYTE)(UTF8_TRAIL | (dwUnicodeChar & 0x3F))))
+		if (!m_pOutputStream->WriteByte((BYTE)(UTF8_TRAIL | (dwUnicodeChar & 0x3F))))
 			return false;
 	}
 	else
 	{
 		// Use upper 3 bits in first byte
-		if (! m_pOutputStream->WriteByte((BYTE)(UTF8_1ST_OF_4 | ((dwUnicodeChar >> 18) & 0x07))))
+		if (!m_pOutputStream->WriteByte((BYTE)(UTF8_1ST_OF_4 | ((dwUnicodeChar >> 18) & 0x07))))
 			return false;
 		// Use middle 6 bits in second byte
-		if (! m_pOutputStream->WriteByte((BYTE)(UTF8_TRAIL | ((dwUnicodeChar >> 12) & 0x3F))))
+		if (!m_pOutputStream->WriteByte((BYTE)(UTF8_TRAIL | ((dwUnicodeChar >> 12) & 0x3F))))
 			return false;
 		// Use middle 6 bits in third byte
-		if (! m_pOutputStream->WriteByte((BYTE)(UTF8_TRAIL | ((dwUnicodeChar >> 6) & 0x3F))))
+		if (!m_pOutputStream->WriteByte((BYTE)(UTF8_TRAIL | ((dwUnicodeChar >> 6) & 0x3F))))
 			return false;
 		// Use lower 6 bits in fourth byte
-		if (! m_pOutputStream->WriteByte((BYTE)(UTF8_TRAIL | (dwUnicodeChar & 0x3F))))
+		if (!m_pOutputStream->WriteByte((BYTE)(UTF8_TRAIL | (dwUnicodeChar & 0x3F))))
 			return false;
 	}
 	return true;
@@ -148,19 +149,19 @@ bool CUTF8EncStream::WriteUTF8Hex(DWORD dwUnicodeChar)
 	int nLength;
 	if (dwUnicodeChar <= ASCII_MAX)
 	{
-		if (! m_pOutputStream->WriteByte((BYTE)dwUnicodeChar))
+		if (!m_pOutputStream->WriteByte((BYTE)dwUnicodeChar))
 			return false;
 	}
 	else if (dwUnicodeChar <= UTF8_3_MAX)
 	{
 		nLength = sprintf_s(szHexValue, countof(szHexValue), "&#x%04lX;", dwUnicodeChar);
-		if (! m_pOutputStream->WriteBytes((const BYTE*)szHexValue, nLength))
+		if (!m_pOutputStream->WriteBytes((const BYTE*)szHexValue, nLength))
 			return false;
 	}
 	else
 	{
 		nLength = sprintf_s(szHexValue, countof(szHexValue), "&#x%06lX;", dwUnicodeChar);
-		if (! m_pOutputStream->WriteBytes((const BYTE*)szHexValue, nLength))
+		if (!m_pOutputStream->WriteBytes((const BYTE*)szHexValue, nLength))
 			return false;
 	}
 	return true;
@@ -176,7 +177,7 @@ bool CUTF8EncStream::WriteUTF8Bin(PCTSTR pszString)
 	while (pszString[nPosition] != _T('\0'))
 	{
 		int nCharSize;
-		if (! WriteUTF8Bin(pszString + nPosition, nCharSize))
+		if (!WriteUTF8Bin(pszString + nPosition, nCharSize))
 			return false;
 		nPosition += nCharSize;
 	}
@@ -193,7 +194,7 @@ bool CUTF8EncStream::WriteUTF8Hex(PCTSTR pszString)
 	while (pszString[nPosition] != _T('\0'))
 	{
 		int nCharSize;
-		if (! WriteUTF8Hex(pszString + nPosition, nCharSize))
+		if (!WriteUTF8Hex(pszString + nPosition, nCharSize))
 			return false;
 		nPosition += nCharSize;
 	}
@@ -290,8 +291,10 @@ bool WriteBinaryString(CUTF8EncStream& rEncStream, PCTSTR pszString, PBYTE pBuff
 	if (pStream == NULL)
 		return false;
 	unsigned uStreamFeatures = pStream->GetFeatures();
-	_ASSERTE((uStreamFeatures & (CStream::SF_GETLENGTH | CStream::SF_SETPOSITION)) == (CStream::SF_GETLENGTH | CStream::SF_SETPOSITION));
-	if ((uStreamFeatures & (CStream::SF_GETLENGTH | CStream::SF_SETPOSITION)) != (CStream::SF_GETLENGTH | CStream::SF_SETPOSITION))
+	_ASSERTE((uStreamFeatures & (CStream::SF_GETLENGTH | CStream::SF_SETPOSITION)) ==
+			 (CStream::SF_GETLENGTH | CStream::SF_SETPOSITION));
+	if ((uStreamFeatures & (CStream::SF_GETLENGTH | CStream::SF_SETPOSITION)) !=
+		(CStream::SF_GETLENGTH | CStream::SF_SETPOSITION))
 		return false;
 	int nOldPosition = nPosition;
 	rEncStream.Reset();
@@ -299,7 +302,7 @@ bool WriteBinaryString(CUTF8EncStream& rEncStream, PCTSTR pszString, PBYTE pBuff
 	pStream->SetPosition(0, FILE_BEGIN);
 	int nLength = pStream->GetLength();
 	_ASSERTE(nLength >= 0);
-	if (! Write7BitEncodedInt(nLength, pBuffer, nPosition, nBufferSize))
+	if (!Write7BitEncodedInt(nLength, pBuffer, nPosition, nBufferSize))
 		return false;
 	if (nBufferSize - nPosition >= nLength)
 	{
@@ -451,7 +454,9 @@ int UTF16LeDecodeChar(const BYTE* pBytes, int nNumBytes, TCHAR arrChar[2], int& 
 			arrChar[1] = *((const WCHAR*)pBytes + 1);
 		nCharSize = nNumBytesInChar / sizeof(WCHAR);
 #else
-		nCharSize = WideCharToMultiByte(CP_ACP, 0, (const WCHAR*)pBytes, nNumBytesInChar, arrChar, countof(arrChar), NULL, NULL) / sizeof(WCHAR);
+		nCharSize = WideCharToMultiByte(CP_ACP, 0, (const WCHAR*)pBytes, nNumBytesInChar, arrChar, countof(arrChar),
+										NULL, NULL) /
+					sizeof(WCHAR);
 		if (nCharSize <= 0)
 			nNumBytesInChar = 0;
 #endif
@@ -500,7 +505,7 @@ int AnsiDecodeChar(const BYTE* pBytes, int nNumBytes, TCHAR arrChar[2], int& nCh
  */
 int UTF8DecodeString(const BYTE* pBytes, int nNumBytes, PTSTR pszString, int nBufferSize)
 {
-	if (! nBufferSize)
+	if (!nBufferSize)
 		return 0;
 	bool bAddNullTerminator;
 	if (nNumBytes < 0)
@@ -562,7 +567,8 @@ int UTF16LeDecodeString(const BYTE* pBytes, int nNumBytes, PTSTR pszString, int 
 	CopyMemory(pszString, pBytes, nNumBytes);
 	return nNumBytes;
 #else
-	int nResult = WideCharToMultiByte(CP_ACP, 0, (const WCHAR*)pBytes, nNumBytes / sizeof(WCHAR), pszString, nBufferSize, NULL, NULL);
+	int nResult = WideCharToMultiByte(CP_ACP, 0, (const WCHAR*)pBytes, nNumBytes / sizeof(WCHAR), pszString,
+									  nBufferSize, NULL, NULL);
 	return (nResult >= 0 ? nResult : 0);
 #endif
 }
@@ -771,7 +777,7 @@ int CDecInputStream::FillBuffer(int nNumBytes)
 {
 	_ASSERTE(m_pInputStream != NULL);
 	int nBytesLeft = m_nInputBufferLength - m_nInputBufferPos;
-	if (nBytesLeft < nNumBytes && ! m_bEndOfFile)
+	if (nBytesLeft < nNumBytes && !m_bEndOfFile)
 	{
 		MoveMemory(m_arrInputBuffer, m_arrInputBuffer + m_nInputBufferPos, nBytesLeft);
 		m_nInputBufferPos = 0;
@@ -831,14 +837,14 @@ bool CDecInputStream::ReadPreamble(TEXT_ENCODING& eEncoding)
 		return true;
 	}
 	else if (nBytesLeft >= sizeof(g_arrUTF16BEPreamble) &&
-		memcmp(pBytes, g_arrUTF16BEPreamble, sizeof(g_arrUTF16BEPreamble)) == 0)
+			 memcmp(pBytes, g_arrUTF16BEPreamble, sizeof(g_arrUTF16BEPreamble)) == 0)
 	{
 		eEncoding = TXTENC_UTF16BE;
 		m_nInputBufferPos += sizeof(g_arrUTF16BEPreamble);
 		return true;
 	}
 	else if (nBytesLeft >= sizeof(g_arrUTF8Preamble) &&
-		memcmp(pBytes, g_arrUTF8Preamble, sizeof(g_arrUTF8Preamble)) == 0)
+			 memcmp(pBytes, g_arrUTF8Preamble, sizeof(g_arrUTF8Preamble)) == 0)
 	{
 		eEncoding = TXTENC_UTF8;
 		m_nInputBufferPos += sizeof(g_arrUTF8Preamble);
@@ -881,7 +887,7 @@ int CStrInputStream::ReadChar(TCHAR arrChar[2])
 bool CCharInputStream::CheckEncoding(void)
 {
 	TEXT_ENCODING eEncoding;
-	if (! ReadPreamble(eEncoding))
+	if (!ReadPreamble(eEncoding))
 		return false;
 	return SetDecoder(CBaseDecoder::GetDecoder(eEncoding));
 }
@@ -894,7 +900,7 @@ bool CCharInputStream::CheckEncoding(TEXT_ENCODING eDefaultEncoding)
 {
 	TEXT_ENCODING eEncoding;
 	bool bResult = ReadPreamble(eEncoding);
-	if (! bResult)
+	if (!bResult)
 		eEncoding = eDefaultEncoding;
 	return SetDecoder(CBaseDecoder::GetDecoder(eEncoding));
 }

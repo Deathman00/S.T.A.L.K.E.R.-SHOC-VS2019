@@ -22,10 +22,7 @@
 #define new DEBUG_NEW
 #endif
 
-CXmlLogFile::CStrLogRecord::CStrLogRecord(void) :
-	m_strLogLevel(8),
-	m_strTimeStatistics(32),
-	m_strEntryText(1024)
+CXmlLogFile::CStrLogRecord::CStrLogRecord(void) : m_strLogLevel(8), m_strTimeStatistics(32), m_strEntryText(1024)
 {
 }
 
@@ -83,9 +80,8 @@ BOOL CXmlLogFile::LoadEntries(void)
 				iResult = XmlReader.GotoNextElement(_T("level"), XmlNode, 0);
 				if (iResult <= 0)
 					goto end;
-				_ASSERTE(
-					XmlNode.GetNodeType() == CXmlReader::CXmlNode::XNT_ELEMENT_BEGIN ||
-					XmlNode.GetNodeType() == CXmlReader::CXmlNode::XNT_ELEMENT);
+				_ASSERTE(XmlNode.GetNodeType() == CXmlReader::CXmlNode::XNT_ELEMENT_BEGIN ||
+						 XmlNode.GetNodeType() == CXmlReader::CXmlNode::XNT_ELEMENT);
 				// enforce constraint: log level is required field
 				if (XmlNode.GetNodeType() != CXmlReader::CXmlNode::XNT_ELEMENT_BEGIN)
 					goto end;
@@ -101,9 +97,8 @@ BOOL CXmlLogFile::LoadEntries(void)
 				iResult = XmlReader.GotoNextElement(_T("time"), XmlNode, 0);
 				if (iResult <= 0)
 					goto end;
-				_ASSERTE(
-					XmlNode.GetNodeType() == CXmlReader::CXmlNode::XNT_ELEMENT_BEGIN ||
-					XmlNode.GetNodeType() == CXmlReader::CXmlNode::XNT_ELEMENT);
+				_ASSERTE(XmlNode.GetNodeType() == CXmlReader::CXmlNode::XNT_ELEMENT_BEGIN ||
+						 XmlNode.GetNodeType() == CXmlReader::CXmlNode::XNT_ELEMENT);
 				// enforce constraint: time statistics is required field
 				if (XmlNode.GetNodeType() != CXmlReader::CXmlNode::XNT_ELEMENT_BEGIN)
 					goto end;
@@ -119,18 +114,16 @@ BOOL CXmlLogFile::LoadEntries(void)
 				iResult = XmlReader.GotoNextElement(_T("text"), XmlNode, 0);
 				if (iResult <= 0)
 					goto end;
-				_ASSERTE(
-					XmlNode.GetNodeType() == CXmlReader::CXmlNode::XNT_ELEMENT_BEGIN ||
-					XmlNode.GetNodeType() == CXmlReader::CXmlNode::XNT_ELEMENT);
+				_ASSERTE(XmlNode.GetNodeType() == CXmlReader::CXmlNode::XNT_ELEMENT_BEGIN ||
+						 XmlNode.GetNodeType() == CXmlReader::CXmlNode::XNT_ELEMENT);
 				// entry text is optional field
 				if (XmlNode.GetNodeType() == CXmlReader::CXmlNode::XNT_ELEMENT_BEGIN)
 				{
 					iResult = XmlReader.GotoText(XmlNode, CXmlReader::XGF_ALLOW_ELEMENT_END);
 					if (iResult <= 0)
 						goto end;
-					_ASSERTE(
-						XmlNode.GetNodeType() == CXmlReader::CXmlNode::XNT_TEXT ||
-						XmlNode.GetNodeType() == CXmlReader::CXmlNode::XNT_ELEMENT_END);
+					_ASSERTE(XmlNode.GetNodeType() == CXmlReader::CXmlNode::XNT_TEXT ||
+							 XmlNode.GetNodeType() == CXmlReader::CXmlNode::XNT_ELEMENT_END);
 					if (XmlNode.GetNodeType() == CXmlReader::CXmlNode::XNT_TEXT)
 					{
 						LogRecord.SetEntryText(XmlNode.GetNodeValue());
@@ -140,7 +133,7 @@ BOOL CXmlLogFile::LoadEntries(void)
 					}
 				}
 
-				if (! AddToTail(LogRecord))
+				if (!AddToTail(LogRecord))
 					goto end;
 				iResult = XmlReader.GotoNextElementEnd(XmlNode, 0);
 				if (iResult <= 0)
@@ -148,15 +141,14 @@ BOOL CXmlLogFile::LoadEntries(void)
 			}
 		}
 		bResult = TRUE;
-end:
-		if (! bResult)
+	end:
+		if (!bResult)
 			FreeEntries();
 	}
 	else
 	{
 		DWORD dwLastError = FileStream.GetLastError();
-		if (dwLastError == ERROR_FILE_NOT_FOUND ||
-			dwLastError == ERROR_PATH_NOT_FOUND ||
+		if (dwLastError == ERROR_FILE_NOT_FOUND || dwLastError == ERROR_PATH_NOT_FOUND ||
 			GetFileAttributes(pszLogFileName) == INVALID_FILE_ATTRIBUTES)
 		{
 			bResult = TRUE; // ignore missing files
@@ -165,7 +157,9 @@ end:
 #ifdef _DEBUG
 	DWORD dwEndTime = GetTickCount();
 	TCHAR szMessage[128];
-	_stprintf_s(szMessage, countof(szMessage), _T("CXmlLogFile::LoadEntries(): %lu entries, %lu bytes, %lu milliseconds\r\n"), GetNumEntries(), GetNumBytes(), dwEndTime - dwStartTime);
+	_stprintf_s(szMessage, countof(szMessage),
+				_T("CXmlLogFile::LoadEntries(): %lu entries, %lu bytes, %lu milliseconds\r\n"), GetNumEntries(),
+				GetNumBytes(), dwEndTime - dwStartTime);
 	OutputDebugString(szMessage);
 #endif
 	return bResult;
@@ -182,7 +176,7 @@ BOOL CXmlLogFile::SaveEntries(bool /*bCrash*/)
 #endif
 	PCTSTR pszLogFileName = GetLogFileName();
 	CFileStream FileStream(1024);
-	if (! FileStream.Open(pszLogFileName, CREATE_ALWAYS, GENERIC_WRITE))
+	if (!FileStream.Open(pszLogFileName, CREATE_ALWAYS, GENERIC_WRITE))
 		return FALSE;
 	CXmlWriter XmlWriter(&FileStream);
 	XmlWriter.SetIndentation(_T(' '), 2);
@@ -199,12 +193,12 @@ BOOL CXmlLogFile::SaveEntries(bool /*bCrash*/)
 		PCTSTR pszTimeStatistics = pchPointer;
 		pchPointer += _tcslen(pchPointer) + 1;
 		PCTSTR pszEntry = pchPointer;
-		//pchPointer += _tcslen(pchPointer) + 1;
-		XmlWriter.WriteStartElement(_T("entry")); // <entry>
-		 XmlWriter.WriteElementString(_T("level"), pszLogLevel); // <level>...</level>
-		 XmlWriter.WriteElementString(_T("time"), pszTimeStatistics); // <time>...</time>
-		 XmlWriter.WriteElementString(_T("text"), pszEntry); // <text>...</text>
-		XmlWriter.WriteEndElement(); // </entry>
+		// pchPointer += _tcslen(pchPointer) + 1;
+		XmlWriter.WriteStartElement(_T("entry"));					 // <entry>
+		XmlWriter.WriteElementString(_T("level"), pszLogLevel);		 // <level>...</level>
+		XmlWriter.WriteElementString(_T("time"), pszTimeStatistics); // <time>...</time>
+		XmlWriter.WriteElementString(_T("text"), pszEntry);			 // <text>...</text>
+		XmlWriter.WriteEndElement();								 // </entry>
 		pLogEntry = pLogEntry->m_pNextEntry;
 	}
 	XmlWriter.WriteEndElement(); // </log>
@@ -212,7 +206,9 @@ BOOL CXmlLogFile::SaveEntries(bool /*bCrash*/)
 #ifdef _DEBUG
 	DWORD dwEndTime = GetTickCount();
 	TCHAR szMessage[128];
-	_stprintf_s(szMessage, countof(szMessage), _T("CXmlLogFile::SaveEntries(): %lu entries, %lu bytes, %lu milliseconds\r\n"), GetNumEntries(), GetNumBytes(), dwEndTime - dwStartTime);
+	_stprintf_s(szMessage, countof(szMessage),
+				_T("CXmlLogFile::SaveEntries(): %lu entries, %lu bytes, %lu milliseconds\r\n"), GetNumEntries(),
+				GetNumBytes(), dwEndTime - dwStartTime);
 	OutputDebugString(szMessage);
 #endif
 	return TRUE;
@@ -251,17 +247,18 @@ CXmlLogFile::CXmlLogEntry* CXmlLogFile::AllocLogEntry(const CBaseLogRecord& rLog
 
 		*pchPointer = _T('\0');
 		pLogEntry->m_dwSize = dwLogLevelSize + dwTimeStatisticsSize + dwEntryTextSize +
-								sizeof("  <entry>\r\n"
-									   "    <level></level>\r\n"
-									   "    <time></time>\r\n"
-									   "    <text></text>\r\n"
-									   "  </entry>\r\n") - 1;
+							  sizeof("  <entry>\r\n"
+									 "    <level></level>\r\n"
+									 "    <time></time>\r\n"
+									 "    <text></text>\r\n"
+									 "  </entry>\r\n") -
+							  1;
 	}
 	return pLogEntry;
 }
 
 /**
-* @param rLogRecord - reference the log record.
+ * @param rLogRecord - reference the log record.
  * @return true if entry was added.
  */
 BOOL CXmlLogFile::AddToHead(const CBaseLogRecord& rLogRecord)
@@ -277,7 +274,7 @@ BOOL CXmlLogFile::AddToHead(const CBaseLogRecord& rLogRecord)
 }
 
 /**
-* @param rLogRecord - reference the log record.
+ * @param rLogRecord - reference the log record.
  * @return true if entry was added.
  */
 BOOL CXmlLogFile::AddToTail(const CBaseLogRecord& rLogRecord)
@@ -298,7 +295,8 @@ BOOL CXmlLogFile::AddToTail(const CBaseLogRecord& rLogRecord)
  * @param rcsConsoleAccess - provides synchronous access to the console.
  * @param pszEntry - log entry text.
  */
-void CXmlLogFile::WriteLogEntry(BUGTRAP_LOGLEVEL eLogLevel, ENTRY_MODE eEntryMode, CRITICAL_SECTION& rcsConsoleAccess, PCTSTR pszEntry)
+void CXmlLogFile::WriteLogEntry(BUGTRAP_LOGLEVEL eLogLevel, ENTRY_MODE eEntryMode, CRITICAL_SECTION& rcsConsoleAccess,
+								PCTSTR pszEntry)
 {
 	BUGTRAP_LOGLEVEL eLogFileLevel = GetLogLevel();
 	if (eLogLevel <= eLogFileLevel)

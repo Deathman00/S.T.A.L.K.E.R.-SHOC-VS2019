@@ -21,7 +21,7 @@ class CInputStream;
 /// Output stream.
 class COutputStream : public virtual CBaseStream
 {
-public:
+  public:
 	/// Set data length.
 	virtual int SetLength(int nLength);
 	/// Write one byte to the stream. This function is required.

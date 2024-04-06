@@ -23,65 +23,63 @@
 #include <ode/config.h>
 #include <ode/memory.h>
 #include <ode/error.h>
- 
 
-static dAllocFunction *allocfn = 0;
-static dReallocFunction *reallocfn = 0;
-static dFreeFunction *freefn = 0;
+static dAllocFunction* allocfn = 0;
+static dReallocFunction* reallocfn = 0;
+static dFreeFunction* freefn = 0;
 
-
-
-void dSetAllocHandler (dAllocFunction *fn)
+void dSetAllocHandler(dAllocFunction* fn)
 {
-  allocfn = fn;
+	allocfn = fn;
 }
 
-
-void dSetReallocHandler (dReallocFunction *fn)
+void dSetReallocHandler(dReallocFunction* fn)
 {
-  reallocfn = fn;
+	reallocfn = fn;
 }
 
-
-void dSetFreeHandler (dFreeFunction *fn)
+void dSetFreeHandler(dFreeFunction* fn)
 {
-  freefn = fn;
+	freefn = fn;
 }
 
-
-dAllocFunction *dGetAllocHandler()
+dAllocFunction* dGetAllocHandler()
 {
-  return allocfn;
+	return allocfn;
 }
 
-
-dReallocFunction *dGetReallocHandler()
+dReallocFunction* dGetReallocHandler()
 {
-  return reallocfn;
+	return reallocfn;
 }
 
-
-dFreeFunction *dGetFreeHandler()
+dFreeFunction* dGetFreeHandler()
 {
-  return freefn;
+	return freefn;
 }
 
-
-void * dAlloc (size_t size)
+void* dAlloc(size_t size)
 {
-  if (allocfn) return allocfn (size); else return malloc (size);
+	if (allocfn)
+		return allocfn(size);
+	else
+		return malloc(size);
 }
 
-
-void * dRealloc (void *ptr, size_t oldsize, size_t newsize)
+void* dRealloc(void* ptr, size_t oldsize, size_t newsize)
 {
-  if (reallocfn) return reallocfn (ptr,oldsize,newsize);
-  else return realloc (ptr,newsize);
+	if (reallocfn)
+		return reallocfn(ptr, oldsize, newsize);
+	else
+		return realloc(ptr, newsize);
 }
 
-
-void dFree (void *ptr, size_t size)
+void dFree(void* ptr, size_t size)
 {
-  if (!ptr) return;
-  if (freefn) freefn (ptr,size); else free (ptr);
+	if (!ptr)
+		return;
+	if (freefn)
+		freefn(ptr, size);
+	else
+		free(ptr);
 }

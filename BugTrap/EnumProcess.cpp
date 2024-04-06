@@ -33,7 +33,6 @@ struct CEnum16Param
 	DWORD dwProcessID;
 };
 
-
 CEnumProcess::CModuleEntry::CModuleEntry(void)
 {
 	*m_szModuleName = _T('\0');
@@ -52,12 +51,12 @@ CEnumProcess::CProcessEntry::CProcessEntry(void)
 	*m_szProcessName = _T('\0');
 }
 
-CEnumProcess::CEnumProcess(void) :
-				m_arrProcesses(0),
+CEnumProcess::CEnumProcess(void)
+	: m_arrProcesses(0),
 #ifdef USE_VDMDBG
-				m_arrProcesses16(0),
+	  m_arrProcesses16(0),
 #endif
-				m_arrModules(0)
+	  m_arrModules(0)
 {
 	m_hPsApiDll = LoadLibrary(_T("PSAPI.DLL"));
 	if (m_hPsApiDll)
@@ -98,7 +97,8 @@ CEnumProcess::CEnumProcess(void) :
 		m_hThreadSnap = INVALID_HANDLE_VALUE;
 
 		// Find ToolHelp functions
-		FCreateToolhelp32Snapshot = (PFCreateToolhelp32Snapshot)GetProcAddress(m_hKernelDll, "CreateToolhelp32Snapshot");
+		FCreateToolhelp32Snapshot =
+			(PFCreateToolhelp32Snapshot)GetProcAddress(m_hKernelDll, "CreateToolhelp32Snapshot");
 		FThread32First = (PFThread32First)GetProcAddress(m_hKernelDll, "Thread32First");
 		FThread32Next = (PFThread32Next)GetProcAddress(m_hKernelDll, "Thread32Next");
 #ifdef _UNICODE
@@ -127,29 +127,21 @@ CEnumProcess::CEnumProcess(void) :
 
 	m_dwAvailMethods = EM_NONE;
 	// Does all PSAPI functions exist?
-	if (m_hPsApiDll &&
-		FEnumProcesses &&
-		FEnumProcessModules &&
-		FGetModuleFileNameEx)
+	if (m_hPsApiDll && FEnumProcesses && FEnumProcessModules && FGetModuleFileNameEx)
 	{
 		m_dwAvailMethods |= EM_PSAPI;
 	}
 
 	// How about ToolHelp?
-	if (m_hKernelDll &&
-		FCreateToolhelp32Snapshot &&
-		FProcess32Next && FProcess32Next &&
-		FModule32First && FModule32Next &&
-		FThread32First && FThread32Next)
+	if (m_hKernelDll && FCreateToolhelp32Snapshot && FProcess32Next && FProcess32Next && FModule32First &&
+		FModule32Next && FThread32First && FThread32Next)
 	{
 		m_dwAvailMethods |= EM_TOOLHELP;
 	}
 
 #ifdef USE_VDMDBG
 	// And 16-bit enumeration?
-	if (m_hVmDbgDll &&
-		FVDMEnumTaskWOWEx &&
-		m_dwAvailMethods != EM_NONE)
+	if (m_hVmDbgDll && FVDMEnumTaskWOWEx && m_dwAvailMethods != EM_NONE)
 	{
 		m_dwAvailMethods |= EM_PROC16;
 	}
@@ -217,7 +209,7 @@ void CEnumProcess::SetMethod(DWORD dwMethod)
 #ifdef USE_VDMDBG
 		if (dwMethod != EM_PROC16)
 #endif
-    		m_dwMethod = dwMethod;
+			m_dwMethod = dwMethod;
 }
 
 /**
@@ -254,7 +246,7 @@ BOOL CEnumProcess::GetProcessFirst(CEnumProcess::CProcessEntry& rEntry)
 		if (m_hProcessSnap == INVALID_HANDLE_VALUE)
 			return FALSE;
 		m_pe.dwSize = sizeof(m_pe);
-		if (! FProcess32First(m_hProcessSnap, &m_pe))
+		if (!FProcess32First(m_hProcessSnap, &m_pe))
 			return FALSE;
 		rEntry.m_dwProcessID = m_pe.th32ProcessID;
 		_tcscpy_s(rEntry.m_szProcessName, countof(rEntry.m_szProcessName), m_pe.szExeFile);
@@ -285,7 +277,7 @@ BOOL CEnumProcess::GetProcessFirst(CEnumProcess::CProcessEntry& rEntry)
 		}
 
 		m_dwCurrentProcess = 0;
-		if (! bResult)
+		if (!bResult)
 			return FALSE;
 		m_arrProcesses.SetCount(cbNeeded / sizeof(DWORD));
 		return FillPStructPSAPI(m_arrProcesses[(int)(m_dwCurrentProcess++)], rEntry);
@@ -315,7 +307,7 @@ BOOL CEnumProcess::GetProcessNext(CEnumProcess::CProcessEntry& rEntry)
 	{
 		// Use ToolHelp functions
 		m_pe.dwSize = sizeof(m_pe);
-		if (! FProcess32Next(m_hProcessSnap, &m_pe))
+		if (!FProcess32Next(m_hProcessSnap, &m_pe))
 			return FALSE;
 		rEntry.m_dwProcessID = m_pe.th32ProcessID;
 		_tcscpy_s(rEntry.m_szProcessName, countof(rEntry.m_szProcessName), m_pe.szExeFile);
@@ -325,7 +317,7 @@ BOOL CEnumProcess::GetProcessNext(CEnumProcess::CProcessEntry& rEntry)
 		// Use PSAPI functions
 		if ((int)m_dwCurrentProcess >= m_arrProcesses.GetCount())
 			return FALSE;
-		if (! FillPStructPSAPI(m_arrProcesses[(int)(m_dwCurrentProcess++)], rEntry))
+		if (!FillPStructPSAPI(m_arrProcesses[(int)(m_dwCurrentProcess++)], rEntry))
 			return FALSE;
 	}
 
@@ -337,8 +329,7 @@ BOOL CEnumProcess::GetProcessNext(CEnumProcess::CProcessEntry& rEntry)
 		static const TCHAR szNTVDM[] = _T("NTVDM.EXE");
 		static const DWORD dwNTVDMLen = countof(szNTVDM) - 1;
 		DWORD dwProcessName = _tcslen(rEntry.m_szProcessName);
-		if (dwProcessName >= dwNTVDMLen &&
-			! _tcsicmp(rEntry.m_szProcessName + (dwProcessName - dwNTVDMLen), szNTVDM))
+		if (dwProcessName >= dwNTVDMLen && !_tcsicmp(rEntry.m_szProcessName + (dwProcessName - dwNTVDMLen), szNTVDM))
 		{
 			m_arrProcesses16.DeleteAll();
 			CEnum16Param param;
@@ -370,7 +361,7 @@ BOOL CEnumProcess::GetModuleFirst(DWORD dwProcessID, CEnumProcess::CModuleEntry&
 		if (m_hModuleSnap == INVALID_HANDLE_VALUE)
 			return FALSE;
 		m_me.dwSize = sizeof(m_me);
-		if(! FModule32First(m_hModuleSnap, &m_me))
+		if (!FModule32First(m_hModuleSnap, &m_me))
 			return FALSE;
 		_tcscpy_s(rEntry.m_szModuleName, countof(rEntry.m_szModuleName), m_me.szExePath);
 		rEntry.m_pLoadBase = m_me.modBaseAddr;
@@ -409,7 +400,7 @@ BOOL CEnumProcess::GetModuleFirst(DWORD dwProcessID, CEnumProcess::CModuleEntry&
 
 			CloseHandle(hProcess);
 			m_dwCurrentModule = 0;
-			if (! bResult)
+			if (!bResult)
 				return FALSE;
 			m_arrModules.SetCount(cbNeeded / sizeof(HMODULE));
 			return FillMStructPSAPI(dwProcessID, m_arrModules[(int)(m_dwCurrentModule++)], rEntry);
@@ -431,7 +422,7 @@ BOOL CEnumProcess::GetModuleNext(DWORD dwProcessID, CEnumProcess::CModuleEntry& 
 	{
 		// Use ToolHelp functions
 		m_me.dwSize = sizeof(m_me);
-		if(! FModule32Next(m_hModuleSnap, &m_me))
+		if (!FModule32Next(m_hModuleSnap, &m_me))
 			return FALSE;
 		_tcscpy_s(rEntry.m_szModuleName, countof(rEntry.m_szModuleName), m_me.szExePath);
 		rEntry.m_pLoadBase = m_me.modBaseAddr;
@@ -468,12 +459,12 @@ BOOL CEnumProcess::GetThreadFirst(DWORD dwProcessID, CEnumProcess::CThreadEntry&
 		if (m_hThreadSnap == INVALID_HANDLE_VALUE)
 			return FALSE;
 		m_te.dwSize = sizeof(m_te);
-		if(! FThread32First(m_hThreadSnap, &m_te))
+		if (!FThread32First(m_hThreadSnap, &m_te))
 			return FALSE;
 		while (m_te.th32OwnerProcessID != dwProcessID)
 		{
 			m_te.dwSize = sizeof(m_te);
-			if(! FThread32Next(m_hThreadSnap, &m_te))
+			if (!FThread32Next(m_hThreadSnap, &m_te))
 				return FALSE;
 		}
 		rEntry.m_dwThreadID = m_te.th32ThreadID;
@@ -501,10 +492,9 @@ BOOL CEnumProcess::GetThreadNext(DWORD dwProcessID, CEnumProcess::CThreadEntry& 
 		do
 		{
 			m_te.dwSize = sizeof(m_te);
-			if(! FThread32Next(m_hThreadSnap, &m_te))
+			if (!FThread32Next(m_hThreadSnap, &m_te))
 				return FALSE;
-		}
-		while (m_te.th32OwnerProcessID != dwProcessID);
+		} while (m_te.th32OwnerProcessID != dwProcessID);
 		rEntry.m_dwThreadID = m_te.th32ThreadID;
 		return TRUE;
 	}
@@ -561,7 +551,7 @@ BOOL CEnumProcess::FillMStructPSAPI(DWORD dwProcessID, HMODULE hModule, CEnumPro
 	HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, dwProcessID);
 	if (hProcess != NULL)
 	{
-		if (! FGetModuleFileNameEx(hProcess, hModule, rEntry.m_szModuleName, countof(rEntry.m_szModuleName)))
+		if (!FGetModuleFileNameEx(hProcess, hModule, rEntry.m_szModuleName, countof(rEntry.m_szModuleName)))
 			_stprintf_s(rEntry.m_szModuleName, countof(rEntry.m_szModuleName), szNAError, GetLastError());
 		rEntry.m_pLoadBase = (PVOID)hModule;
 		rEntry.m_dwModuleSize = 0;
@@ -583,7 +573,8 @@ BOOL CEnumProcess::FillMStructPSAPI(DWORD dwProcessID, HMODULE hModule, CEnumPro
  * @param dwPreferredSize - preferred module size.
  * @return true if operation has been successful.
  */
-BOOL CEnumProcess::GetPreferredModuleLocation(DWORD dwProcessID, PVOID pModBase, PVOID& pPreferredBase, DWORD& dwPreferredSize)
+BOOL CEnumProcess::GetPreferredModuleLocation(DWORD dwProcessID, PVOID pModBase, PVOID& pPreferredBase,
+											  DWORD& dwPreferredSize)
 {
 	pPreferredBase = NULL;
 	dwPreferredSize = 0;
@@ -627,9 +618,12 @@ BOOL CEnumProcess::GetPreferredModuleLocation(DWORD dwProcessID, PVOID pModBase,
  * @param lpUserDefined - user-defined parameter.
  * @return false to keep enumerating.
  */
-BOOL CALLBACK CEnumProcess::Enum16Proc(DWORD dwThreadId, WORD hModule16, WORD hTask16, PSZ pszModuleName, PSZ pszProcessName, LPARAM lpUserDefined)
+BOOL CALLBACK CEnumProcess::Enum16Proc(DWORD dwThreadId, WORD hModule16, WORD hTask16, PSZ pszModuleName,
+									   PSZ pszProcessName, LPARAM lpUserDefined)
 {
-	dwThreadId; pszModuleName; hModule16;
+	dwThreadId;
+	pszModuleName;
+	hModule16;
 	CEnum16Param* pParam = (CEnum16Param*)lpUserDefined;
 	CEnumProcess* _this = pParam->_this;
 

@@ -32,9 +32,8 @@
  * These new rotation function names are more consistent with the
  * rest of the API.
  */
-#define dQtoR(q,R) dRfromQ((R),(q))
-#define dRtoQ(R,q) dQfromR((q),(R))
-#define dWtoDQ(w,q,dq) dDQfromW((dq),(w),(q))
-
+#define dQtoR(q, R) dRfromQ((R), (q))
+#define dRtoQ(R, q) dQfromR((q), (R))
+#define dWtoDQ(w, q, dq) dDQfromW((dq), (w), (q))
 
 #endif

@@ -25,11 +25,11 @@
 /// XML parser.
 class CXmlReader
 {
-private:
+  private:
 	/// Forward declaration of XML node class required for the friendship.
 	class CXmlParser;
 
-public:
+  public:
 	/// Forward declaration of XML node class required for the friendship.
 	class CXmlNode;
 
@@ -38,13 +38,14 @@ public:
 	{
 		friend class CXmlNode;
 		friend class CXmlParser;
-	private:
+
+	  private:
 		/// Useful shorthand.
 		typedef CHash<CStrStream, CStrStream> CAttributesListBase;
 		/// Perform case-insensitive attribute search.
 		PCTSTR CaselessGetAt(PCTSTR pszName) const;
 
-	public:
+	  public:
 		/// Synonym of hash iterator type.
 		typedef CAttributesListBase::POSITION POSITION;
 
@@ -71,7 +72,8 @@ public:
 	{
 		friend class CXmlParser;
 		friend class CXmlReader;
-	public:
+
+	  public:
 		/// Type of the node.
 		enum XML_NODE_TYPE
 		{
@@ -106,7 +108,7 @@ public:
 		/// Reset node info.
 		void Reset(void);
 
-	private:
+	  private:
 		/// Node type.
 		XML_NODE_TYPE m_eNodeType;
 		/// Node name (if applicable).
@@ -121,17 +123,17 @@ public:
 	enum XML_CONTENT_FILTER
 	{
 		/// Don't perform any special post-processing.
-		XCF_NONE        = 0x00,
+		XCF_NONE = 0x00,
 		/// Strip comments.
-		XCF_COMMENT     = 0x01,
+		XCF_COMMENT = 0x01,
 		/// Merge CDATA with the text.
-		XCF_CDATA       = 0x02,
+		XCF_CDATA = 0x02,
 		/// Strip processing instructions.
-		XCF_PROCINSTR   = 0x04,
+		XCF_PROCINSTR = 0x04,
 		/// Strip surrounding white-spaces.
 		XCF_WHITESPACES = 0x08,
 		/// Combination of all post-processing flags.
-		XCF_ALL         = 0xFF
+		XCF_ALL = 0xFF
 	};
 
 	/// XML go to flags.
@@ -140,7 +142,7 @@ public:
 		/// True if child elements are accepted.
 		XGF_ALLOW_NESTED_ELEMENTS = 0x01,
 		/// True if parent element could be ended.
-		XGF_ALLOW_ELEMENT_END     = 0x02
+		XGF_ALLOW_ELEMENT_END = 0x02
 	};
 
 	/// Initialize the object.
@@ -182,7 +184,7 @@ public:
 	/// Free standard entities.
 	static void FreeStdEntries(void);
 
-private:
+  private:
 	/// Object can't be copied.
 	CXmlReader(const CXmlReader& rReader);
 	/// Object can't be copied.
@@ -205,11 +207,11 @@ private:
 	enum XML_RESULT
 	{
 		/// Parse error.
-		XMLR_ERROR    = -1,
+		XMLR_ERROR = -1,
 		/// End of file/stream.
-		XMLR_EOF      =  0,
+		XMLR_EOF = 0,
 		/// End of sequence.
-		XMLR_EOS      = +1,
+		XMLR_EOS = +1,
 		/// Continue.
 		XMLR_CONTINUE = +2
 	};
@@ -226,7 +228,7 @@ private:
 	/// XML input stream.
 	class CXmlInputStream
 	{
-	public:
+	  public:
 		/// Object constructor.
 		CXmlInputStream(void);
 		/// Object constructor.
@@ -300,7 +302,7 @@ private:
 		/// Read and apply byte order mark.
 		bool CheckEncoding(TEXT_ENCODING eDefaultEncoding);
 
-	private:
+	  private:
 		/// Object can't be copied.
 		CXmlInputStream(const CXmlInputStream& rXmlInputStream);
 		/// Object can't be copied.
@@ -365,7 +367,8 @@ private:
 	class CXmlParser
 	{
 		friend class CXmlReader;
-	public:
+
+	  public:
 		/// Parser type.
 		enum PARSER_TYPE
 		{
@@ -394,7 +397,7 @@ private:
 		/// Apply parent content filter.
 		void ApplyContentFilter(void);
 
-	private:
+	  private:
 		/// State of the parser.
 		enum PARSER_STATE
 		{
@@ -584,8 +587,7 @@ inline CXmlReader::~CXmlReader(void)
 	ReleaseInputStream();
 }
 
-inline CXmlReader::CXmlNode::CXmlNode(void)
-	: m_strNodeName(32), m_strNodeValue(128)
+inline CXmlReader::CXmlNode::CXmlNode(void) : m_strNodeName(32), m_strNodeValue(128)
 {
 	m_eNodeType = XNT_UNDEFINED;
 }
@@ -857,9 +859,9 @@ inline bool CXmlReader::CXmlInputStream::IsBackBufferEmpty(void) const
  */
 inline int CXmlReader::CXmlInputStream::GetBackBufferLength(void) const
 {
-	return (m_nBackBufferReadPos <= m_nBackBufferWritePos ?
-				m_nBackBufferWritePos - m_nBackBufferReadPos :
-				m_nBackBufferSize - m_nBackBufferReadPos + m_nBackBufferWritePos);
+	return (m_nBackBufferReadPos <= m_nBackBufferWritePos
+				? m_nBackBufferWritePos - m_nBackBufferReadPos
+				: m_nBackBufferSize - m_nBackBufferReadPos + m_nBackBufferWritePos);
 }
 
 /**
@@ -1004,7 +1006,8 @@ inline CXmlReader::XML_RESULT CXmlReader::CXmlParser::SkipString(void)
  * @param bInAttribute - true when reading attribute value.
  * @return XML result code.
  */
-inline CXmlReader::XML_RESULT CXmlReader::CXmlParser::ReadText(CStrStream& rOutputStream, PCTSTR pszTerminators, bool bInAttribute)
+inline CXmlReader::XML_RESULT CXmlReader::CXmlParser::ReadText(CStrStream& rOutputStream, PCTSTR pszTerminators,
+															   bool bInAttribute)
 {
 	return ReadTextEx(&rOutputStream, pszTerminators, bInAttribute);
 }

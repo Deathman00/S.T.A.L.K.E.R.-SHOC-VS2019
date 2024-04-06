@@ -88,7 +88,7 @@ CSymEngine* g_pSymEngine = NULL;
 /// Pointer to process enumerator.
 CEnumProcess* g_pEnumProc = NULL;
 /// Array of custom log file names attached to the report.
-CArray<CLogLink*, CDynamicTraits<CLogLink*> > g_arrLogLinks;
+CArray<CLogLink*, CDynamicTraits<CLogLink*>> g_arrLogLinks;
 /// User defined message printed to the log file.
 CStrHolder g_strUserMessage;
 /// 1st introduction message displayed on the dialog.

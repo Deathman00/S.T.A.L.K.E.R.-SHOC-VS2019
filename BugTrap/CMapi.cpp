@@ -46,18 +46,15 @@ void CMapiSession::Initialise(void)
 		m_hMapi = LoadLibrary(_T("MAPI32.DLL"));
 		if (m_hMapi)
 		{
-			m_pfnMAPILogon = (LPMAPILOGON) GetProcAddress(m_hMapi, "MAPILogon");
-			m_pfnMAPILogoff = (LPMAPILOGOFF) GetProcAddress(m_hMapi, "MAPILogoff");
-			m_pfnMAPISendMail = (LPMAPISENDMAIL) GetProcAddress(m_hMapi, "MAPISendMail");
-			m_pfnMAPIResolveName = (LPMAPIRESOLVENAME) GetProcAddress(m_hMapi, "MAPIResolveName");
-			m_pfnMAPIFreeBuffer = (LPMAPIFREEBUFFER) GetProcAddress(m_hMapi, "MAPIFreeBuffer");
+			m_pfnMAPILogon = (LPMAPILOGON)GetProcAddress(m_hMapi, "MAPILogon");
+			m_pfnMAPILogoff = (LPMAPILOGOFF)GetProcAddress(m_hMapi, "MAPILogoff");
+			m_pfnMAPISendMail = (LPMAPISENDMAIL)GetProcAddress(m_hMapi, "MAPISendMail");
+			m_pfnMAPIResolveName = (LPMAPIRESOLVENAME)GetProcAddress(m_hMapi, "MAPIResolveName");
+			m_pfnMAPIFreeBuffer = (LPMAPIFREEBUFFER)GetProcAddress(m_hMapi, "MAPIFreeBuffer");
 
 			// If any of the functions are not installed then fail the load
-			if (m_pfnMAPILogon == NULL ||
-				m_pfnMAPILogoff == NULL ||
-				m_pfnMAPISendMail == NULL ||
-				m_pfnMAPIResolveName == NULL ||
-				m_pfnMAPIFreeBuffer == NULL)
+			if (m_pfnMAPILogon == NULL || m_pfnMAPILogoff == NULL || m_pfnMAPISendMail == NULL ||
+				m_pfnMAPIResolveName == NULL || m_pfnMAPIFreeBuffer == NULL)
 				Deinitialise();
 		}
 	}
@@ -78,7 +75,7 @@ void CMapiSession::Deinitialise(void)
  */
 BOOL CMapiSession::Logon(void)
 {
-	if (! MapiInstalled())
+	if (!MapiInstalled())
 		return FALSE;
 
 	// Just in case we are already logged in
@@ -98,7 +95,7 @@ BOOL CMapiSession::Logon(void)
  */
 BOOL CMapiSession::Logon(PCTSTR pszProfileName, PCTSTR pszPassword, BOOL bNewSession)
 {
-	if (! MapiInstalled() || pszProfileName == NULL || *pszProfileName == _T('\0'))
+	if (!MapiInstalled() || pszProfileName == NULL || *pszProfileName == _T('\0'))
 		return FALSE;
 
 	// Just in case we are already logged in
@@ -141,7 +138,7 @@ BOOL CMapiSession::Logon(PCTSTR pszProfileName, PCTSTR pszPassword, BOOL bNewSes
  */
 BOOL CMapiSession::Logon(HWND hwndParent, BOOL bNewSession)
 {
-	if (! MapiInstalled())
+	if (!MapiInstalled())
 		return FALSE;
 
 	// Just in case we are already logged in
@@ -163,7 +160,7 @@ BOOL CMapiSession::Logon(HWND hwndParent, BOOL bNewSession)
  */
 BOOL CMapiSession::Logoff(void)
 {
-	if (! MapiInstalled())
+	if (!MapiInstalled())
 		return FALSE;
 
 	if (m_hSession)
@@ -184,7 +181,7 @@ BOOL CMapiSession::Logoff(void)
  */
 BOOL CMapiSession::Resolve(const CStrHolder& strName, lpMapiRecipDesc& lpRecip)
 {
-	if (! MapiInstalled() || ! LoggedOn() || strName.IsEmpty())
+	if (!MapiInstalled() || !LoggedOn() || strName.IsEmpty())
 		return FALSE;
 
 #ifdef _UNICODE
@@ -206,7 +203,7 @@ BOOL CMapiSession::Resolve(const CStrHolder& strName, lpMapiRecipDesc& lpRecip)
  */
 BOOL CMapiSession::FreeBuffer(PVOID pBuffer)
 {
-	if (! MapiInstalled())
+	if (!MapiInstalled())
 		return FALSE;
 	if (pBuffer == NULL)
 		return TRUE;
@@ -227,8 +224,7 @@ void CMapiSession::InitRecipient(ULONG ulRecipClass, MapiRecipDesc& rRecipDesc, 
 	rRecipDesc.ulRecipClass = ulRecipClass;
 	PCTSTR pszBracket1, pszBracket2;
 	// John Smith <jsmith@aol.com>
-	if ((pszBracket1 = _tcschr(pszName, _T('<'))) != NULL &&
-		(pszBracket2 = _tcschr(pszBracket1 + 1, _T('>'))) != NULL)
+	if ((pszBracket1 = _tcschr(pszName, _T('<'))) != NULL && (pszBracket2 = _tcschr(pszBracket1 + 1, _T('>'))) != NULL)
 	{
 		// Copy name
 		int nLength = pszBracket1 - pszName;
@@ -273,8 +269,7 @@ void CMapiSession::InitRecipient(ULONG ulRecipClass, MapiRecipDesc& rRecipDesc, 
 		int nSize;
 		// Try to resolve the name
 		lpMapiRecipDesc lpTempRecip = NULL;
-		if (_tcschr(pszName, _T('@')) == NULL &&
-			Resolve(strName, lpTempRecip))
+		if (_tcschr(pszName, _T('@')) == NULL && Resolve(strName, lpTempRecip))
 		{
 			// Resolve worked, put the resolved name/address back into the array
 			if (lpTempRecip->lpszName)
@@ -320,7 +315,8 @@ void CMapiSession::InitRecipient(ULONG ulRecipClass, MapiRecipDesc& rRecipDesc, 
  * @param nRecipIndex - current position of initialized recipient descriptor in the array.
  * @param arrRecipients - recipient names.
  */
-void CMapiSession::InitRecipients(ULONG ulRecipClass, lpMapiRecipDesc lpRecips, int& nRecipIndex, const CArray<CStrHolder>& arrRecipients)
+void CMapiSession::InitRecipients(ULONG ulRecipClass, lpMapiRecipDesc lpRecips, int& nRecipIndex,
+								  const CArray<CStrHolder>& arrRecipients)
 {
 	int nNumRecipients = arrRecipients.GetCount();
 	for (int i = 0; i < nNumRecipients; ++i, ++nRecipIndex)
@@ -336,7 +332,7 @@ void CMapiSession::InitRecipients(ULONG ulRecipClass, lpMapiRecipDesc lpRecips, 
  */
 BOOL CMapiSession::Send(const CMapiMessage& rMessage, BOOL bShowMessageEditor, HWND hwndParent, BOOL bNewSession)
 {
-	if (! MapiInstalled() || (bNewSession ? LoggedOn() : ! LoggedOn()))
+	if (!MapiInstalled() || (bNewSession ? LoggedOn() : !LoggedOn()))
 		return FALSE;
 
 	const CArray<CStrHolder>& arrAttachments = rMessage.GetAttachments();
@@ -376,7 +372,7 @@ BOOL CMapiSession::Send(const CMapiMessage& rMessage, BOOL bShowMessageEditor, H
 
 	// Setup the sender
 	const CStrHolder& strFrom = rMessage.GetFrom();
-	if (! strFrom.IsEmpty())
+	if (!strFrom.IsEmpty())
 	{
 		MapiRecipDesc recipOrigin;
 		ZeroMemory(&recipOrigin, sizeof(recipOrigin));
@@ -489,7 +485,7 @@ BOOL CMapiSession::Send(const CMapiMessage& rMessage, BOOL bShowMessageEditor, H
 	if (bShowMessageEditor)
 	{
 		flags |= MAPI_DIALOG;
-		if (! m_hSession)
+		if (!m_hSession)
 		{
 			flags |= MAPI_LOGON_UI;
 			if (bNewSession)
@@ -510,7 +506,7 @@ BOOL CMapiSession::Send(const CMapiMessage& rMessage, BOOL bShowMessageEditor, H
 			delete[] file.lpszPathName;
 			delete[] file.lpszFileName;
 		}
-		delete [] mapiMessage.lpFiles;
+		delete[] mapiMessage.lpFiles;
 	}
 
 	// Free up the recipients memory
@@ -521,7 +517,7 @@ BOOL CMapiSession::Send(const CMapiMessage& rMessage, BOOL bShowMessageEditor, H
 			delete[] mapiMessage.lpRecips[nRecipIndex].lpszName;
 			delete[] mapiMessage.lpRecips[nRecipIndex].lpszAddress;
 		}
-		delete [] mapiMessage.lpRecips;
+		delete[] mapiMessage.lpRecips;
 		if (mapiMessage.lpOriginator)
 		{
 			delete[] mapiMessage.lpOriginator->lpszName;

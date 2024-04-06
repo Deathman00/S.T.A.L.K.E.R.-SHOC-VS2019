@@ -18,13 +18,13 @@
 #include "StrStream.h"
 
 /// Lower value of Unicode high-surrogate character.
-#define HIGH_SURROGATE_START   0xD800
+#define HIGH_SURROGATE_START 0xD800
 /// Higher value of Unicode high-surrogate character.
-#define HIGH_SURROGATE_END     0xDBFF
+#define HIGH_SURROGATE_END 0xDBFF
 /// Lower value of Unicode low-surrogate character.
-#define LOW_SURROGATE_START    0xDC00
+#define LOW_SURROGATE_START 0xDC00
 /// Higher value of Unicode low-surrogate character.
-#define LOW_SURROGATE_END      0xDFFF
+#define LOW_SURROGATE_END 0xDFFF
 
 /// Text encoding.
 enum TEXT_ENCODING
@@ -42,7 +42,7 @@ enum TEXT_ENCODING
 /// UTF-8 encoder.
 class CUTF8EncStream
 {
-public:
+  public:
 	/// Initialize the object.
 	CUTF8EncStream(void);
 	/// Initialize the object.
@@ -78,7 +78,7 @@ public:
 	/// Clear data in the buffer.
 	void Reset(void);
 
-private:
+  private:
 	/// Object can't be copied.
 	CUTF8EncStream(const CUTF8EncStream& rStream);
 	/// Object can't be copied.
@@ -234,9 +234,11 @@ int GetStringSizeInUTF8(PCTSTR pszString);
 /// Base decoder interface.
 class CBaseDecoder
 {
-public:
+  public:
 	/// Object destructor.
-	virtual ~CBaseDecoder(void) { }
+	virtual ~CBaseDecoder(void)
+	{
+	}
 	/// Return current encoding.
 	virtual TEXT_ENCODING GetEncoding(void) = 0;
 	/// Decode single character.
@@ -252,23 +254,33 @@ public:
 /// UTF-8 decoder.
 class CUTF8Decoder : public CBaseDecoder
 {
-public:
+  public:
 	/// Return current encoding.
 	virtual TEXT_ENCODING GetEncoding(void)
-	{ return TXTENC_UTF8; }
+	{
+		return TXTENC_UTF8;
+	}
 	/// Decode single character.
 	virtual int DecodeChar(BYTE* pBytes, int nNumBytes, TCHAR arrChar[2], int& nCharSize)
-	{ return UTF8DecodeChar(pBytes, nNumBytes, arrChar, nCharSize); }
+	{
+		return UTF8DecodeChar(pBytes, nNumBytes, arrChar, nCharSize);
+	}
 	/// Decode string of characters.
 	virtual int DecodeString(BYTE* pBytes, int nNumBytes, PTSTR pszString, int nBufferSize)
-	{ return UTF8DecodeString(pBytes, nNumBytes, pszString, nBufferSize); }
+	{
+		return UTF8DecodeString(pBytes, nNumBytes, pszString, nBufferSize);
+	}
 	/// Get single object instance.
 	static CUTF8Decoder& GetInstance(void)
-	{ return m_instance; }
+	{
+		return m_instance;
+	}
 
-private:
+  private:
 	/// Hides object constructor.
-	CUTF8Decoder(void) { }
+	CUTF8Decoder(void)
+	{
+	}
 	/// Object can't be copied.
 	CUTF8Decoder(const CUTF8Decoder& rDecoder);
 	/// Object can't be copied.
@@ -281,23 +293,33 @@ private:
 /// UTF-16 decoder.
 class CUTF16LeDecoder : public CBaseDecoder
 {
-public:
+  public:
 	/// Return current encoding.
 	virtual TEXT_ENCODING GetEncoding(void)
-	{ return TXTENC_UTF16LE; }
+	{
+		return TXTENC_UTF16LE;
+	}
 	/// Decode single character.
 	virtual int DecodeChar(BYTE* pBytes, int nNumBytes, TCHAR arrChar[2], int& nCharSize)
-	{ return UTF16LeDecodeChar(pBytes, nNumBytes, arrChar, nCharSize); }
+	{
+		return UTF16LeDecodeChar(pBytes, nNumBytes, arrChar, nCharSize);
+	}
 	/// Decode string of characters.
 	virtual int DecodeString(BYTE* pBytes, int nNumBytes, PTSTR pszString, int nBufferSize)
-	{ return UTF16LeDecodeString(pBytes, nNumBytes, pszString, nBufferSize); }
+	{
+		return UTF16LeDecodeString(pBytes, nNumBytes, pszString, nBufferSize);
+	}
 	/// Get single object instance.
 	static CUTF16LeDecoder& GetInstance(void)
-	{ return m_instance; }
+	{
+		return m_instance;
+	}
 
-private:
+  private:
 	/// Hides object constructor.
-	CUTF16LeDecoder(void) { }
+	CUTF16LeDecoder(void)
+	{
+	}
 	/// Object can't be copied.
 	CUTF16LeDecoder(const CUTF16LeDecoder& rDecoder);
 	/// Object can't be copied.
@@ -310,23 +332,33 @@ private:
 /// UTF-16 decoder.
 class CUTF16BeDecoder : public CBaseDecoder
 {
-public:
+  public:
 	/// Return current encoding.
 	virtual TEXT_ENCODING GetEncoding(void)
-	{ return TXTENC_UTF16BE; }
+	{
+		return TXTENC_UTF16BE;
+	}
 	/// Decode single character.
 	virtual int DecodeChar(BYTE* pBytes, int nNumBytes, TCHAR arrChar[2], int& nCharSize)
-	{ return UTF16BeDecodeChar(pBytes, nNumBytes, arrChar, nCharSize); }
+	{
+		return UTF16BeDecodeChar(pBytes, nNumBytes, arrChar, nCharSize);
+	}
 	/// Decode string of characters.
 	virtual int DecodeString(BYTE* pBytes, int nNumBytes, PTSTR pszString, int nBufferSize)
-	{ return UTF16BeDecodeString(pBytes, nNumBytes, pszString, nBufferSize); }
+	{
+		return UTF16BeDecodeString(pBytes, nNumBytes, pszString, nBufferSize);
+	}
 	/// Get single object instance.
 	static CUTF16BeDecoder& GetInstance(void)
-	{ return m_instance; }
+	{
+		return m_instance;
+	}
 
-private:
+  private:
 	/// Hides object constructor.
-	CUTF16BeDecoder(void) { }
+	CUTF16BeDecoder(void)
+	{
+	}
 	/// Object can't be copied.
 	CUTF16BeDecoder(const CUTF16BeDecoder& rDecoder);
 	/// Object can't be copied.
@@ -339,23 +371,33 @@ private:
 /// Ansi decoder.
 class CAnsiDecoder : public CBaseDecoder
 {
-public:
+  public:
 	/// Return current encoding.
 	virtual TEXT_ENCODING GetEncoding(void)
-	{ return TXTENC_ANSI; }
+	{
+		return TXTENC_ANSI;
+	}
 	/// Decode single character.
 	virtual int DecodeChar(BYTE* pBytes, int nNumBytes, TCHAR arrChar[2], int& nCharSize)
-	{ return AnsiDecodeChar(pBytes, nNumBytes, arrChar, nCharSize); }
+	{
+		return AnsiDecodeChar(pBytes, nNumBytes, arrChar, nCharSize);
+	}
 	/// Decode string of characters.
 	virtual int DecodeString(BYTE* pBytes, int nNumBytes, PTSTR pszString, int nBufferSize)
-	{ return AnsiDecodeString(pBytes, nNumBytes, pszString, nBufferSize); }
+	{
+		return AnsiDecodeString(pBytes, nNumBytes, pszString, nBufferSize);
+	}
 	/// Get single object instance.
 	static CAnsiDecoder& GetInstance(void)
-	{ return m_instance; }
+	{
+		return m_instance;
+	}
 
-private:
+  private:
 	/// Hides object constructor.
-	CAnsiDecoder(void) { }
+	CAnsiDecoder(void)
+	{
+	}
 	/// Object can't be copied.
 	CAnsiDecoder(const CAnsiDecoder& rDecoder);
 	/// Object can't be copied.
@@ -368,23 +410,35 @@ private:
 /// Text input stream.
 class CCharInputStream
 {
-public:
+  public:
 	/// Object destructor.
-	virtual ~CCharInputStream(void) { }
+	virtual ~CCharInputStream(void)
+	{
+	}
 	/// Read character from the stream.
 	virtual int ReadChar(TCHAR arrChar[2]) = 0;
 	/// Get byte order mark. This function is optional.
 	virtual bool ReadPreamble(TEXT_ENCODING& /*eEncoding*/)
-	{ return false; }
+	{
+		return false;
+	}
 	/// Get text decoder. This function is optional.
 	virtual CBaseDecoder* GetDecoder(void) const
-	{ return NULL; }
+	{
+		return NULL;
+	}
 	/// Set text decoder. This function is optional.
 	virtual bool SetDecoder(CBaseDecoder* /*pDecoder*/)
-	{ return false; }
+	{
+		return false;
+	}
 	/// Get stream name. This function is optional.
 	virtual bool GetName(PTSTR pszName, int nNameSize) const
-	{ if (nNameSize > 0) *pszName = _T('0'); return false; }
+	{
+		if (nNameSize > 0)
+			*pszName = _T('0');
+		return false;
+	}
 	/// Read and apply byte order mark.
 	bool CheckEncoding(void);
 	/// Read and apply byte order mark.
@@ -394,7 +448,7 @@ public:
 /// Decoding input stream.
 class CDecInputStream : public CCharInputStream
 {
-public:
+  public:
 	/// Initialize the object.
 	explicit CDecInputStream(CInputStream* pInputStream = NULL);
 	/// Read character from the stream.
@@ -412,7 +466,7 @@ public:
 	/// Get pointer to the input stream.
 	CInputStream* GetInputStream(void) const;
 
-private:
+  private:
 	/// Object can't be copied.
 	CDecInputStream(const CDecInputStream& rStream);
 	/// Object can't be copied.
@@ -484,7 +538,7 @@ inline bool CDecInputStream::GetName(PTSTR pszName, int nNameSize) const
 /// String input stream.
 class CStrInputStream : public CCharInputStream
 {
-public:
+  public:
 	/// Initialize the object.
 	explicit CStrInputStream(const CStrStream* pStrStream = NULL);
 	/// Read character from the stream.
@@ -494,7 +548,7 @@ public:
 	/// Get pointer to the input stream.
 	const CStrStream* GetStrStream(void) const;
 
-private:
+  private:
 	/// Object can't be copied.
 	CStrInputStream(const CStrInputStream& rStream);
 	/// Object can't be copied.

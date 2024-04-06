@@ -168,7 +168,8 @@ void CHexView::DrawHexView(HDC hdc, RECT* prcPaint)
 		SelectFont(hdcMem, hOldFont);
 
 #ifdef USE_MEM_DC
-	BitBlt(hdc, prcPaint->left, prcPaint->top, nClientWidth, nClientHeight, hdcMem, prcPaint->left, prcPaint->top, SRCCOPY);
+	BitBlt(hdc, prcPaint->left, prcPaint->top, nClientWidth, nClientHeight, hdcMem, prcPaint->left, prcPaint->top,
+		   SRCCOPY);
 	SelectBitmap(hdcMem, hbmpSafe);
 	DeleteDC(hdcMem);
 	DeleteBitmap(hbmpMem);
@@ -190,7 +191,7 @@ void CHexView::ResizeHexView(BOOL bIgnoreScrollPos)
 	sinfo.cbSize = sizeof(sinfo);
 	sinfo.fMask = SIF_POS | SIF_RANGE;
 	GetScrollInfo(m_hwnd, SB_HORZ, &sinfo);
-	int nOldHorPos = ! bIgnoreScrollPos ? sinfo.nPos : 0;
+	int nOldHorPos = !bIgnoreScrollPos ? sinfo.nPos : 0;
 	int nWidth = (10 + 3 * LINE_WIDTH + 2 + LINE_WIDTH) * tmetr.tmAveCharWidth;
 
 	sinfo.fMask = SIF_POS | SIF_PAGE | SIF_RANGE;
@@ -206,7 +207,7 @@ void CHexView::ResizeHexView(BOOL bIgnoreScrollPos)
 	ZeroMemory(&sinfo, sizeof(sinfo));
 	sinfo.cbSize = sizeof(sinfo);
 	int nOldVertPos;
-	if (! bIgnoreScrollPos)
+	if (!bIgnoreScrollPos)
 	{
 		sinfo.fMask = SIF_POS;
 		GetScrollInfo(m_hwnd, SB_VERT, &sinfo);
@@ -268,30 +269,30 @@ void CHexView::ScrollHexView(int nScrollBarType, int nScrollCode)
 	switch (nScrollCode)
 	{
 	case SB_LINEUP:
-	//case SB_LINELEFT:
+		// case SB_LINELEFT:
 		sinfo.nPos -= nLineOffset;
 		break;
 	case SB_LINEDOWN:
-	//case SB_LINERIGHT:
+		// case SB_LINERIGHT:
 		sinfo.nPos += nLineOffset;
 		break;
 	case SB_PAGEUP:
-	//case SB_PAGELEFT:
+		// case SB_PAGELEFT:
 		sinfo.nPos -= sinfo.nPage;
 		break;
 	case SB_PAGEDOWN:
-	//case SB_PAGERIGHT:
+		// case SB_PAGERIGHT:
 		sinfo.nPos += sinfo.nPage;
 		break;
 	case SB_THUMBTRACK:
 		sinfo.nPos = sinfo.nTrackPos;
 		break;
 	case SB_TOP:
-	//case SB_LEFT:
+		// case SB_LEFT:
 		sinfo.nPos = 0;
 		break;
 	case SB_BOTTOM:
-	//case SB_RIGHT:
+		// case SB_RIGHT:
 		sinfo.nPos = sinfo.nMax;
 		break;
 	default:
@@ -336,9 +337,9 @@ LRESULT CALLBACK CHexView::HexViewWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, L
 	int zDelta, zTotal, nScrollCode, nScrollBarType;
 	LONG lWindowStyle;
 
-	CHexView* _this  = (CHexView*)GetWindowLongPtr(hwnd, GWL_USERDATA);
+	CHexView* _this = (CHexView*)GetWindowLongPtr(hwnd, GWL_USERDATA);
 	_ASSERTE(_this != NULL);
-	switch(uMsg)
+	switch (uMsg)
 	{
 	case WM_LBUTTONDOWN:
 		SetFocus(hwnd);
@@ -347,7 +348,7 @@ LRESULT CALLBACK CHexView::HexViewWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, L
 		return TRUE;
 	case WM_PAINT:
 		hdc = (HDC)wParam;
-		if (! hdc)
+		if (!hdc)
 		{
 			hdc = BeginPaint(hwnd, &ps);
 			if (hdc)
@@ -430,7 +431,7 @@ LRESULT CALLBACK CHexView::HexViewWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, L
 	case WM_SETTINGCHANGE:
 		if (wParam == SPI_SETWHEELSCROLLLINES)
 		{
-			if (! SystemParametersInfo(SPI_GETWHEELSCROLLLINES, 0, &_this->m_nWheelLines, 0))
+			if (!SystemParametersInfo(SPI_GETWHEELSCROLLLINES, 0, &_this->m_nWheelLines, 0))
 				_this->m_nWheelLines = g_dwDefaultNumWheels;
 		}
 		return 0;
@@ -450,7 +451,7 @@ void CHexView::Attach(HWND hwnd)
 	_ASSERTE(m_hwnd == NULL);
 	_ASSERTE(g_pResManager != NULL);
 
-	if (! SystemParametersInfo(SPI_GETWHEELSCROLLLINES, 0, &m_nWheelLines, 0))
+	if (!SystemParametersInfo(SPI_GETWHEELSCROLLLINES, 0, &m_nWheelLines, 0))
 		m_nWheelLines = g_dwDefaultNumWheels;
 
 	m_hwnd = hwnd;
@@ -536,8 +537,10 @@ void CHexView::CacheLine(DWORD dwCachedLineNum)
 	if (dwCachedLineNum >= m_dwFirstCachedLine && dwCachedLineNum < m_dwFirstCachedLine + dwNumCachedLines)
 		return;
 
-	DWORD dwFirstCachedLine = dwCachedLineNum > NUMBER_OF_CACHED_LINES / 2 ? dwCachedLineNum - NUMBER_OF_CACHED_LINES / 2 : 0;
-	DWORD dwFirstMappedLine, dwNumMappedLines, dwFirstLoadedLine, dwNumLoadedLines, dwFromMemOffset, dwToMemOffset, dwLoadOffset;
+	DWORD dwFirstCachedLine =
+		dwCachedLineNum > NUMBER_OF_CACHED_LINES / 2 ? dwCachedLineNum - NUMBER_OF_CACHED_LINES / 2 : 0;
+	DWORD dwFirstMappedLine, dwNumMappedLines, dwFirstLoadedLine, dwNumLoadedLines, dwFromMemOffset, dwToMemOffset,
+		dwLoadOffset;
 	if (m_dwFirstCachedLine <= dwFirstCachedLine && dwFirstCachedLine < m_dwFirstCachedLine + dwNumCachedLines)
 	{
 		dwFirstMappedLine = dwFirstCachedLine;

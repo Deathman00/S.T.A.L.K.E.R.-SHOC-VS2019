@@ -24,14 +24,16 @@
 #include "LogLink.h"
 
 #ifdef _MANAGED
- #define BUGTRAP_TITLE   _T("BugTrap for .NET")
+#define BUGTRAP_TITLE _T("BugTrap for .NET")
 #else
- #define BUGTRAP_TITLE   _T("BugTrap for Win32")
+#define BUGTRAP_TITLE _T("BugTrap for Win32")
 #endif
 
-#define _TOSTR(value)   _T(#value)
-#define TOSTR(value)    _TOSTR(value)
-#define VERSION_STRING  TOSTR(FILE_MAJOR_VERSION) _T("-") TOSTR(FILE_MINOR_VERSION) _T("-") TOSTR(BUILD_NUMBER) _T("-") TOSTR(REVISION_NUMBER)
+#define _TOSTR(value) _T(#value)
+#define TOSTR(value) _TOSTR(value)
+#define VERSION_STRING                                                                                                 \
+	TOSTR(FILE_MAJOR_VERSION)                                                                                          \
+	_T("-") TOSTR(FILE_MINOR_VERSION) _T("-") TOSTR(BUILD_NUMBER) _T("-") TOSTR(REVISION_NUMBER)
 
 /// Maximum size of memory buffer (100K).
 const DWORD g_dwMaxBufferSize = 100 * 1024;
@@ -95,7 +97,7 @@ extern CSymEngine* g_pSymEngine;
 /// Pointer to process enumerator.
 extern CEnumProcess* g_pEnumProc;
 /// Array of custom log file names attached to the report.
-extern CArray<CLogLink*, CDynamicTraits<CLogLink*> > g_arrLogLinks;
+extern CArray<CLogLink*, CDynamicTraits<CLogLink*>> g_arrLogLinks;
 /// User defined message printed to the log file.
 extern CStrHolder g_strUserMessage;
 /// 1st introduction message displayed on the dialog.

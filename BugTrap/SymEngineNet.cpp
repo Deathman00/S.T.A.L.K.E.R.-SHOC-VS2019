@@ -25,28 +25,29 @@
 
 namespace IntelleSoft
 {
-	namespace BugTrap
-	{
-		StackFrame^ StackFrameEnumerator::GetNextStackTraceEntry(void)
-		{
-			return (this->frameIndex < this->stackTrace->FrameCount ? this->stackTrace->GetFrame(this->frameIndex++) : nullptr);
-		}
-
-		AssemblyEnumerator::AssemblyEnumerator(void)
-		{
-			AppDomain^ domain = AppDomain::CurrentDomain;
-			this->assemblies = domain->GetAssemblies();
-			this->assemblyEnumerator = this->assemblies->GetEnumerator();
-		}
-
-		Assembly^ AssemblyEnumerator::GetNextAssembly(void)
-		{
-			return (this->assemblyEnumerator != nullptr && this->assemblyEnumerator->MoveNext() ? safe_cast<Assembly^>(this->assemblyEnumerator->Current) : nullptr);
-		}
-	}
+namespace BugTrap
+{
+StackFrame ^ StackFrameEnumerator::GetNextStackTraceEntry(void)
+{
+	return (this->frameIndex < this->stackTrace->FrameCount ? this->stackTrace->GetFrame(this->frameIndex++) : nullptr);
 }
+
+AssemblyEnumerator::AssemblyEnumerator(void)
+{
+	AppDomain ^ domain = AppDomain::CurrentDomain;
+	this->assemblies = domain->GetAssemblies();
+	this->assemblyEnumerator = this->assemblies->GetEnumerator();
+}
+
+Assembly ^ AssemblyEnumerator::GetNextAssembly(void)
+{
+	return (this->assemblyEnumerator != nullptr && this->assemblyEnumerator->MoveNext()
+				? safe_cast<Assembly ^>(this->assemblyEnumerator->Current)
+				: nullptr);
+}
+} // namespace BugTrap
+} // namespace IntelleSoft
 
 #pragma unmanaged
 
 #endif // _MANAGED
-

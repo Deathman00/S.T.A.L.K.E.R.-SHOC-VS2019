@@ -20,7 +20,7 @@
 /// Text view control class.
 class CTextView
 {
-public:
+  public:
 	/// Initialize the object.
 	CTextView(void);
 	/// De-initialize the object.
@@ -50,7 +50,7 @@ public:
 		LINE_BUFFER_SIZE = 40000
 	};
 
-private:
+  private:
 	/// Protect the class from being accidentally copied.
 	CTextView(const CTextView& rTextView);
 	/// Protect the class from being accidentally copied.

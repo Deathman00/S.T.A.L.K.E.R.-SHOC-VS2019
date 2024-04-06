@@ -31,7 +31,8 @@ BOOL CTextLogFile::LoadEntries(void)
 #endif
 	BOOL bResult = FALSE;
 	PCTSTR pszLogFileName = GetLogFileName();
-	HANDLE hFile = CreateFile(pszLogFileName, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	HANDLE hFile =
+		CreateFile(pszLogFileName, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (hFile != INVALID_HANDLE_VALUE)
 	{
 		DWORD dwFileSize = GetFileSize(hFile, NULL);
@@ -48,7 +49,8 @@ BOOL CTextLogFile::LoadEntries(void)
 			BYTE arrUTF8Preamble[sizeof(g_arrUTF8Preamble)];
 			DWORD dwWritten = 0;
 			if (ReadFile(hFile, arrUTF8Preamble, sizeof(arrUTF8Preamble), &dwWritten, NULL) &&
-				dwWritten == sizeof(arrUTF8Preamble) && memcmp(arrUTF8Preamble, g_arrUTF8Preamble, sizeof(arrUTF8Preamble)) == 0)
+				dwWritten == sizeof(arrUTF8Preamble) &&
+				memcmp(arrUTF8Preamble, g_arrUTF8Preamble, sizeof(arrUTF8Preamble)) == 0)
 			{
 				bResult = TRUE;
 				DWORD dwCurrentPos = 0, dwLineStart = 0;
@@ -56,7 +58,7 @@ BOOL CTextLogFile::LoadEntries(void)
 				{
 					dwWritten = 0;
 					DWORD dwFreeSize = dwBufferSize - dwCurrentPos;
-					if (! ReadFile(hFile, pFileBuffer + dwCurrentPos, dwFreeSize, &dwWritten, NULL))
+					if (!ReadFile(hFile, pFileBuffer + dwCurrentPos, dwFreeSize, &dwWritten, NULL))
 						goto end;
 					BOOL bEndOfFile = dwWritten < dwFreeSize;
 					dwWritten += dwCurrentPos;
@@ -65,7 +67,7 @@ BOOL CTextLogFile::LoadEntries(void)
 						goto end;
 					for (;;)
 					{
-						if (dwCurrentPos >= dwWritten && ! bEndOfFile)
+						if (dwCurrentPos >= dwWritten && !bEndOfFile)
 						{
 							if (dwLineStart > 0)
 							{
@@ -77,7 +79,7 @@ BOOL CTextLogFile::LoadEntries(void)
 							{
 								dwBufferSize *= 2;
 								PBYTE pNewFileBuffer = new BYTE[dwBufferSize];
-								if (! pNewFileBuffer)
+								if (!pNewFileBuffer)
 								{
 									bResult = FALSE;
 									goto end;
@@ -88,9 +90,12 @@ BOOL CTextLogFile::LoadEntries(void)
 							}
 							break;
 						}
-						if (dwCurrentPos < dwWritten ? pFileBuffer[dwCurrentPos] == '\r' || pFileBuffer[dwCurrentPos] == '\n' : bEndOfFile)
+						if (dwCurrentPos < dwWritten
+								? pFileBuffer[dwCurrentPos] == '\r' || pFileBuffer[dwCurrentPos] == '\n'
+								: bEndOfFile)
 						{
-							if (dwLineStart < dwCurrentPos && ! AddToTail(pFileBuffer + dwLineStart, dwCurrentPos - dwLineStart, true))
+							if (dwLineStart < dwCurrentPos &&
+								!AddToTail(pFileBuffer + dwLineStart, dwCurrentPos - dwLineStart, true))
 							{
 								bResult = FALSE;
 								goto end;
@@ -106,8 +111,8 @@ BOOL CTextLogFile::LoadEntries(void)
 					}
 				}
 			}
-end:
-			if (! bResult)
+		end:
+			if (!bResult)
 				FreeEntries();
 			delete[] pFileBuffer;
 		}
@@ -116,8 +121,7 @@ end:
 	else
 	{
 		DWORD dwLastError = GetLastError();
-		if (dwLastError == ERROR_FILE_NOT_FOUND ||
-			dwLastError == ERROR_PATH_NOT_FOUND ||
+		if (dwLastError == ERROR_FILE_NOT_FOUND || dwLastError == ERROR_PATH_NOT_FOUND ||
 			GetFileAttributes(pszLogFileName) == INVALID_FILE_ATTRIBUTES)
 		{
 			bResult = TRUE; // ignore missing files
@@ -126,7 +130,9 @@ end:
 #ifdef _DEBUG
 	DWORD dwEndTime = GetTickCount();
 	TCHAR szMessage[128];
-	_stprintf_s(szMessage, countof(szMessage), _T("CTextLogFile::LoadEntries(): %lu entries, %lu bytes, %lu milliseconds\r\n"), GetNumEntries(), GetNumBytes(), dwEndTime - dwStartTime);
+	_stprintf_s(szMessage, countof(szMessage),
+				_T("CTextLogFile::LoadEntries(): %lu entries, %lu bytes, %lu milliseconds\r\n"), GetNumEntries(),
+				GetNumBytes(), dwEndTime - dwStartTime);
 	OutputDebugString(szMessage);
 #endif
 	return bResult;
@@ -157,7 +163,9 @@ BOOL CTextLogFile::SaveEntries(bool /*bCrash*/)
 #ifdef _DEBUG
 	DWORD dwEndTime = GetTickCount();
 	TCHAR szMessage[128];
-	_stprintf_s(szMessage, countof(szMessage), _T("CTextLogFile::SaveEntries(): %lu entries, %lu bytes, %lu milliseconds\r\n"), GetNumEntries(), GetNumBytes(), dwEndTime - dwStartTime);
+	_stprintf_s(szMessage, countof(szMessage),
+				_T("CTextLogFile::SaveEntries(): %lu entries, %lu bytes, %lu milliseconds\r\n"), GetNumEntries(),
+				GetNumBytes(), dwEndTime - dwStartTime);
 	OutputDebugString(szMessage);
 #endif
 	CloseHandle(hFile);
@@ -258,7 +266,8 @@ BOOL CTextLogFile::AddToTail(bool bAddCrLf)
  * @param rcsConsoleAccess - provides synchronous access to the console.
  * @param pszEntry - log entry text.
  */
-void CTextLogFile::WriteLogEntry(BUGTRAP_LOGLEVEL eLogLevel, ENTRY_MODE eEntryMode, CRITICAL_SECTION& rcsConsoleAccess, PCTSTR pszEntry)
+void CTextLogFile::WriteLogEntry(BUGTRAP_LOGLEVEL eLogLevel, ENTRY_MODE eEntryMode, CRITICAL_SECTION& rcsConsoleAccess,
+								 PCTSTR pszEntry)
 {
 	BUGTRAP_LOGLEVEL eLogFileLevel = GetLogLevel();
 	if (eLogLevel <= eLogFileLevel)

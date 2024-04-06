@@ -21,10 +21,9 @@
 #include "StrStream.h"
 
 /// Object instantiation traits.
-template <typename DATA_TYPE>
-class CObjectTraits
+template <typename DATA_TYPE> class CObjectTraits
 {
-public:
+  public:
 	/// Calls the constructor of @a DATA_TYPE class by default.
 	static void Constructor(DATA_TYPE& rData);
 	/// Calls the destructor of @a DATA_TYPE class by default.
@@ -36,19 +35,18 @@ public:
 /**
  * @param rData - reference to the memory placement of new object.
  */
-template <typename DATA_TYPE>
-inline void CObjectTraits<DATA_TYPE>::Constructor(DATA_TYPE& rData)
+template <typename DATA_TYPE> inline void CObjectTraits<DATA_TYPE>::Constructor(DATA_TYPE& rData)
 {
-	::new((void*)&rData) DATA_TYPE;
+	::new ((void*)&rData) DATA_TYPE;
 }
 
 /**
  * @param rData - reference to the memory placement of deleted object.
  */
-template <typename DATA_TYPE>
-inline void CObjectTraits<DATA_TYPE>::Destructor(DATA_TYPE& rData)
+template <typename DATA_TYPE> inline void CObjectTraits<DATA_TYPE>::Destructor(DATA_TYPE& rData)
 {
-	rData; rData.~DATA_TYPE();
+	rData;
+	rData.~DATA_TYPE();
 }
 
 /**
@@ -62,10 +60,9 @@ inline void CObjectTraits<DATA_TYPE>::Assignment(DATA_TYPE& rDstData, const DATA
 }
 
 /// Value initialization traits.
-template <typename DATA_TYPE, DATA_TYPE value = 0>
-class CValueTraits
+template <typename DATA_TYPE, DATA_TYPE value = 0> class CValueTraits
 {
-public:
+  public:
 	/// Calls the constructor of @a DATA_TYPE by default.
 	static void Constructor(DATA_TYPE& rData);
 	/// Calls the destructor of @a DATA_TYPE by default
@@ -77,8 +74,7 @@ public:
 /**
  * @param rData - reference to the memory placement of new object.
  */
-template <typename DATA_TYPE, DATA_TYPE value>
-inline void CValueTraits<DATA_TYPE, value>::Constructor(DATA_TYPE& rData)
+template <typename DATA_TYPE, DATA_TYPE value> inline void CValueTraits<DATA_TYPE, value>::Constructor(DATA_TYPE& rData)
 {
 	rData = value;
 }
@@ -102,10 +98,9 @@ inline void CValueTraits<DATA_TYPE, value>::Assignment(DATA_TYPE& rDstData, cons
 }
 
 /// Dynamic instantiation traits.
-template <typename DATA_TYPE>
-class CDynamicTraits
+template <typename DATA_TYPE> class CDynamicTraits
 {
-public:
+  public:
 	/// Calls the constructor of @a DATA_TYPE class by default.
 	static void Constructor(DATA_TYPE& rData);
 	/// Calls the destructor of @a DATA_TYPE class by default.
@@ -117,8 +112,7 @@ public:
 /**
  * @param rData - reference to the memory placement of new object.
  */
-template <typename DATA_TYPE>
-inline void CDynamicTraits<DATA_TYPE>::Constructor(DATA_TYPE& rData)
+template <typename DATA_TYPE> inline void CDynamicTraits<DATA_TYPE>::Constructor(DATA_TYPE& rData)
 {
 	rData = NULL;
 }
@@ -126,8 +120,7 @@ inline void CDynamicTraits<DATA_TYPE>::Constructor(DATA_TYPE& rData)
 /**
  * @param rData - reference to the memory placement of deleted object.
  */
-template <typename DATA_TYPE>
-inline void CDynamicTraits<DATA_TYPE>::Destructor(DATA_TYPE& rData)
+template <typename DATA_TYPE> inline void CDynamicTraits<DATA_TYPE>::Destructor(DATA_TYPE& rData)
 {
 	delete rData;
 }
@@ -144,10 +137,9 @@ inline void CDynamicTraits<DATA_TYPE>::Assignment(DATA_TYPE& rDstData, const DAT
 }
 
 /// Data comparator traits.
-template <typename DATA_TYPE>
-class CCompareTraits
+template <typename DATA_TYPE> class CCompareTraits
 {
-public:
+  public:
 	/// Determines whatever two elements are equal to each other.
 	static bool Compare(const DATA_TYPE& rData1, const DATA_TYPE& rData2);
 	/// Compares two elements according to their order.
@@ -187,11 +179,11 @@ int CCompareTraits<DATA_TYPE>::OrderedCompare(const DATA_TYPE& rData1, const DAT
 /// Explicit template specialization for strings.
 template <> class CCompareTraits<TCHAR*>
 {
-public:
+  public:
 	/// Determines whatever two elements are equal to each other.
-	static bool Compare(TCHAR * const & rData1, TCHAR * const & rData2);
+	static bool Compare(TCHAR* const& rData1, TCHAR* const& rData2);
 	/// Compares two elements according to their order.
-	static int OrderedCompare(TCHAR * const & rData1, TCHAR * const & rData2);
+	static int OrderedCompare(TCHAR* const& rData1, TCHAR* const& rData2);
 };
 
 /**
@@ -199,7 +191,7 @@ public:
  * @param rData2 - reference to the second element.
  * @return true if elements are equal.
  */
-inline bool CCompareTraits<TCHAR*>::Compare(TCHAR * const & rData1, TCHAR * const & rData2)
+inline bool CCompareTraits<TCHAR*>::Compare(TCHAR* const& rData1, TCHAR* const& rData2)
 {
 	return (_tcscmp(rData1, rData2) == 0);
 }
@@ -212,7 +204,7 @@ inline bool CCompareTraits<TCHAR*>::Compare(TCHAR * const & rData1, TCHAR * cons
  * - = 0 if first element is equal to the second element;
  * - > 0 if first element is greater than second element.
  */
-inline int CCompareTraits<TCHAR*>::OrderedCompare(TCHAR * const & rData1, TCHAR * const & rData2)
+inline int CCompareTraits<TCHAR*>::OrderedCompare(TCHAR* const& rData1, TCHAR* const& rData2)
 {
 	return _tcscmp(rData1, rData2);
 }
@@ -220,11 +212,11 @@ inline int CCompareTraits<TCHAR*>::OrderedCompare(TCHAR * const & rData1, TCHAR 
 /// Explicit template specialization for strings.
 template <> class CCompareTraits<const TCHAR*>
 {
-public:
+  public:
 	/// Determines whatever two elements are equal to each other.
-	static bool Compare(TCHAR const * const & rData1, TCHAR const * const & rData2);
+	static bool Compare(TCHAR const* const& rData1, TCHAR const* const& rData2);
 	/// Compares two elements according to their order.
-	static int OrderedCompare(TCHAR const * const & rData1, TCHAR const * const & rData2);
+	static int OrderedCompare(TCHAR const* const& rData1, TCHAR const* const& rData2);
 };
 
 /**
@@ -232,7 +224,7 @@ public:
  * @param rData2 - reference to the second element.
  * @return true if elements are equal.
  */
-inline bool CCompareTraits<const TCHAR*>::Compare(TCHAR const * const & rData1, TCHAR const * const & rData2)
+inline bool CCompareTraits<const TCHAR*>::Compare(TCHAR const* const& rData1, TCHAR const* const& rData2)
 {
 	return (_tcscmp(rData1, rData2) == 0);
 }
@@ -245,16 +237,15 @@ inline bool CCompareTraits<const TCHAR*>::Compare(TCHAR const * const & rData1, 
  * - = 0 if first element is equal to the second element;
  * - > 0 if first element is greater than second element.
  */
-inline int CCompareTraits<const TCHAR*>::OrderedCompare(TCHAR const * const & rData1, TCHAR const * const & rData2)
+inline int CCompareTraits<const TCHAR*>::OrderedCompare(TCHAR const* const& rData1, TCHAR const* const& rData2)
 {
 	return _tcscmp(rData1, rData2);
 }
 
 /// Comparator traits used for incomparable objects.
-template <typename DATA_TYPE>
-class CIncomparableTraits
+template <typename DATA_TYPE> class CIncomparableTraits
 {
-public:
+  public:
 	/// Determines whatever two elements are equal to each other.
 	static bool Compare(const DATA_TYPE& rData1, const DATA_TYPE& rData2);
 	/// Compares two elements according to their order.
@@ -289,10 +280,9 @@ int CIncomparableTraits<DATA_TYPE>::OrderedCompare(const DATA_TYPE& /*rData1*/, 
 }
 
 /// Hash key traits.
-template <typename KEY_TYPE>
-class CHashTraits
+template <typename KEY_TYPE> class CHashTraits
 {
-public:
+  public:
 	/// Computes the hash value for the given object instance.
 	static unsigned HashKey(const KEY_TYPE& key);
 };
@@ -301,8 +291,7 @@ public:
  * @param key - hash value must be generated for this object.
  * @return hash value of the given object.
  */
-template <typename KEY_TYPE>
-inline unsigned CHashTraits<KEY_TYPE>::HashKey(const KEY_TYPE& key)
+template <typename KEY_TYPE> inline unsigned CHashTraits<KEY_TYPE>::HashKey(const KEY_TYPE& key)
 {
 	return ((unsigned)key >> 4);
 }
@@ -310,7 +299,7 @@ inline unsigned CHashTraits<KEY_TYPE>::HashKey(const KEY_TYPE& key)
 /// Explicit template specialization for string hash tables.
 template <> class CHashTraits<CStrHolder>
 {
-public:
+  public:
 	/// Computes the hash value for the given object instance.
 	static unsigned HashKey(const CStrHolder& strKey);
 };
@@ -328,7 +317,7 @@ inline unsigned CHashTraits<CStrHolder>::HashKey(const CStrHolder& strKey)
 /// Explicit template specialization for string hash tables.
 template <> class CHashTraits<CStrStream>
 {
-public:
+  public:
 	/// Computes the hash value for the given object instance.
 	static unsigned HashKey(const CStrStream& strKey);
 };
@@ -346,16 +335,16 @@ inline unsigned CHashTraits<CStrStream>::HashKey(const CStrStream& strKey)
 /// Explicit template specialization for string hash tables.
 template <> class CHashTraits<TCHAR*>
 {
-public:
+  public:
 	/// Computes the hash value for the given object instance.
-	static unsigned HashKey(TCHAR * const & pszKey);
+	static unsigned HashKey(TCHAR* const& pszKey);
 };
 
 /**
  * @param pszKey - hash value must be generated for this string.
  * @return hash value of the given object.
  */
-inline unsigned CHashTraits<TCHAR*>::HashKey(TCHAR * const & pszKey)
+inline unsigned CHashTraits<TCHAR*>::HashKey(TCHAR* const& pszKey)
 {
 	extern unsigned GetStringHashValue(const TCHAR* pszKey);
 	return GetStringHashValue(pszKey);
@@ -364,16 +353,16 @@ inline unsigned CHashTraits<TCHAR*>::HashKey(TCHAR * const & pszKey)
 /// Explicit template specialization for string hash tables.
 template <> class CHashTraits<const TCHAR*>
 {
-public:
+  public:
 	/// Computes the hash value for the given object instance.
-	static unsigned HashKey(TCHAR const * const & pszKey);
+	static unsigned HashKey(TCHAR const* const& pszKey);
 };
 
 /**
  * @param pszKey - hash value must be generated for this string.
  * @return hash value of the given object.
  */
-inline unsigned CHashTraits<const TCHAR*>::HashKey(TCHAR const * const & pszKey)
+inline unsigned CHashTraits<const TCHAR*>::HashKey(TCHAR const* const& pszKey)
 {
 	extern unsigned GetStringHashValue(const TCHAR* pszKey);
 	return GetStringHashValue(pszKey);

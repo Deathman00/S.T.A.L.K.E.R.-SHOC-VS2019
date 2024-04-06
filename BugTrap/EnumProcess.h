@@ -25,50 +25,50 @@
 
 #ifdef USE_VDMDBG
 /// 16-bit enumeration functions loaded from VDMDBG.DLL.
-typedef INT (WINAPI *PFVDMEnumTaskWOWEx)(DWORD dwProcessId, TASKENUMPROCEX fp, LPARAM lParam);
+typedef INT(WINAPI* PFVDMEnumTaskWOWEx)(DWORD dwProcessId, TASKENUMPROCEX fp, LPARAM lParam);
 #endif
 
 // Functions loaded from PSAPI.DLL.
 
 /// Type definition of pointer to EnumProcesses() function.
-typedef BOOL (WINAPI *PFEnumProcesses)(PDWORD pidProcess, DWORD cb, PDWORD pcbNeeded);
+typedef BOOL(WINAPI* PFEnumProcesses)(PDWORD pidProcess, DWORD cb, PDWORD pcbNeeded);
 /// Type definition of pointer to EnumProcessModules() function.
-typedef BOOL (WINAPI *PFEnumProcessModules)(HANDLE hProcess, HMODULE* phModule, DWORD cb, PDWORD pcbNeeded);
+typedef BOOL(WINAPI* PFEnumProcessModules)(HANDLE hProcess, HMODULE* phModule, DWORD cb, PDWORD pcbNeeded);
 /// Type definition of pointer to GetModuleFileNameEx() function.
-typedef DWORD (WINAPI *PFGetModuleFileNameEx)(HANDLE hProcess, HMODULE hModule, PTSTR pszFileName, DWORD nSize);
+typedef DWORD(WINAPI* PFGetModuleFileNameEx)(HANDLE hProcess, HMODULE hModule, PTSTR pszFileName, DWORD nSize);
 
 // Functions loaded from KERNEL32.DLL.
 
 /// Type definition of pointer to CreateToolhelp32Snapshot() function.
-typedef HANDLE (WINAPI *PFCreateToolhelp32Snapshot)(DWORD dwFlags, DWORD th32ProcessID);
+typedef HANDLE(WINAPI* PFCreateToolhelp32Snapshot)(DWORD dwFlags, DWORD th32ProcessID);
 /// Type definition of pointer to Process32First() function.
-typedef BOOL (WINAPI *PFProcess32First)(HANDLE hSnapshot, PPROCESSENTRY32 ppe);
+typedef BOOL(WINAPI* PFProcess32First)(HANDLE hSnapshot, PPROCESSENTRY32 ppe);
 /// Type definition of pointer to Process32Next() function.
-typedef BOOL (WINAPI *PFProcess32Next)(HANDLE hSnapshot, PPROCESSENTRY32 ppe);
+typedef BOOL(WINAPI* PFProcess32Next)(HANDLE hSnapshot, PPROCESSENTRY32 ppe);
 /// Type definition of pointer to Module32First() function.
-typedef BOOL (WINAPI *PFModule32First)(HANDLE hSnapshot, PMODULEENTRY32 pme);
+typedef BOOL(WINAPI* PFModule32First)(HANDLE hSnapshot, PMODULEENTRY32 pme);
 /// Type definition of pointer to Module32Next() function.
-typedef BOOL (WINAPI *PFModule32Next)(HANDLE hSnapshot, PMODULEENTRY32 pme);
+typedef BOOL(WINAPI* PFModule32Next)(HANDLE hSnapshot, PMODULEENTRY32 pme);
 /// Type definition of pointer to Thread32First() function.
-typedef BOOL (WINAPI *PFThread32First)(HANDLE hSnapshot, PTHREADENTRY32 pte);
+typedef BOOL(WINAPI* PFThread32First)(HANDLE hSnapshot, PTHREADENTRY32 pte);
 /// Type definition of pointer to Thread32Next() function.
-typedef BOOL (WINAPI *PFThread32Next)(HANDLE hSnapshot, PTHREADENTRY32 pte);
+typedef BOOL(WINAPI* PFThread32Next)(HANDLE hSnapshot, PTHREADENTRY32 pte);
 
 /// Enumerates processes in a system.
 class CEnumProcess
 {
-public:
+  public:
 	/// Possible enumeration methods.
 	enum ENUM_METHOD
 	{
 		/// No methods are defined.
-		EM_NONE     = 0x00,
+		EM_NONE = 0x00,
 #ifdef USE_VDMDBG
 		/// PROC16 method (Windows NT and Windows 2000).
-		EM_PROC16   = 0x01,
+		EM_PROC16 = 0x01,
 #endif
 		/// PSAPI method (Windows NT and Windows 2000).
-		EM_PSAPI    = 0x02,
+		EM_PSAPI = 0x02,
 		/// Tool Help (Windows 9x and Windows 2000).
 		EM_TOOLHELP = 0x04
 	};
@@ -143,7 +143,7 @@ public:
 	/// Set enumeration method.
 	void SetMethod(DWORD dwMethod);
 
-private:
+  private:
 	/// Protects the class from being accidentally copied.
 	CEnumProcess(const CEnumProcess& rEnumProcess);
 	/// Protects the class from being accidentally copied.
@@ -224,7 +224,8 @@ private:
 	PFVDMEnumTaskWOWEx FVDMEnumTaskWOWEx;
 
 	/// Enumerator for 16-bit processes.
-	static BOOL CALLBACK Enum16Proc(DWORD dwThreadId, WORD hModule16, WORD hTask16, PSZ pszModuleName, PSZ pszProcessName, LPARAM lpUserDefined);
+	static BOOL CALLBACK Enum16Proc(DWORD dwThreadId, WORD hModule16, WORD hTask16, PSZ pszModuleName,
+									PSZ pszProcessName, LPARAM lpUserDefined);
 #endif
 };
 

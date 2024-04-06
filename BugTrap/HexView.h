@@ -17,7 +17,7 @@
 /// Hex view control class.
 class CHexView
 {
-public:
+  public:
 	/// Initialize the object.
 	CHexView(void);
 	/// De-initialize the object.
@@ -43,7 +43,7 @@ public:
 		CACHE_SIZE = LINE_WIDTH * NUMBER_OF_CACHED_LINES
 	};
 
-private:
+  private:
 	/// Protect the class from being accidentally copied.
 	CHexView(const CHexView& rHexView);
 	/// Protect the class from being accidentally copied.

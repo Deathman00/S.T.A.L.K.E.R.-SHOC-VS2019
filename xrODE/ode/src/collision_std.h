@@ -32,40 +32,27 @@ the standard ODE geometry primitives.
 #include "../../include/ode/common.h"
 #include "collision_kernel.h"
 
-
 // primitive collision functions - these have the dColliderFn interface, i.e.
 // the same interface as dCollide(). the first and second geom arguments must
 // have the specified types.
 
-int dCollideSphereSphere (dxGeom *o1, dxGeom *o2, int flags,
-			  dContactGeom *contact, int skip);
-int dCollideSphereBox (dxGeom *o1, dxGeom *o2, int flags,
-		       dContactGeom *contact, int skip);
-int dCollideSpherePlane (dxGeom *o1, dxGeom *o2, int flags,
-			 dContactGeom *contact, int skip);
-int dCollideBoxBox (dxGeom *o1, dxGeom *o2, int flags,
-		    dContactGeom *contact, int skip);
-int dCollideBoxPlane (dxGeom *o1, dxGeom *o2,
-		      int flags, dContactGeom *contact, int skip);
-int dCollideCCylinderSphere (dxGeom *o1, dxGeom *o2, int flags,
-			     dContactGeom *contact, int skip);
-int dCollideCCylinderBox (dxGeom *o1, dxGeom *o2, int flags,
-			  dContactGeom *contact, int skip);
-int dCollideCCylinderCCylinder (dxGeom *o1, dxGeom *o2,
-				int flags, dContactGeom *contact, int skip);
-int dCollideCCylinderPlane (dxGeom *o1, dxGeom *o2, int flags,
-			    dContactGeom *contact, int skip);
+int dCollideSphereSphere(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int skip);
+int dCollideSphereBox(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int skip);
+int dCollideSpherePlane(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int skip);
+int dCollideBoxBox(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int skip);
+int dCollideBoxPlane(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int skip);
+int dCollideCCylinderSphere(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int skip);
+int dCollideCCylinderBox(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int skip);
+int dCollideCCylinderCCylinder(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int skip);
+int dCollideCCylinderPlane(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int skip);
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
-int dCollideRaySphere (dxGeom *o1, dxGeom *o2, int flags,
-		       dContactGeom *contact, int skip);
-int dCollideRayBox (dxGeom *o1, dxGeom *o2, int flags,
-		    dContactGeom *contact, int skip);
-int dCollideRayCCylinder (dxGeom *o1, dxGeom *o2,
-			  int flags, dContactGeom *contact, int skip);
-int dCollideRayPlane (dxGeom *o1, dxGeom *o2, int flags,
-		      dContactGeom *contact, int skip);
+	int dCollideRaySphere(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int skip);
+	int dCollideRayBox(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int skip);
+	int dCollideRayCCylinder(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int skip);
+	int dCollideRayPlane(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int skip);
 
 #ifdef __cplusplus
 }

@@ -17,15 +17,11 @@
 #include "ColHelper.h"
 
 /// Simple dynamic array.
-template
-<
-	typename DATA_TYPE,
-	class INSTANCE_TRAITS = CObjectTraits<DATA_TYPE>,
-	class COMPARE_TRAITS = CCompareTraits<DATA_TYPE>
->
+template <typename DATA_TYPE, class INSTANCE_TRAITS = CObjectTraits<DATA_TYPE>,
+		  class COMPARE_TRAITS = CCompareTraits<DATA_TYPE>>
 class CArray
 {
-public:
+  public:
 	enum
 	{
 		/// Default array size.
@@ -85,7 +81,7 @@ public:
 	/// Get array buffer.
 	operator const DATA_TYPE*(void) const;
 
-private:
+  private:
 	/// Validate item index.
 	void ValidateIndex(int nItemPos) const;
 	/// Compare two elements.
@@ -116,7 +112,7 @@ CArray<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::CArray(int nSize)
 	if (nSize > 0)
 	{
 		m_arrData = (DATA_TYPE*)new BYTE[nSize * sizeof(DATA_TYPE)];
-		if (! m_arrData)
+		if (!m_arrData)
 		{
 			m_nSize = 0;
 			RaiseException(STATUS_NO_MEMORY, 0, 0, NULL);
@@ -136,7 +132,7 @@ CArray<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::CArray(const CArray& rArray)
 	if (m_nSize)
 	{
 		m_arrData = (DATA_TYPE*)new BYTE[m_nSize * sizeof(DATA_TYPE)];
-		if (! m_arrData)
+		if (!m_arrData)
 		{
 			m_nSize = m_nCount = 0;
 			RaiseException(STATUS_NO_MEMORY, 0, 0, NULL);
@@ -159,7 +155,8 @@ CArray<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::CArray(const CArray& rArray)
  * @return reference to itself.
  */
 template <typename DATA_TYPE, class INSTANCE_TRAITS, class COMPARE_TRAITS>
-CArray<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>& CArray<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::operator=(const CArray& rArray)
+CArray<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>& CArray<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::operator=(
+	const CArray& rArray)
 {
 	if (this != &rArray)
 	{
@@ -204,14 +201,14 @@ void CArray<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::EnsureSize(int nSize, b
 		if (bAdaptiveGrowth)
 			nSize *= 2;
 		DATA_TYPE* arrData = (DATA_TYPE*)new BYTE[nSize * sizeof(DATA_TYPE)];
-		if (! arrData)
+		if (!arrData)
 			RaiseException(STATUS_NO_MEMORY, 0, 0, NULL);
 		else
 		{
 			if (m_arrData)
 			{
 				CopyMemory(arrData, m_arrData, m_nCount * sizeof(DATA_TYPE));
-				delete[] (PBYTE)m_arrData;
+				delete[](PBYTE) m_arrData;
 			}
 			m_arrData = arrData;
 			m_nSize = nSize;
@@ -290,7 +287,7 @@ void CArray<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::DeleteAll(bool bFree)
 	SetCount(0);
 	if (bFree)
 	{
-		delete[] (PBYTE)m_arrData;
+		delete[](PBYTE) m_arrData;
 		m_arrData = NULL;
 		m_nSize = 0;
 	}
@@ -313,12 +310,13 @@ inline void CArray<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::InsertItem(int n
  * @return position of the inserted item.
  */
 template <typename DATA_TYPE, class INSTANCE_TRAITS, class COMPARE_TRAITS>
-inline int CArray<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::InsertOrderedItem(const DATA_TYPE& rItem, bool bAscending, bool bAllowDuplicates)
+inline int CArray<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::InsertOrderedItem(const DATA_TYPE& rItem,
+																				 bool bAscending, bool bAllowDuplicates)
 {
 	int nInsertPos = BSearch(rItem, bAscending);
 	if (nInsertPos < 0)
 		nInsertPos = -(nInsertPos + 1);
-	else if (! bAllowDuplicates)
+	else if (!bAllowDuplicates)
 		return nInsertPos;
 	InsertItem(nInsertPos, rItem);
 	return nInsertPos;
@@ -433,7 +431,8 @@ inline const DATA_TYPE& CArray<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::GetA
  * @return comparison result.
  */
 template <typename DATA_TYPE, class INSTANCE_TRAITS, class COMPARE_TRAITS>
-inline int CArray<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::CompareAsc(const DATA_TYPE& rData1, const DATA_TYPE& rData2)
+inline int CArray<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::CompareAsc(const DATA_TYPE& rData1,
+																		  const DATA_TYPE& rData2)
 {
 	return COMPARE_TRAITS::OrderedCompare(rData1, rData2);
 }
@@ -444,7 +443,8 @@ inline int CArray<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::CompareAsc(const 
  * @return comparison result.
  */
 template <typename DATA_TYPE, class INSTANCE_TRAITS, class COMPARE_TRAITS>
-inline int CArray<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::CompareDesc(const DATA_TYPE& rData1, const DATA_TYPE& rData2)
+inline int CArray<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::CompareDesc(const DATA_TYPE& rData1,
+																		   const DATA_TYPE& rData2)
 {
 	return COMPARE_TRAITS::OrderedCompare(rData2, rData1);
 }
@@ -466,7 +466,8 @@ inline void CArray<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::QSort(bool bAsce
  * @param nHighPos - rightmost array index.
  */
 template <typename DATA_TYPE, class INSTANCE_TRAITS, class COMPARE_TRAITS>
-void CArray<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::PrivQSort(DATA_TYPE* arrData, TCompareFunc pfnCompare, int nLowPos, int nHighPos)
+void CArray<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::PrivQSort(DATA_TYPE* arrData, TCompareFunc pfnCompare,
+																   int nLowPos, int nHighPos)
 {
 	if (nLowPos < nHighPos)
 	{

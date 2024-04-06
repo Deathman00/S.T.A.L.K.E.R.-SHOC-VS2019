@@ -30,10 +30,10 @@
 #define new DEBUG_NEW
 #endif
 
-#define IDC_ZOOMIN         101
-#define IDC_ZOOMOUT        102
-#define IDC_RESETSIZE      103
-#define IDC_FITIMAGE       104
+#define IDC_ZOOMIN 101
+#define IDC_ZOOMOUT 102
+#define IDC_RESETSIZE 103
+#define IDC_FITIMAGE 104
 
 /**
  * @addtogroup BugTrapUI BugTrap Graphical User Interface
@@ -41,15 +41,13 @@
  */
 
 /// Control layouts for Preview dialog.
-static LAYOUT_INFO g_arrPreviewLayout[] =
-{
-	LAYOUT_INFO(IDC_SPLITTER,         ALIGN_LEFT,  ALIGN_TOP,    ALIGN_RIGHT, ALIGN_BOTTOM),
-	LAYOUT_INFO(IDC_FILEFORMAT_FRAME, ALIGN_LEFT,  ALIGN_BOTTOM, ALIGN_LEFT,  ALIGN_BOTTOM),
-	LAYOUT_INFO(IDC_TEXTVIEW,         ALIGN_LEFT,  ALIGN_BOTTOM, ALIGN_LEFT,  ALIGN_BOTTOM),
-	LAYOUT_INFO(IDC_HEXVIEW,          ALIGN_LEFT,  ALIGN_BOTTOM, ALIGN_LEFT,  ALIGN_BOTTOM),
-	LAYOUT_INFO(IDCANCEL,             ALIGN_RIGHT, ALIGN_BOTTOM, ALIGN_RIGHT, ALIGN_BOTTOM),
-	LAYOUT_INFO(IDC_IMAGE_COMMANDS,   ALIGN_LEFT,  ALIGN_BOTTOM, ALIGN_LEFT,  ALIGN_BOTTOM)
-};
+static LAYOUT_INFO g_arrPreviewLayout[] = {
+	LAYOUT_INFO(IDC_SPLITTER, ALIGN_LEFT, ALIGN_TOP, ALIGN_RIGHT, ALIGN_BOTTOM),
+	LAYOUT_INFO(IDC_FILEFORMAT_FRAME, ALIGN_LEFT, ALIGN_BOTTOM, ALIGN_LEFT, ALIGN_BOTTOM),
+	LAYOUT_INFO(IDC_TEXTVIEW, ALIGN_LEFT, ALIGN_BOTTOM, ALIGN_LEFT, ALIGN_BOTTOM),
+	LAYOUT_INFO(IDC_HEXVIEW, ALIGN_LEFT, ALIGN_BOTTOM, ALIGN_LEFT, ALIGN_BOTTOM),
+	LAYOUT_INFO(IDCANCEL, ALIGN_RIGHT, ALIGN_BOTTOM, ALIGN_RIGHT, ALIGN_BOTTOM),
+	LAYOUT_INFO(IDC_IMAGE_COMMANDS, ALIGN_LEFT, ALIGN_BOTTOM, ALIGN_LEFT, ALIGN_BOTTOM)};
 
 /// File list column identifiers.
 enum FILE_LIST_COLUMN_ID
@@ -114,13 +112,10 @@ static DWORD g_dwSignatureSize = 0;
 /// Tool-bar image-list.
 static HIMAGELIST g_hImageList = NULL;
 /// List of tool-bar buttons.
-static const TBBUTTON g_arrButtons[] =
-{
-	{ 0, IDC_ZOOMIN,     TBSTATE_ENABLED, BTNS_BUTTON },
-	{ 1, IDC_ZOOMOUT,    TBSTATE_ENABLED, BTNS_BUTTON },
-	{ 2, IDC_RESETSIZE,  TBSTATE_ENABLED, BTNS_BUTTON },
-	{ 3, IDC_FITIMAGE,   TBSTATE_ENABLED, BTNS_BUTTON }
-};
+static const TBBUTTON g_arrButtons[] = {{0, IDC_ZOOMIN, TBSTATE_ENABLED, BTNS_BUTTON},
+										{1, IDC_ZOOMOUT, TBSTATE_ENABLED, BTNS_BUTTON},
+										{2, IDC_RESETSIZE, TBSTATE_ENABLED, BTNS_BUTTON},
+										{3, IDC_FITIMAGE, TBSTATE_ENABLED, BTNS_BUTTON}};
 
 /**
  * @brief Show or hide file format options.
@@ -130,10 +125,7 @@ static const TBBUTTON g_arrButtons[] =
 static void ShowFileFormatOptions(HWND hwnd, BOOL bShow)
 {
 	int nCmdShow = bShow ? SW_SHOWNA : SW_HIDE;
-	UINT arrFileFormatItems[] =
-	{
-		IDC_TEXTVIEW, IDC_HEXVIEW, IDC_FILEFORMAT_FRAME
-	};
+	UINT arrFileFormatItems[] = {IDC_TEXTVIEW, IDC_HEXVIEW, IDC_FILEFORMAT_FRAME};
 	for (int nFileFormatItem = 0; nFileFormatItem < countof(arrFileFormatItems); ++nFileFormatItem)
 	{
 		HWND hwndCtl = GetDlgItem(hwnd, arrFileFormatItems[nFileFormatItem]);
@@ -253,7 +245,8 @@ inline static void CloseViewPane(HWND hwnd)
  */
 static void PreviewDlg_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
 {
-	codeNotify; hwndCtl;
+	codeNotify;
+	hwndCtl;
 	switch (id)
 	{
 	case IDC_TEXTVIEW:
@@ -298,7 +291,10 @@ static void PreviewDlg_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotif
  */
 static void PreviewDlg_OnSize(HWND hwnd, UINT state, int cx, int cy)
 {
-	hwnd; cx; cy; state;
+	hwnd;
+	cx;
+	cy;
+	state;
 	g_LayoutMgr.ApplyLayout();
 }
 
@@ -324,7 +320,8 @@ static void AddFileItem(HWND hwndFileList, PCTSTR pszFilePath)
 
 	SHFILEINFO sfi;
 	ZeroMemory(&sfi, sizeof(sfi));
-	HIMAGELIST hFileImages = (HIMAGELIST)SHGetFileInfo(pszFilePath, 0, &sfi, sizeof(sfi), SHGFI_SYSICONINDEX | SHGFI_SMALLICON | SHGFI_TYPENAME);
+	HIMAGELIST hFileImages = (HIMAGELIST)SHGetFileInfo(pszFilePath, 0, &sfi, sizeof(sfi),
+													   SHGFI_SYSICONINDEX | SHGFI_SMALLICON | SHGFI_TYPENAME);
 	if (nItemPos == 0)
 	{
 		_ASSERTE((GetWindowLong(hwndFileList, GWL_STYLE) & LVS_SHAREIMAGELISTS) != 0);
@@ -339,11 +336,14 @@ static void AddFileItem(HWND hwndFileList, PCTSTR pszFilePath)
 	{
 		dwFileSize = FindData.nFileSizeLow;
 		if (dwFileSize >= 1000000000)
-			_stprintf_s(szFileSize, countof(szFileSize), _T("%lu.%lu GB"), dwFileSize / 1000000000, (dwFileSize % 1000000000) / 100000000);
+			_stprintf_s(szFileSize, countof(szFileSize), _T("%lu.%lu GB"), dwFileSize / 1000000000,
+						(dwFileSize % 1000000000) / 100000000);
 		else if (dwFileSize >= 1000000)
-			_stprintf_s(szFileSize, countof(szFileSize), _T("%lu.%lu MB"), dwFileSize / 1000000, (dwFileSize % 1000000) / 100000);
+			_stprintf_s(szFileSize, countof(szFileSize), _T("%lu.%lu MB"), dwFileSize / 1000000,
+						(dwFileSize % 1000000) / 100000);
 		else if (dwFileSize >= 1000)
-			_stprintf_s(szFileSize, countof(szFileSize), _T("%lu.%lu KB"), dwFileSize / 1000, (dwFileSize % 1000) / 100);
+			_stprintf_s(szFileSize, countof(szFileSize), _T("%lu.%lu KB"), dwFileSize / 1000,
+						(dwFileSize % 1000) / 100);
 		else
 			_stprintf_s(szFileSize, countof(szFileSize), _T("%lu B"), dwFileSize);
 		FindClose(hFindFile);
@@ -402,8 +402,10 @@ static BOOL OpenImageFile(HWND hwnd, PCTSTR pszFileName)
 	static const TCHAR szBmpFileExt[] = _T(".bmp");
 	DWORD dwFileNameLength = _tcslen(pszFileName);
 	const DWORD dwBmpFileExtLength = countof(szBmpFileExt) - 1;
-	if (dwFileNameLength >= dwBmpFileExtLength && _tcsicmp(pszFileName + dwFileNameLength - dwBmpFileExtLength, szBmpFileExt) == 0 &&
-		(g_hBitmap = (HBITMAP)LoadImage(NULL, pszFileName, IMAGE_BITMAP, 0, 0, LR_DEFAULTCOLOR | LR_LOADFROMFILE)) != NULL)
+	if (dwFileNameLength >= dwBmpFileExtLength &&
+		_tcsicmp(pszFileName + dwFileNameLength - dwBmpFileExtLength, szBmpFileExt) == 0 &&
+		(g_hBitmap = (HBITMAP)LoadImage(NULL, pszFileName, IMAGE_BITMAP, 0, 0, LR_DEFAULTCOLOR | LR_LOADFROMFILE)) !=
+			NULL)
 	{
 		g_eFileViewType = FVT_IMAGEVIEW;
 		SetImageView(hwnd);
@@ -454,82 +456,79 @@ static LRESULT PreviewDlg_OnNotify(HWND hwnd, int idCtrl, LPNMHDR pnmh)
 {
 	switch (pnmh->code)
 	{
-	case LVN_ITEMCHANGED:
+	case LVN_ITEMCHANGED: {
+		if (idCtrl != IDC_FILESLIST)
+			break;
+		LPNMLISTVIEW pnmv = (LPNMLISTVIEW)pnmh;
+		if ((pnmv->uNewState & LVIS_SELECTED) != (pnmv->uOldState & LVIS_SELECTED))
 		{
-			if (idCtrl != IDC_FILESLIST)
-				break;
-			LPNMLISTVIEW pnmv = (LPNMLISTVIEW)pnmh;
-			if ((pnmv->uNewState & LVIS_SELECTED) != (pnmv->uOldState & LVIS_SELECTED))
+			if (pnmv->uNewState & LVIS_SELECTED)
 			{
-				if (pnmv->uNewState & LVIS_SELECTED)
+				_ASSERTE(g_hFile == INVALID_HANDLE_VALUE && g_hBitmap == NULL);
+				HWND hwndFileList = GetDlgItem(hwnd, IDC_FILESLIST);
+				LVITEM lvi;
+				ZeroMemory(&lvi, sizeof(lvi));
+				lvi.mask = LVIF_PARAM;
+				lvi.iItem = pnmv->iItem;
+				ListView_GetItem(hwndFileList, &lvi);
+				FILE_ITEM_INFO* pFileItemInfo = (FILE_ITEM_INFO*)lvi.lParam;
+				if (pFileItemInfo != NULL)
 				{
-					_ASSERTE(g_hFile == INVALID_HANDLE_VALUE && g_hBitmap == NULL);
-					HWND hwndFileList = GetDlgItem(hwnd, IDC_FILESLIST);
-					LVITEM lvi;
-					ZeroMemory(&lvi, sizeof(lvi));
-					lvi.mask = LVIF_PARAM;
-					lvi.iItem = pnmv->iItem;
-					ListView_GetItem(hwndFileList, &lvi);
-					FILE_ITEM_INFO* pFileItemInfo = (FILE_ITEM_INFO*)lvi.lParam;
-					if (pFileItemInfo != NULL)
-					{
-						CWaitCursor wait(true);
-						if (! OpenImageFile(hwnd, pFileItemInfo->szFileName))
-							OpenRegularFile(hwnd, pFileItemInfo->szFileName);
-					}
+					CWaitCursor wait(true);
+					if (!OpenImageFile(hwnd, pFileItemInfo->szFileName))
+						OpenRegularFile(hwnd, pFileItemInfo->szFileName);
 				}
-				else
-					CloseViewPane(hwnd);
 			}
+			else
+				CloseViewPane(hwnd);
 		}
-		break;
-	case LVN_COLUMNCLICK:
+	}
+	break;
+	case LVN_COLUMNCLICK: {
+		if (idCtrl != IDC_FILESLIST)
+			break;
+		LPNMLISTVIEW pnmv = (LPNMLISTVIEW)pnmh;
+		HWND hwndFileList = GetDlgItem(hwnd, IDC_FILESLIST);
+		g_FilesListOrder.ToggleSortParams(hwndFileList, pnmv->iSubItem);
+		LISTVIEW_SORT_PARAMS lvSortParams;
+		lvSortParams.hwndList = hwndFileList;
+		lvSortParams.iColumnNumber = pnmv->iSubItem;
+		lvSortParams.bAscending = g_FilesListOrder.GetSortOrder();
+		switch (pnmv->iSubItem)
 		{
-			if (idCtrl != IDC_FILESLIST)
-				break;
-			LPNMLISTVIEW pnmv = (LPNMLISTVIEW)pnmh;
-			HWND hwndFileList = GetDlgItem(hwnd, IDC_FILESLIST);
-			g_FilesListOrder.ToggleSortParams(hwndFileList, pnmv->iSubItem);
-			LISTVIEW_SORT_PARAMS lvSortParams;
-			lvSortParams.hwndList = hwndFileList;
-			lvSortParams.iColumnNumber = pnmv->iSubItem;
-			lvSortParams.bAscending = g_FilesListOrder.GetSortOrder();
-			switch (pnmv->iSubItem)
-			{
-			case CID_FILE_NAME:
-			case CID_FILE_TYPE:
-				lvSortParams.eCompareType = LISTVIEW_SORT_PARAMS::ICT_STRING;
-				ListView_SortItemsEx(hwndFileList, &ListViewCompareFunc, (LPARAM)&lvSortParams);
-				break;
-			case CID_FILE_SIZE:
-				lvSortParams.eCompareType = LISTVIEW_SORT_PARAMS::ICT_INTEGER;
-				ListView_SortItems(hwndFileList, &FileSizeCompareFunc, (LPARAM)&lvSortParams);
-				break;
-			}
+		case CID_FILE_NAME:
+		case CID_FILE_TYPE:
+			lvSortParams.eCompareType = LISTVIEW_SORT_PARAMS::ICT_STRING;
+			ListView_SortItemsEx(hwndFileList, &ListViewCompareFunc, (LPARAM)&lvSortParams);
+			break;
+		case CID_FILE_SIZE:
+			lvSortParams.eCompareType = LISTVIEW_SORT_PARAMS::ICT_INTEGER;
+			ListView_SortItems(hwndFileList, &FileSizeCompareFunc, (LPARAM)&lvSortParams);
+			break;
 		}
-		break;
-	case TTN_GETDISPINFO:
+	}
+	break;
+	case TTN_GETDISPINFO: {
+		LPTOOLTIPTEXT ptt = (LPTOOLTIPTEXT)pnmh;
+		ptt->hinst = g_hInstance;
+		ptt->uFlags |= TTF_DI_SETITEM;
+		switch (ptt->hdr.idFrom)
 		{
-			LPTOOLTIPTEXT ptt = (LPTOOLTIPTEXT)pnmh;
-			ptt->hinst = g_hInstance;
-			ptt->uFlags |= TTF_DI_SETITEM;
-			switch (ptt->hdr.idFrom)
-			{
-			case IDC_ZOOMIN:
-				ptt->lpszText = MAKEINTRESOURCE(IDS_ZOOMIN);
-				break;
-			case IDC_ZOOMOUT:
-				ptt->lpszText = MAKEINTRESOURCE(IDS_ZOOMOUT);
-				break;
-			case IDC_RESETSIZE:
-				ptt->lpszText = MAKEINTRESOURCE(IDS_RESETSIZE);
-				break;
-			case IDC_FITIMAGE:
-				ptt->lpszText = MAKEINTRESOURCE(IDS_FITIMAGE);
-				break;
-			}
+		case IDC_ZOOMIN:
+			ptt->lpszText = MAKEINTRESOURCE(IDS_ZOOMIN);
+			break;
+		case IDC_ZOOMOUT:
+			ptt->lpszText = MAKEINTRESOURCE(IDS_ZOOMOUT);
+			break;
+		case IDC_RESETSIZE:
+			ptt->lpszText = MAKEINTRESOURCE(IDS_RESETSIZE);
+			break;
+		case IDC_FITIMAGE:
+			ptt->lpszText = MAKEINTRESOURCE(IDS_FITIMAGE);
+			break;
 		}
-		break;
+	}
+	break;
 	}
 	return FALSE;
 }
@@ -543,7 +542,8 @@ static LRESULT PreviewDlg_OnNotify(HWND hwnd, int idCtrl, LPNMHDR pnmh)
  */
 static BOOL PreviewDlg_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 {
-	lParam; hwndFocus;
+	lParam;
+	hwndFocus;
 
 	_ASSERTE(g_pResManager != NULL);
 	if (g_pResManager->m_hBigAppIcon)
@@ -555,7 +555,8 @@ static BOOL PreviewDlg_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 	g_hImageList = ImageList_LoadBitmap(g_hInstance, MAKEINTRESOURCE(IDB_IMAGETOOLBAR), 16, 0, RGB(0xC0, 0xC0, 0xC0));
 	HWND hwndImgToolbar = GetDlgItem(hwnd, IDC_IMAGE_COMMANDS);
 	LONG lStyle = GetWindowLong(hwndImgToolbar, GWL_STYLE);
-	SetWindowLong(hwndImgToolbar, GWL_STYLE, lStyle | CCS_NODIVIDER | CCS_NOPARENTALIGN | CCS_NORESIZE | TBSTYLE_FLAT | TBSTYLE_TOOLTIPS);
+	SetWindowLong(hwndImgToolbar, GWL_STYLE,
+				  lStyle | CCS_NODIVIDER | CCS_NOPARENTALIGN | CCS_NORESIZE | TBSTYLE_FLAT | TBSTYLE_TOOLTIPS);
 	SendMessage(hwndImgToolbar, TB_SETIMAGELIST, 0, (LPARAM)g_hImageList);
 	SendMessage(hwndImgToolbar, TB_ADDBUTTONS, countof(g_arrButtons), (LPARAM)g_arrButtons);
 
@@ -657,7 +658,7 @@ static void PreviewDlg_OnDestroy(HWND hwnd)
 		lvi.iItem = nItemNum;
 		ListView_GetItem(hwndFileList, &lvi);
 		FILE_ITEM_INFO* pFileItemInfo = (FILE_ITEM_INFO*)lvi.lParam;
-		delete[] (PBYTE)pFileItemInfo;
+		delete[](PBYTE) pFileItemInfo;
 	}
 	CloseViewPane(hwnd);
 	g_Splitter.Detach();
@@ -675,13 +676,14 @@ INT_PTR CALLBACK PreviewDlgProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM l
 {
 	switch (uMsg)
 	{
-	HANDLE_MSG(hwndDlg, WM_INITDIALOG, PreviewDlg_OnInitDialog);
-	HANDLE_MSG(hwndDlg, WM_COMMAND, PreviewDlg_OnCommand);
-	HANDLE_MSG(hwndDlg, WM_SIZE, PreviewDlg_OnSize);
-	HANDLE_MSG(hwndDlg, WM_GETMINMAXINFO, PreviewDlg_OnGetMinMaxInfo);
-	HANDLE_MSG(hwndDlg, WM_DESTROY, PreviewDlg_OnDestroy);
-	HANDLE_MSG(hwndDlg, WM_NOTIFY, PreviewDlg_OnNotify);
-	default: return FALSE;
+		HANDLE_MSG(hwndDlg, WM_INITDIALOG, PreviewDlg_OnInitDialog);
+		HANDLE_MSG(hwndDlg, WM_COMMAND, PreviewDlg_OnCommand);
+		HANDLE_MSG(hwndDlg, WM_SIZE, PreviewDlg_OnSize);
+		HANDLE_MSG(hwndDlg, WM_GETMINMAXINFO, PreviewDlg_OnGetMinMaxInfo);
+		HANDLE_MSG(hwndDlg, WM_DESTROY, PreviewDlg_OnDestroy);
+		HANDLE_MSG(hwndDlg, WM_NOTIFY, PreviewDlg_OnNotify);
+	default:
+		return FALSE;
 	}
 }
 

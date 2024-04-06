@@ -23,46 +23,46 @@
 #ifndef _ODE_OBSTACK_H_
 #define _ODE_OBSTACK_H_
 
-#include "objects.h" 
+#include "objects.h"
 
 // each obstack Arena pointer points to a block of this many bytes
 #define dOBSTACK_ARENA_SIZE 16384
 
+struct dObStack : public dBase
+{
+	struct Arena
+	{
+		Arena* next; // next arena in linked list
+		int used;	 // total number of bytes used in this arena, counting
+	};				 //   this header
 
-struct dObStack : public dBase {
-  struct Arena {
-    Arena *next;	// next arena in linked list
-    int used;		// total number of bytes used in this arena, counting
-  };			//   this header
+	Arena* first; // head of the arena linked list. 0 if no arenas yet
+	Arena* last;  // arena where blocks are currently being allocated
 
-  Arena *first;		// head of the arena linked list. 0 if no arenas yet
-  Arena *last;		// arena where blocks are currently being allocated
+	// used for iterator
+	Arena* current_arena;
+	int current_ofs;
 
-  // used for iterator
-  Arena *current_arena;
-  int current_ofs;
+	dObStack();
+	~dObStack();
 
-  dObStack();
-  ~dObStack();
+	void* alloc(int num_bytes);
+	// allocate a block in the last arena, allocating a new arena if necessary.
+	// it is a runtime error if num_bytes is larger than the arena size.
 
-  void *alloc (int num_bytes);
-  // allocate a block in the last arena, allocating a new arena if necessary.
-  // it is a runtime error if num_bytes is larger than the arena size.
+	void freeAll();
+	// free all blocks in all arenas. this does not deallocate the arenas
+	// themselves, so future alloc()s will reuse them.
 
-  void freeAll();
-  // free all blocks in all arenas. this does not deallocate the arenas
-  // themselves, so future alloc()s will reuse them.
+	void* rewind();
+	// rewind the obstack iterator, and return the address of the first
+	// allocated block. return 0 if there are no allocated blocks.
 
-  void *rewind();
-  // rewind the obstack iterator, and return the address of the first
-  // allocated block. return 0 if there are no allocated blocks.
-
-  void *next (int num_bytes);
-  // return the address of the next allocated block. 'num_bytes' is the size
-  // of the previous block. this returns null if there are no more arenas.
-  // the sequence of 'num_bytes' parameters passed to next() during a
-  // traversal of the list must exactly match the parameters passed to alloc().
+	void* next(int num_bytes);
+	// return the address of the next allocated block. 'num_bytes' is the size
+	// of the previous block. this returns null if there are no more arenas.
+	// the sequence of 'num_bytes' parameters passed to next() during a
+	// traversal of the list must exactly match the parameters passed to alloc().
 };
-
 
 #endif

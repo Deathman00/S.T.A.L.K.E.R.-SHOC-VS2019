@@ -21,7 +21,7 @@
  */
 class CXmlLogFile : public CLogFile
 {
-public:
+  public:
 	/// Initialize the object.
 	CXmlLogFile(void);
 	/// Load entries into memory.
@@ -29,9 +29,10 @@ public:
 	/// Save entries into disk.
 	virtual BOOL SaveEntries(bool bCrash);
 	/// Add new log entry.
-	virtual void WriteLogEntry(BUGTRAP_LOGLEVEL eLogLevel, ENTRY_MODE eEntryMode, CRITICAL_SECTION& rcsConsoleAccess, PCTSTR pszEntry);
+	virtual void WriteLogEntry(BUGTRAP_LOGLEVEL eLogLevel, ENTRY_MODE eEntryMode, CRITICAL_SECTION& rcsConsoleAccess,
+							   PCTSTR pszEntry);
 
-private:
+  private:
 	/// Log entry data.
 	struct CXmlLogEntry : public CLogFile::CLogEntry
 	{
@@ -45,8 +46,10 @@ private:
 	/// Base log record.
 	class CBaseLogRecord
 	{
-	public:
-		virtual ~CBaseLogRecord(void) { }
+	  public:
+		virtual ~CBaseLogRecord(void)
+		{
+		}
 		/// Reset log entry.
 		virtual void Reset(void) = 0;
 		/// Set log level.
@@ -72,40 +75,58 @@ private:
 	/// Log record that keeps strings.
 	class CStrLogRecord : public CBaseLogRecord
 	{
-	public:
+	  public:
 		/// Object initializer.
 		CStrLogRecord(void);
 		/// Reset log entry.
 		virtual void Reset(void);
 		/// Set log level.
 		virtual void SetLogLevel(PCTSTR pszLogLevel)
-		{ m_strLogLevel = pszLogLevel; }
+		{
+			m_strLogLevel = pszLogLevel;
+		}
 		/// Get log level.
 		virtual PCTSTR GetLogLevel(void) const
-		{ return m_strLogLevel; }
+		{
+			return m_strLogLevel;
+		}
 		/// Get log level length.
 		virtual int GetLogLevelLength(void) const
-		{ return m_strLogLevel.GetLength(); }
+		{
+			return m_strLogLevel.GetLength();
+		}
 		/// Set time statistics.
 		virtual void SetTimeStatistics(PCTSTR pszTimeStatistics)
-		{ m_strTimeStatistics = pszTimeStatistics; }
+		{
+			m_strTimeStatistics = pszTimeStatistics;
+		}
 		/// Get time statistics.
 		virtual PCTSTR GetTimeStatistics(void) const
-		{ return m_strTimeStatistics; }
+		{
+			return m_strTimeStatistics;
+		}
 		/// Get time statistics length.
 		virtual int GetTimeStatisticsLength(void) const
-		{ return m_strTimeStatistics.GetLength(); }
+		{
+			return m_strTimeStatistics.GetLength();
+		}
 		/// Set entry text.
 		virtual void SetEntryText(PCTSTR pszEntryText)
-		{ m_strEntryText = pszEntryText; }
+		{
+			m_strEntryText = pszEntryText;
+		}
 		/// Get entry text.
 		virtual PCTSTR GetEntryText(void) const
-		{ return m_strEntryText; }
+		{
+			return m_strEntryText;
+		}
 		/// Get entry text length.
 		virtual int GetEntryTextLength(void) const
-		{ return m_strEntryText.GetLength(); }
+		{
+			return m_strEntryText.GetLength();
+		}
 
-	private:
+	  private:
 		/// Log level.
 		CStrStream m_strLogLevel;
 		/// time statistics.
@@ -117,41 +138,61 @@ private:
 	/// Log record that keeps pointers to strings.
 	class CPtrLogRecord : public CBaseLogRecord
 	{
-	public:
+	  public:
 		/// Object initializer.
 		CPtrLogRecord(void)
-		{ CPtrLogRecord::Reset(); }
+		{
+			CPtrLogRecord::Reset();
+		}
 		/// Reset log entry.
 		virtual void Reset(void);
 		/// Set log level.
 		virtual void SetLogLevel(PCTSTR pszLogLevel)
-		{ m_pszLogLevel = pszLogLevel; }
+		{
+			m_pszLogLevel = pszLogLevel;
+		}
 		/// Get log level.
 		virtual PCTSTR GetLogLevel(void) const
-		{ return m_pszLogLevel; }
+		{
+			return m_pszLogLevel;
+		}
 		/// Get log level length.
 		virtual int GetLogLevelLength(void) const
-		{ return _tcslen(m_pszLogLevel); }
+		{
+			return _tcslen(m_pszLogLevel);
+		}
 		/// Set time statistics.
 		virtual void SetTimeStatistics(PCTSTR pszTimeStatistics)
-		{ m_pszTimeStatistics = pszTimeStatistics; }
+		{
+			m_pszTimeStatistics = pszTimeStatistics;
+		}
 		/// Get time statistics.
 		virtual PCTSTR GetTimeStatistics(void) const
-		{ return m_pszTimeStatistics; }
+		{
+			return m_pszTimeStatistics;
+		}
 		/// Get time statistics length.
 		virtual int GetTimeStatisticsLength(void) const
-		{ return _tcslen(m_pszTimeStatistics); }
+		{
+			return _tcslen(m_pszTimeStatistics);
+		}
 		/// Set entry text.
 		virtual void SetEntryText(PCTSTR pszEntryText)
-		{ m_pszEntryText = pszEntryText; }
+		{
+			m_pszEntryText = pszEntryText;
+		}
 		/// Get entry text.
 		virtual PCTSTR GetEntryText(void) const
-		{ return m_pszEntryText; }
+		{
+			return m_pszEntryText;
+		}
 		/// Get entry text length.
 		virtual int GetEntryTextLength(void) const
-		{ return _tcslen(m_pszEntryText); }
+		{
+			return _tcslen(m_pszEntryText);
+		}
 
-	private:
+	  private:
 		/// Log level.
 		PCTSTR m_pszLogLevel;
 		/// time statistics.
@@ -174,10 +215,11 @@ private:
 	BOOL AddToTail(const CBaseLogRecord& rLogRecord);
 };
 
-inline CXmlLogFile::CXmlLogFile(void) :
-	CLogFile(sizeof("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n"
-					"<log>\r\n"
-					"</log>") - 1)
+inline CXmlLogFile::CXmlLogFile(void)
+	: CLogFile(sizeof("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n"
+					  "<log>\r\n"
+					  "</log>") -
+			   1)
 {
 }
 

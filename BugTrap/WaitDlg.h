@@ -22,7 +22,7 @@
 /// Wait dialog class.
 class CWaitDialog
 {
-public:
+  public:
 	/// Initialize wait dialog.
 	CWaitDialog(void);
 	/// Initialize wait dialog and wait message.
@@ -34,7 +34,7 @@ public:
 	/// Closes wait dialog.
 	void EndWait(void);
 
-private:
+  private:
 	/// Protect the class from being accidentally copied.
 	CWaitDialog(const CWaitDialog& rWaitDialog);
 	/// Protect the class from being accidentally copied.

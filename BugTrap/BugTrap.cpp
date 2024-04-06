@@ -41,7 +41,7 @@ static BOOL g_bLoggingEnabled = FALSE;
 /// Number of active request to logging functions from different threads.
 static DWORD g_dwNumLogRequests = 0;
 /// Array of pointers to log descriptors.
-static CArray<CLogFile*, CDynamicTraits<CLogFile*> > g_arrLogFiles;
+static CArray<CLogFile*, CDynamicTraits<CLogFile*>> g_arrLogFiles;
 
 #ifndef _MANAGED
 /// Old filter of unhandled exception.
@@ -59,7 +59,7 @@ static _CrtMemState g_MemState;
  */
 static BOOL RequestMorePrivileges(void)
 {
-	if (! g_bWinNT)
+	if (!g_bWinNT)
 		return TRUE; // simulation for Win9x
 	BOOL bResult = FALSE;
 	HANDLE hCurrentProcess = GetCurrentProcess();
@@ -67,7 +67,7 @@ static BOOL RequestMorePrivileges(void)
 	if (OpenProcessToken(hCurrentProcess, TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &hToken))
 	{
 		DWORD dwLength = 0;
-		if (! GetTokenInformation(hToken, TokenPrivileges, NULL, 0, &dwLength) &&
+		if (!GetTokenInformation(hToken, TokenPrivileges, NULL, 0, &dwLength) &&
 			GetLastError() == ERROR_INSUFFICIENT_BUFFER)
 		{
 			BYTE* pBuffer = new BYTE[dwLength];
@@ -125,7 +125,7 @@ static void SaveLogLinkEntries(bool bCrash)
  */
 static void SaveLogFiles(bool bCrash)
 {
-	_ASSERTE(! g_bLoggingEnabled && ! g_dwNumLogRequests);
+	_ASSERTE(!g_bLoggingEnabled && !g_dwNumLogRequests);
 	int iNumLogFiles = g_arrLogFiles.GetCount();
 	for (int iLogFilePos = 0; iLogFilePos < iNumLogFiles; ++iLogFilePos)
 	{
@@ -178,7 +178,7 @@ static void LeaveLogFunction(void)
  */
 static inline BOOL EnterLogFunction(CLogFile* pLogFile)
 {
-	if (! pLogFile || ! EnterLogFunction())
+	if (!pLogFile || !EnterLogFunction())
 		return FALSE;
 	if (g_arrLogFiles.LSearch(pLogFile) < 0)
 	{
@@ -228,7 +228,7 @@ static void InitSymEngine(CSymEngine::CEngineParams& rParams)
 #endif
 	// Flush contents of all open log files ands disable logging.
 	FlushLogFiles(true);
-	_ASSERTE(! g_bLoggingEnabled && ! g_dwNumLogRequests);
+	_ASSERTE(!g_bLoggingEnabled && !g_dwNumLogRequests);
 	// All resource consuming objects are allocated dynamically.
 	// So, they don't eat computer memory if application works as expected.
 	if (g_pEnumProc == NULL)
@@ -342,9 +342,10 @@ static LONG GenericFilter(PEXCEPTION_POINTERS pExceptionPointers, CSymEngine::EX
  * @param eEntryMode - entry mode.
  * @param pszEntry - log entry text.
  */
-static void WriteLogEntry(CLogFile* pLogFile, BUGTRAP_LOGLEVEL eLogLevel, CLogFile::ENTRY_MODE eEntryMode, PCTSTR pszEntry)
+static void WriteLogEntry(CLogFile* pLogFile, BUGTRAP_LOGLEVEL eLogLevel, CLogFile::ENTRY_MODE eEntryMode,
+						  PCTSTR pszEntry)
 {
-	if (pszEntry == NULL || ! EnterLogFunction(pLogFile))
+	if (pszEntry == NULL || !EnterLogFunction(pLogFile))
 		return;
 	pLogFile->WriteLogEntry(eLogLevel, eEntryMode, g_csConsoleAccess, pszEntry);
 	LeaveLogFunction(pLogFile);
@@ -358,9 +359,10 @@ static void WriteLogEntry(CLogFile* pLogFile, BUGTRAP_LOGLEVEL eLogLevel, CLogFi
  * @param pszFormat - format string.
  * @param argList - variable argument list.
  */
-static void WriteLogEntry(CLogFile* pLogFile, BUGTRAP_LOGLEVEL eLogLevel, CLogFile::ENTRY_MODE eEntryMode, PCTSTR pszFormat, va_list argList)
+static void WriteLogEntry(CLogFile* pLogFile, BUGTRAP_LOGLEVEL eLogLevel, CLogFile::ENTRY_MODE eEntryMode,
+						  PCTSTR pszFormat, va_list argList)
 {
-	if (pszFormat == NULL || ! EnterLogFunction(pLogFile))
+	if (pszFormat == NULL || !EnterLogFunction(pLogFile))
 		return;
 	pLogFile->WriteLogEntryV(eLogLevel, eEntryMode, g_csConsoleAccess, pszFormat, argList);
 	LeaveLogFunction(pLogFile);
@@ -412,7 +414,7 @@ static void DetachProcess(void)
 {
 	// Flush log files to the disk.
 	FlushLogFiles(false);
-	_ASSERTE(! g_bLoggingEnabled && ! g_dwNumLogRequests);
+	_ASSERTE(!g_bLoggingEnabled && !g_dwNumLogRequests);
 	// Restore exception handler.
 	BT_UninstallSehFilter();
 	// Close log event.
@@ -699,7 +701,9 @@ static int FindLogLink(PCTSTR pszLogFile)
  * @param pLogEntry - log entry data.
  * @return error status.
  */
-extern "C" BUGTRAP_API DWORD APIENTRY BT_GetLogFileEntry(INT_PTR nLogFileIndexOrName, BOOL bGetByIndex, BUGTRAP_LOGTYPE* peLogType, PDWORD pdwLogEntrySize, PVOID pLogEntry)
+extern "C" BUGTRAP_API DWORD APIENTRY BT_GetLogFileEntry(INT_PTR nLogFileIndexOrName, BOOL bGetByIndex,
+														 BUGTRAP_LOGTYPE* peLogType, PDWORD pdwLogEntrySize,
+														 PVOID pLogEntry)
 {
 	if (bGetByIndex)
 	{
@@ -720,9 +724,7 @@ extern "C" BUGTRAP_API DWORD APIENTRY BT_GetLogFileEntry(INT_PTR nLogFileIndexOr
 	BUGTRAP_LOGTYPE eLogType = pLogLink->GetLogType();
 	if (pLogEntry != NULL)
 	{
-		if (peLogType == NULL ||
-			*peLogType != eLogType ||
-			pdwLogEntrySize == NULL)
+		if (peLogType == NULL || *peLogType != eLogType || pdwLogEntrySize == NULL)
 		{
 			return ERROR_BAD_ARGUMENTS;
 		}
@@ -733,7 +735,8 @@ extern "C" BUGTRAP_API DWORD APIENTRY BT_GetLogFileEntry(INT_PTR nLogFileIndexOr
 				return ERROR_INCORRECT_SIZE;
 			{
 				BUGTRAP_LOGFILEENTRY* pLogFileEntry = (BUGTRAP_LOGFILEENTRY*)pLogEntry;
-				_tcscpy_s(pLogFileEntry->szLogFileName, countof(pLogFileEntry->szLogFileName), pLogLink->GetLogFileName());
+				_tcscpy_s(pLogFileEntry->szLogFileName, countof(pLogFileEntry->szLogFileName),
+						  pLogLink->GetLogFileName());
 			}
 			break;
 		case BTLT_REGEXPORT:
@@ -742,7 +745,8 @@ extern "C" BUGTRAP_API DWORD APIENTRY BT_GetLogFileEntry(INT_PTR nLogFileIndexOr
 			{
 				BUGTRAP_REGEXPORTENTRY* pRegExportEntry = (BUGTRAP_REGEXPORTENTRY*)pLogEntry;
 				CRegLink* pRegLink = (CRegLink*)pLogLink;
-				_tcscpy_s(pRegExportEntry->szLogFileName, countof(pRegExportEntry->szLogFileName), pRegLink->GetLogFileName());
+				_tcscpy_s(pRegExportEntry->szLogFileName, countof(pRegExportEntry->szLogFileName),
+						  pRegLink->GetLogFileName());
 				_tcscpy_s(pRegExportEntry->szRegKey, countof(pRegExportEntry->szRegKey), pRegLink->GetRegKey());
 			}
 			break;
@@ -863,7 +867,7 @@ extern "C" BUGTRAP_API void APIENTRY BT_SetPostErrHandler(BT_ErrHandler pfnPostE
 extern "C" BUGTRAP_API PCTSTR APIENTRY BT_GetLogFileName(INT_PTR iHandle)
 {
 	CLogFile* pLogFile = (CLogFile*)iHandle;
-	if (! EnterLogFunction(pLogFile))
+	if (!EnterLogFunction(pLogFile))
 		return NULL;
 	PCTSTR pszLogFileName = pLogFile->GetLogFileName();
 	LeaveLogFunction(pLogFile);
@@ -877,7 +881,7 @@ extern "C" BUGTRAP_API PCTSTR APIENTRY BT_GetLogFileName(INT_PTR iHandle)
 extern "C" BUGTRAP_API DWORD APIENTRY BT_GetLogSizeInEntries(INT_PTR iHandle)
 {
 	CLogFile* pLogFile = (CLogFile*)iHandle;
-	if (! EnterLogFunction(pLogFile))
+	if (!EnterLogFunction(pLogFile))
 		return 0;
 	DWORD dwLogSizeInEntries = pLogFile->GetLogSizeInEntries();
 	LeaveLogFunction(pLogFile);
@@ -891,7 +895,7 @@ extern "C" BUGTRAP_API DWORD APIENTRY BT_GetLogSizeInEntries(INT_PTR iHandle)
 extern "C" BUGTRAP_API void APIENTRY BT_SetLogSizeInEntries(INT_PTR iHandle, DWORD dwLogSizeInEntries)
 {
 	CLogFile* pLogFile = (CLogFile*)iHandle;
-	if (! EnterLogFunction(pLogFile))
+	if (!EnterLogFunction(pLogFile))
 		return;
 	pLogFile->SetLogSizeInEntries(dwLogSizeInEntries);
 	LeaveLogFunction(pLogFile);
@@ -904,7 +908,7 @@ extern "C" BUGTRAP_API void APIENTRY BT_SetLogSizeInEntries(INT_PTR iHandle, DWO
 extern "C" BUGTRAP_API DWORD APIENTRY BT_GetLogSizeInBytes(INT_PTR iHandle)
 {
 	CLogFile* pLogFile = (CLogFile*)iHandle;
-	if (! EnterLogFunction(pLogFile))
+	if (!EnterLogFunction(pLogFile))
 		return 0;
 	DWORD dwLogSizeInBytes = pLogFile->GetLogSizeInBytes();
 	LeaveLogFunction(pLogFile);
@@ -918,7 +922,7 @@ extern "C" BUGTRAP_API DWORD APIENTRY BT_GetLogSizeInBytes(INT_PTR iHandle)
 extern "C" BUGTRAP_API void APIENTRY BT_SetLogSizeInBytes(INT_PTR iHandle, DWORD dwLogSizeInBytes)
 {
 	CLogFile* pLogFile = (CLogFile*)iHandle;
-	if (! EnterLogFunction(pLogFile))
+	if (!EnterLogFunction(pLogFile))
 		return;
 	pLogFile->SetLogSizeInBytes(dwLogSizeInBytes);
 	LeaveLogFunction(pLogFile);
@@ -931,7 +935,7 @@ extern "C" BUGTRAP_API void APIENTRY BT_SetLogSizeInBytes(INT_PTR iHandle, DWORD
 extern "C" BUGTRAP_API DWORD APIENTRY BT_GetLogFlags(INT_PTR iHandle)
 {
 	CLogFile* pLogFile = (CLogFile*)iHandle;
-	if (! EnterLogFunction(pLogFile))
+	if (!EnterLogFunction(pLogFile))
 		return BTLF_NONE;
 	DWORD dwLogFlags = pLogFile->GetLogFlags();
 	LeaveLogFunction(pLogFile);
@@ -945,7 +949,7 @@ extern "C" BUGTRAP_API DWORD APIENTRY BT_GetLogFlags(INT_PTR iHandle)
 extern "C" BUGTRAP_API void APIENTRY BT_SetLogFlags(INT_PTR iHandle, DWORD dwLogFlags)
 {
 	CLogFile* pLogFile = (CLogFile*)iHandle;
-	if (! EnterLogFunction(pLogFile))
+	if (!EnterLogFunction(pLogFile))
 		return;
 	pLogFile->SetLogFlags(dwLogFlags);
 	LeaveLogFunction(pLogFile);
@@ -958,7 +962,7 @@ extern "C" BUGTRAP_API void APIENTRY BT_SetLogFlags(INT_PTR iHandle, DWORD dwLog
 extern "C" BUGTRAP_API BUGTRAP_LOGLEVEL APIENTRY BT_GetLogLevel(INT_PTR iHandle)
 {
 	CLogFile* pLogFile = (CLogFile*)iHandle;
-	if (! EnterLogFunction(pLogFile))
+	if (!EnterLogFunction(pLogFile))
 		return BTLL_NONE;
 	BUGTRAP_LOGLEVEL eLogLevel = pLogFile->GetLogLevel();
 	LeaveLogFunction(pLogFile);
@@ -972,7 +976,7 @@ extern "C" BUGTRAP_API BUGTRAP_LOGLEVEL APIENTRY BT_GetLogLevel(INT_PTR iHandle)
 extern "C" BUGTRAP_API void APIENTRY BT_SetLogLevel(INT_PTR iHandle, BUGTRAP_LOGLEVEL eLogLevel)
 {
 	CLogFile* pLogFile = (CLogFile*)iHandle;
-	if (! EnterLogFunction(pLogFile))
+	if (!EnterLogFunction(pLogFile))
 		return;
 	pLogFile->SetLogLevel(eLogLevel);
 	LeaveLogFunction(pLogFile);
@@ -985,7 +989,7 @@ extern "C" BUGTRAP_API void APIENTRY BT_SetLogLevel(INT_PTR iHandle, BUGTRAP_LOG
 extern "C" BUGTRAP_API DWORD APIENTRY BT_GetLogEchoMode(INT_PTR iHandle)
 {
 	CLogFile* pLogFile = (CLogFile*)iHandle;
-	if (! EnterLogFunction(pLogFile))
+	if (!EnterLogFunction(pLogFile))
 		return BTLE_NONE;
 	DWORD dwLogEchoMode = pLogFile->GetLogEchoMode();
 	LeaveLogFunction(pLogFile);
@@ -999,7 +1003,7 @@ extern "C" BUGTRAP_API DWORD APIENTRY BT_GetLogEchoMode(INT_PTR iHandle)
 extern "C" BUGTRAP_API void APIENTRY BT_SetLogEchoMode(INT_PTR iHandle, DWORD dwLogEchoMode)
 {
 	CLogFile* pLogFile = (CLogFile*)iHandle;
-	if (! EnterLogFunction(pLogFile))
+	if (!EnterLogFunction(pLogFile))
 		return;
 	pLogFile->SetLogEchoMode(dwLogEchoMode);
 	LeaveLogFunction(pLogFile);
@@ -1007,26 +1011,35 @@ extern "C" BUGTRAP_API void APIENTRY BT_SetLogEchoMode(INT_PTR iHandle, DWORD dw
 
 extern "C" BUGTRAP_API void CDECL BT_CallSehFilter(void)
 {
-	__try {
+	__try
+	{
 		RaiseException(EXCEPTION_ACCESS_VIOLATION, 0, 0, NULL);
-	} __except(BT_SehFilter(GetExceptionInformation())) {
+	}
+	__except (BT_SehFilter(GetExceptionInformation()))
+	{
 	}
 }
 
 extern "C" BUGTRAP_API void CDECL BT_CallCppFilter(void)
 {
-	__try {
+	__try
+	{
 		RaiseException(EXCEPTION_ACCESS_VIOLATION, 0, 0, NULL);
-	} __except(BT_CppFilter(GetExceptionInformation())) {
+	}
+	__except (BT_CppFilter(GetExceptionInformation()))
+	{
 	}
 }
 
 extern "C" BUGTRAP_API void CDECL BT_CallNetFilter(void)
 {
 #ifdef _MANAGED
-	__try {
+	__try
+	{
 		RaiseException(EXCEPTION_ACCESS_VIOLATION, 0, 0, NULL);
-	} __except(BT_NetFilter(GetExceptionInformation())) {
+	}
+	__except (BT_NetFilter(GetExceptionInformation()))
+	{
 	}
 #endif
 }
@@ -1073,7 +1086,8 @@ extern "C" BUGTRAP_API void CDECL BT_AppLogEntryF(INT_PTR iHandle, BUGTRAP_LOGLE
  * @param pszFormat - printf-like message format.
  * @param argList - variable length argument list.
  */
-extern "C" BUGTRAP_API void APIENTRY BT_AppLogEntryV(INT_PTR iHandle, BUGTRAP_LOGLEVEL eLogLevel, PCTSTR pszFormat, va_list argList)
+extern "C" BUGTRAP_API void APIENTRY BT_AppLogEntryV(INT_PTR iHandle, BUGTRAP_LOGLEVEL eLogLevel, PCTSTR pszFormat,
+													 va_list argList)
 {
 	CLogFile* pLogFile = (CLogFile*)iHandle;
 	WriteLogEntry(pLogFile, eLogLevel, CLogFile::EM_APPEND, pszFormat, argList);
@@ -1099,7 +1113,8 @@ extern "C" BUGTRAP_API void CDECL BT_InsLogEntryF(INT_PTR iHandle, BUGTRAP_LOGLE
  * @param pszFormat - printf-like message format.
  * @param argList - variable length argument list.
  */
-extern "C" BUGTRAP_API void APIENTRY BT_InsLogEntryV(INT_PTR iHandle, BUGTRAP_LOGLEVEL eLogLevel, PCTSTR pszFormat, va_list argList)
+extern "C" BUGTRAP_API void APIENTRY BT_InsLogEntryV(INT_PTR iHandle, BUGTRAP_LOGLEVEL eLogLevel, PCTSTR pszFormat,
+													 va_list argList)
 {
 	CLogFile* pLogFile = (CLogFile*)iHandle;
 	WriteLogEntry(pLogFile, eLogLevel, CLogFile::EM_INSERT, pszFormat, argList);
@@ -1111,7 +1126,7 @@ extern "C" BUGTRAP_API void APIENTRY BT_InsLogEntryV(INT_PTR iHandle, BUGTRAP_LO
 extern "C" BUGTRAP_API void APIENTRY BT_ClearLog(INT_PTR iHandle)
 {
 	CLogFile* pLogFile = (CLogFile*)iHandle;
-	if (! EnterLogFunction(pLogFile))
+	if (!EnterLogFunction(pLogFile))
 		return;
 	// remove entries from the memory
 	pLogFile->FreeEntries();
@@ -1237,8 +1252,7 @@ extern "C" BUGTRAP_API INT_PTR APIENTRY BT_OpenLogFile(PCTSTR pszLogFileName, BU
 		EnterLogFunction();
 		pLogFile->SetLogFileName(pszLogFileName);
 		pszLogFileName = pLogFile->GetLogFileName();
-		if (CreateParentFolder(pszLogFileName) &&
-			pLogFile->LoadEntries())
+		if (CreateParentFolder(pszLogFileName) && pLogFile->LoadEntries())
 		{
 			EnterCriticalSection(&g_csMutualLogAccess);
 			g_arrLogFiles.AddItem(pLogFile);
@@ -1247,7 +1261,7 @@ extern "C" BUGTRAP_API INT_PTR APIENTRY BT_OpenLogFile(PCTSTR pszLogFileName, BU
 		}
 		LeaveLogFunction();
 	}
-	if (! bResult)
+	if (!bResult)
 	{
 		delete pLogFile;
 		pLogFile = NULL;
@@ -1275,7 +1289,7 @@ extern "C" BUGTRAP_API void APIENTRY BT_CloseLogFile(INT_PTR iHandle)
 extern "C" BUGTRAP_API void APIENTRY BT_FlushLogFile(INT_PTR iHandle)
 {
 	CLogFile* pLogFile = (CLogFile*)iHandle;
-	if (! EnterLogFunction(pLogFile))
+	if (!EnterLogFunction(pLogFile))
 		return;
 	pLogFile->SaveEntries(false);
 	LeaveLogFunction(pLogFile);
@@ -1303,9 +1317,9 @@ extern "C" BUGTRAP_API void APIENTRY BT_SetUserMessage(PCTSTR pszUserMessage)
 extern "C" BUGTRAP_API void APIENTRY BT_SetUserMessageFromCode(DWORD dwErrorCode)
 {
 	PTSTR pszMessageBuffer = NULL;
-	DWORD dwNumChars = FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_FROM_SYSTEM,
-	                                 NULL, dwErrorCode, MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL),
-	                                 (PTSTR)&pszMessageBuffer, 0, NULL);
+	DWORD dwNumChars =
+		FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_FROM_SYSTEM, NULL,
+					  dwErrorCode, MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), (PTSTR)&pszMessageBuffer, 0, NULL);
 	CStrStream strTemp(dwNumChars ? 32 + dwNumChars : 128);
 	TCHAR szErrorCode[32];
 	_stprintf_s(szErrorCode, countof(szErrorCode), _T("0x%08lX - "), dwErrorCode);
@@ -1376,12 +1390,14 @@ extern "C" BUGTRAP_API BOOL APIENTRY BT_ReadVersionInfo(HMODULE hModule)
 			PTSTR pszValue;
 			UINT uValueLength;
 			TCHAR szSubBlock[128];
-			_stprintf_s(szSubBlock, countof(szSubBlock), _T("\\StringFileInfo\\%04x%04x\\AppName"), pTranslation[iItemPos].wLanguage, pTranslation[iItemPos].wCodePage);
+			_stprintf_s(szSubBlock, countof(szSubBlock), _T("\\StringFileInfo\\%04x%04x\\AppName"),
+						pTranslation[iItemPos].wLanguage, pTranslation[iItemPos].wCodePage);
 			if (VerQueryValue(pVersionInfo, szSubBlock, (void**)&pszValue, &uValueLength))
 			{
 				bResult = TRUE;
 				BT_SetAppName(pszValue);
-				_stprintf_s(szSubBlock, countof(szSubBlock), _T("\\StringFileInfo\\%04x%04x\\AppVersion"), pTranslation[iItemPos].wLanguage, pTranslation[iItemPos].wCodePage);
+				_stprintf_s(szSubBlock, countof(szSubBlock), _T("\\StringFileInfo\\%04x%04x\\AppVersion"),
+							pTranslation[iItemPos].wLanguage, pTranslation[iItemPos].wCodePage);
 				if (VerQueryValue(pVersionInfo, szSubBlock, (void**)&pszValue, &uValueLength))
 					BT_SetAppVersion(pszValue);
 				else
@@ -1481,20 +1497,16 @@ static BOOL GetRootKey(PCTSTR pszRegKey, HKEY& hRootKey, PCTSTR& pszRootName, PC
 		PCTSTR pszName;
 		/// Full name of the key.
 		PCTSTR pszFullName;
-	}
-	arrRegKeySynonyms[] =
-	{
-		{ HKEY_CLASSES_ROOT,   _T("HKEY_CLASSES_ROOT"),   _T("HKEY_CLASSES_ROOT")   },
-		{ HKEY_CLASSES_ROOT,   _T("HKCR"),                _T("HKEY_CLASSES_ROOT")   },
-		{ HKEY_CURRENT_USER,   _T("HKEY_CURRENT_USER"),   _T("HKEY_CURRENT_USER")   },
-		{ HKEY_CURRENT_USER,   _T("HKCU"),                _T("HKEY_CURRENT_USER")   },
-		{ HKEY_LOCAL_MACHINE,  _T("HKEY_LOCAL_MACHINE"),  _T("HKEY_LOCAL_MACHINE")  },
-		{ HKEY_LOCAL_MACHINE,  _T("HKLM"),                _T("HKEY_LOCAL_MACHINE")  },
-		{ HKEY_USERS,          _T("HKEY_USERS"),          _T("HKEY_USERS")          },
-		{ HKEY_USERS,          _T("HKU"),                 _T("HKEY_USERS")          },
-		{ HKEY_CURRENT_CONFIG, _T("HKEY_CURRENT_CONFIG"), _T("HKEY_CURRENT_CONFIG") },
-		{ HKEY_CURRENT_CONFIG, _T("HKCC"),                _T("HKEY_CURRENT_CONFIG") }
-	};
+	} arrRegKeySynonyms[] = {{HKEY_CLASSES_ROOT, _T("HKEY_CLASSES_ROOT"), _T("HKEY_CLASSES_ROOT")},
+							 {HKEY_CLASSES_ROOT, _T("HKCR"), _T("HKEY_CLASSES_ROOT")},
+							 {HKEY_CURRENT_USER, _T("HKEY_CURRENT_USER"), _T("HKEY_CURRENT_USER")},
+							 {HKEY_CURRENT_USER, _T("HKCU"), _T("HKEY_CURRENT_USER")},
+							 {HKEY_LOCAL_MACHINE, _T("HKEY_LOCAL_MACHINE"), _T("HKEY_LOCAL_MACHINE")},
+							 {HKEY_LOCAL_MACHINE, _T("HKLM"), _T("HKEY_LOCAL_MACHINE")},
+							 {HKEY_USERS, _T("HKEY_USERS"), _T("HKEY_USERS")},
+							 {HKEY_USERS, _T("HKU"), _T("HKEY_USERS")},
+							 {HKEY_CURRENT_CONFIG, _T("HKEY_CURRENT_CONFIG"), _T("HKEY_CURRENT_CONFIG")},
+							 {HKEY_CURRENT_CONFIG, _T("HKCC"), _T("HKEY_CURRENT_CONFIG")}};
 	for (int iItemNum = 0; iItemNum < countof(arrRegKeySynonyms); ++iItemNum)
 	{
 		const REGKEY_SYNONYM* pRegKeySynonym = arrRegKeySynonyms + iItemNum;
@@ -1562,7 +1574,8 @@ static void FlushRegData(REGEXPORT_DATA& rRegData)
 	if (rRegData.dwFileBufferPos > 0)
 	{
 		DWORD dwNumWritten;
-		WriteFile(rRegData.hFile, rRegData.arrFileBuffer, rRegData.dwFileBufferPos * sizeof(TCHAR), &dwNumWritten, NULL);
+		WriteFile(rRegData.hFile, rRegData.arrFileBuffer, rRegData.dwFileBufferPos * sizeof(TCHAR), &dwNumWritten,
+				  NULL);
 		rRegData.dwFileBufferPos = 0;
 	}
 }
@@ -1619,7 +1632,8 @@ static DWORD WriteRegData(REGEXPORT_DATA& rRegData, PCTSTR pszText)
  * @param dwPosition - initial cursor position.
  * @return number of characters written to the file.
  */
-static DWORD WriteRegData(REGEXPORT_DATA& rRegData, DWORD dwValueType, PBYTE pbValueData, DWORD dwValueSize, DWORD dwPosition)
+static DWORD WriteRegData(REGEXPORT_DATA& rRegData, DWORD dwValueType, PBYTE pbValueData, DWORD dwValueSize,
+						  DWORD dwPosition)
 {
 	DWORD dwNumChars;
 	if (dwValueType != REG_NONE)
@@ -1653,7 +1667,6 @@ static DWORD WriteRegData(REGEXPORT_DATA& rRegData, DWORD dwValueType, PBYTE pbV
 			break;
 	}
 	return dwNumChars;
-
 }
 
 /**
@@ -1692,7 +1705,8 @@ static BOOL ConvertRegBuffer(REGEXPORT_DATA& rRegData)
 		else
 			return FALSE;
 	}
-	MultiByteToWideChar(CP_ACP, 0, (PCSTR)rRegData.pbValueBuffer, rRegData.dwValueSize, (PWSTR)rRegData.pbAuxiliaryBuffer, nNewDataSize);
+	MultiByteToWideChar(CP_ACP, 0, (PCSTR)rRegData.pbValueBuffer, rRegData.dwValueSize,
+						(PWSTR)rRegData.pbAuxiliaryBuffer, nNewDataSize);
 	rRegData.dwAuxiliarySize = nNewDataSize2;
 	return TRUE;
 }
@@ -1706,12 +1720,13 @@ static BOOL ConvertRegBuffer(REGEXPORT_DATA& rRegData)
  */
 static void ExportRegValues(REGEXPORT_DATA& rRegData, HKEY hKey)
 {
-	for (DWORD dwRegIndex = 0; ; ++dwRegIndex)
+	for (DWORD dwRegIndex = 0;; ++dwRegIndex)
 	{
 		DWORD dwValueType;
 		rRegData.dwNameSize = countof(rRegData.szName);
 		rRegData.dwValueSize = rRegData.dwValueBufferSize;
-		LONG lResult = RegEnumValue(hKey, dwRegIndex, rRegData.szName, &rRegData.dwNameSize, NULL, &dwValueType, rRegData.pbValueBuffer, &rRegData.dwValueSize);
+		LONG lResult = RegEnumValue(hKey, dwRegIndex, rRegData.szName, &rRegData.dwNameSize, NULL, &dwValueType,
+									rRegData.pbValueBuffer, &rRegData.dwValueSize);
 		if (lResult == ERROR_NO_MORE_ITEMS)
 			break;
 		if (lResult == ERROR_MORE_DATA)
@@ -1726,7 +1741,8 @@ static void ExportRegValues(REGEXPORT_DATA& rRegData, HKEY hKey)
 			}
 			else
 				continue;
-			lResult = RegEnumValue(hKey, dwRegIndex, rRegData.szName, &rRegData.dwNameSize, NULL, &dwValueType, rRegData.pbValueBuffer, &rRegData.dwValueSize);
+			lResult = RegEnumValue(hKey, dwRegIndex, rRegData.szName, &rRegData.dwNameSize, NULL, &dwValueType,
+								   rRegData.pbValueBuffer, &rRegData.dwValueSize);
 		}
 		if (lResult == ERROR_SUCCESS)
 		{
@@ -1750,7 +1766,8 @@ static void ExportRegValues(REGEXPORT_DATA& rRegData, HKEY hKey)
 				WriteRegData(rRegData, _T("\""));
 				break;
 			case REG_DWORD:
-				_stprintf_s(rRegData.szAuxiliaryBuffer, countof(rRegData.szAuxiliaryBuffer), _T("dword:%08x"), *(PDWORD)rRegData.pbValueBuffer);
+				_stprintf_s(rRegData.szAuxiliaryBuffer, countof(rRegData.szAuxiliaryBuffer), _T("dword:%08x"),
+							*(PDWORD)rRegData.pbValueBuffer);
 				WriteRegData(rRegData, rRegData.szAuxiliaryBuffer);
 				break;
 			case REG_EXPAND_SZ:
@@ -1759,7 +1776,8 @@ static void ExportRegValues(REGEXPORT_DATA& rRegData, HKEY hKey)
 				WriteRegData(rRegData, dwValueType, dwNumChars);
 #else
 				if (ConvertRegBuffer(rRegData))
-					WriteRegData(rRegData, dwValueType, rRegData.pbAuxiliaryBuffer, rRegData.dwAuxiliarySize, dwNumChars);
+					WriteRegData(rRegData, dwValueType, rRegData.pbAuxiliaryBuffer, rRegData.dwAuxiliarySize,
+								 dwNumChars);
 #endif
 				break;
 			default:
@@ -1786,10 +1804,11 @@ static void ExportRegKeys(REGEXPORT_DATA& rRegData, HKEY hKey, DWORD dwRegPathLe
 	rRegData.szRegPathBuffer[dwRegPathLength] = _T('\\');
 	++dwRegPathLength;
 	PTSTR pszRegPathEnd = rRegData.szRegPathBuffer + dwRegPathLength;
-	for (DWORD dwRegIndex = 0; ; ++dwRegIndex)
+	for (DWORD dwRegIndex = 0;; ++dwRegIndex)
 	{
 		rRegData.dwNameSize = countof(rRegData.szName);
-		LONG lResult = RegEnumKeyEx(hKey, dwRegIndex, rRegData.szName, &rRegData.dwNameSize, NULL, NULL, NULL, &rRegData.ftime);
+		LONG lResult =
+			RegEnumKeyEx(hKey, dwRegIndex, rRegData.szName, &rRegData.dwNameSize, NULL, NULL, NULL, &rRegData.ftime);
 		if (lResult == ERROR_NO_MORE_ITEMS)
 			break;
 		if (lResult == ERROR_SUCCESS)
@@ -1839,9 +1858,8 @@ static void WriteRegError(REGEXPORT_DATA& rRegData, PCTSTR pszRegKey, LONG lResu
 	_stprintf_s(rRegData.szAuxiliaryBuffer, countof(rRegData.szAuxiliaryBuffer), _T("0x%08lX"), lResult);
 	WriteRegData(rRegData, rRegData.szAuxiliaryBuffer);
 	PTSTR pszMessageBuffer = NULL;
-	FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_FROM_SYSTEM,
-	              NULL, lResult, MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL),
-	              (PTSTR)&pszMessageBuffer, 0, NULL);
+	FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_FROM_SYSTEM, NULL,
+				  lResult, MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), (PTSTR)&pszMessageBuffer, 0, NULL);
 	if (pszMessageBuffer)
 	{
 		TrimSpaces(pszMessageBuffer);
@@ -1855,7 +1873,8 @@ static void WriteRegError(REGEXPORT_DATA& rRegData, PCTSTR pszRegKey, LONG lResu
 /**
  * @param pszRegFileName - output reg-file name.
  * @param pszRegKey - registry key path.
- * @return > 0 - if registry key was exported; 0 - if registry key was not exported, but error info was stored to a file. < 0 - if function ws not able to allocate memory, create file, etc.
+ * @return > 0 - if registry key was exported; 0 - if registry key was not exported, but error info was stored to a
+ * file. < 0 - if function ws not able to allocate memory, create file, etc.
  */
 extern "C" BUGTRAP_API int APIENTRY BT_ExportRegistryKey(LPCTSTR pszRegFile, LPCTSTR pszRegKey)
 {
@@ -1866,8 +1885,7 @@ extern "C" BUGTRAP_API int APIENTRY BT_ExportRegistryKey(LPCTSTR pszRegFile, LPC
 	if (GetRootKey(pszRegKey, hRootKey, RegData.pszRootName, pszRegPath))
 	{
 		TCHAR szRegFileName[MAX_PATH];
-		if (GetCompleteLogFileName(szRegFileName, pszRegFile, _T(".reg")) &&
-			CreateParentFolder(szRegFileName))
+		if (GetCompleteLogFileName(szRegFileName, pszRegFile, _T(".reg")) && CreateParentFolder(szRegFileName))
 		{
 			RegData.dwValueSize = 0;
 			RegData.dwFileBufferPos = 0;
@@ -1880,7 +1898,8 @@ extern "C" BUGTRAP_API int APIENTRY BT_ExportRegistryKey(LPCTSTR pszRegFile, LPC
 				RegData.dwAuxiliarySize = 0;
 				RegData.dwAuxiliaryBufferSize = 0;
 #endif
-				RegData.hFile = CreateFile(szRegFileName, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+				RegData.hFile =
+					CreateFile(szRegFileName, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 				if (RegData.hFile != INVALID_HANDLE_VALUE)
 				{
 #ifdef _UNICODE
@@ -1925,7 +1944,7 @@ static PCTSTR GetReportFileName(PCTSTR pszFileName, PTSTR szFileNameBuffer)
 {
 	_ASSERTE(g_pSymEngine != NULL);
 	bool bGenerateFileName = pszFileName == NULL || *pszFileName == _T('\0');
-	if (bGenerateFileName || ! PathIsRoot(pszFileName))
+	if (bGenerateFileName || !PathIsRoot(pszFileName))
 	{
 		PCTSTR pszReportFolder = BT_GetReportFilePath();
 		if (bGenerateFileName)

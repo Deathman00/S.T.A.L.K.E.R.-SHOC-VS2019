@@ -35,7 +35,8 @@ inline void* operator new(size_t size, void* ptr)
  */
 inline void operator delete(void* ptr1, void* ptr2)
 {
-	ptr1; ptr2;
+	ptr1;
+	ptr2;
 }
 
 #endif

@@ -22,8 +22,7 @@
  * @param val2 - 2nd value.
  * @return comparison result.
  */
-template <typename TYPE>
-inline int Comparator(const TYPE& val1, const TYPE& val2)
+template <typename TYPE> inline int Comparator(const TYPE& val1, const TYPE& val2)
 {
 	if (val1 < val2)
 		return -1;
@@ -40,10 +39,7 @@ inline int Comparator(const TYPE& val1, const TYPE& val2)
  */
 inline WORD SWAP16(WORD value)
 {
-	return (
-		(((WORD)(value) & 0xFF00) >> 8) |
-		(((WORD)(value) & 0x00FF) << 8)
-		);
+	return ((((WORD)(value)&0xFF00) >> 8) | (((WORD)(value)&0x00FF) << 8));
 }
 
 /**
@@ -53,12 +49,8 @@ inline WORD SWAP16(WORD value)
  */
 inline DWORD SWAP32(DWORD value)
 {
-	return (
-		(((DWORD)(value) & 0xFF000000) >> 24) |
-		(((DWORD)(value) & 0x00FF0000) >> 8) |
-		(((DWORD)(value) & 0x000000FF) << 24) |
-		(((DWORD)(value) & 0x0000FF00) << 8)
-		);
+	return ((((DWORD)(value)&0xFF000000) >> 24) | (((DWORD)(value)&0x00FF0000) >> 8) |
+			(((DWORD)(value)&0x000000FF) << 24) | (((DWORD)(value)&0x0000FF00) << 8));
 }
 
 // Windows processing.
@@ -75,15 +67,15 @@ DWORD GetCanonicalAppName(PTSTR pszAppName, DWORD dwBufferSize, BOOL bAllowSpace
 BOOL GetCompleteLogFileName(PTSTR pszCompleteLogFileName, PCTSTR pszLogFileName, PCTSTR pszDefFileExtension);
 
 // Strings processing.
-#define TrimSpaces(str)   StrTrim(str, _T(" \t\r\n"))
-#define TrimSpacesA(str)  StrTrimA(str, " \t\r\n")
-#define TrimSpacesW(str)  StrTrimW(str, L" \t\r\n")
+#define TrimSpaces(str) StrTrim(str, _T(" \t\r\n"))
+#define TrimSpacesA(str) StrTrimA(str, " \t\r\n")
+#define TrimSpacesW(str) StrTrimW(str, L" \t\r\n")
 
-#define IsSpace(ch)       ((ch) == ' ' || (ch) == '\t' || (ch) == '\r' || (ch) == '\n')
-#define IsAlpha(ch)       (((ch) >= 'a' && (ch) <= 'z') || ((ch) >= 'A' && (ch) <= 'Z'))
-#define IsNumber(ch)      ((ch) >= '0' && (ch) <= '9')
-#define IsAlphaNum(ch)    (IsAlpha(ch) || IsNumber(ch))
-#define IsQuotation(ch)   ((ch) == '\"' || (ch) == '\'')
+#define IsSpace(ch) ((ch) == ' ' || (ch) == '\t' || (ch) == '\r' || (ch) == '\n')
+#define IsAlpha(ch) (((ch) >= 'a' && (ch) <= 'z') || ((ch) >= 'A' && (ch) <= 'Z'))
+#define IsNumber(ch) ((ch) >= '0' && (ch) <= '9')
+#define IsAlphaNum(ch) (IsAlpha(ch) || IsNumber(ch))
+#define IsQuotation(ch) ((ch) == '\"' || (ch) == '\'')
 
 // List controls utilities.
 
@@ -114,7 +106,7 @@ struct LISTVIEW_SORT_PARAMS
 /// Store list view order information.
 class CListViewOrder
 {
-public:
+  public:
 	/// Initialize the object.
 	CListViewOrder(void);
 	/// Initialize list view control.
@@ -130,7 +122,7 @@ public:
 	/// Toggle active sort parameters.
 	void ToggleSortParams(HWND hwndList, int iColumnNumber);
 
-private:
+  private:
 	/// Set sort marker of the list.
 	void SetSortImage(HWND hwndList, int iImage);
 	/// Active column number.

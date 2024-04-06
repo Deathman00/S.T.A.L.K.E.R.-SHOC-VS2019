@@ -21,75 +21,71 @@
 #define new DEBUG_NEW
 #endif
 
-static const TCHAR g_pszXmlInternalError                 [] = _T("Internal error");
-static const TCHAR g_pszXmlInputError                    [] = _T("Input error");
-static const TCHAR g_pszXmlErrorOutOfMemory              [] = _T("Out of memory");
-static const TCHAR g_pszXmlErrorInvalidClosingElement    [] = _T("Invalid closing element");
-static const TCHAR g_pszXmlErrorUnexpectedChars          [] = _T("Unexpected characters");
-static const TCHAR g_pszXmlErrorUnexpectedToken          [] = _T("Unexpected token");
-static const TCHAR g_pszXmlErrorUnexpectedElement        [] = _T("Unexpected element");
-static const TCHAR g_pszXmlErrorUnexpectedEndOfElement   [] = _T("Unexpected end of element");
-static const TCHAR g_pszXmlErrorUnexpectedEndOfStream    [] = _T("Unexpected end of stream");
-static const TCHAR g_pszXmlErrorInvalidNumber            [] = _T("Invalid number");
-static const TCHAR g_pszXmlErrorUnuspportedUrlScheme     [] = _T("Unuspported URL scheme");
-static const TCHAR g_pszXmlErrorInvalidUrl               [] = _T("Invalid URL");
-static const TCHAR g_pszXmlErrorInvalidEntity            [] = _T("Invalid entity");
-static const TCHAR g_pszXmlErrorCantOpenExternalResource [] = _T("Can't open external resource");
+static const TCHAR g_pszXmlInternalError[] = _T("Internal error");
+static const TCHAR g_pszXmlInputError[] = _T("Input error");
+static const TCHAR g_pszXmlErrorOutOfMemory[] = _T("Out of memory");
+static const TCHAR g_pszXmlErrorInvalidClosingElement[] = _T("Invalid closing element");
+static const TCHAR g_pszXmlErrorUnexpectedChars[] = _T("Unexpected characters");
+static const TCHAR g_pszXmlErrorUnexpectedToken[] = _T("Unexpected token");
+static const TCHAR g_pszXmlErrorUnexpectedElement[] = _T("Unexpected element");
+static const TCHAR g_pszXmlErrorUnexpectedEndOfElement[] = _T("Unexpected end of element");
+static const TCHAR g_pszXmlErrorUnexpectedEndOfStream[] = _T("Unexpected end of stream");
+static const TCHAR g_pszXmlErrorInvalidNumber[] = _T("Invalid number");
+static const TCHAR g_pszXmlErrorUnuspportedUrlScheme[] = _T("Unuspported URL scheme");
+static const TCHAR g_pszXmlErrorInvalidUrl[] = _T("Invalid URL");
+static const TCHAR g_pszXmlErrorInvalidEntity[] = _T("Invalid entity");
+static const TCHAR g_pszXmlErrorCantOpenExternalResource[] = _T("Can't open external resource");
 
 /// Map of standard entities and their values.
 CHash<PCTSTR, TCHAR> CXmlReader::m_mapStdEntities;
 
 /// XML search table.
-CXmlReader::CXmlSearchParams CXmlReader::CXmlParser::m_arrInitialXmlSearchParams[] =
-{
-#define XML_TEXT_PARAM_POS             0
-	CXmlSearchParams(_T(""),           &CXmlReader::CXmlParser::XmlTextHandler),
-#define XML_ELEMENT_PARAM_POS          1
-	CXmlSearchParams(_T("<"),          &CXmlReader::CXmlParser::XmlElementHandler),
-#define XML_PROCINSTR_PARAM_POS        2
-	CXmlSearchParams(_T("<?"),         &CXmlReader::CXmlParser::ProcInstrHandler),
-#define XML_COMMENT_PARAM_POS          3
-	CXmlSearchParams(_T("<!--"),       &CXmlReader::CXmlParser::CommentHandler),
-#define XML_CDATA_PARAM_POS            4
-	CXmlSearchParams(_T("<![CDATA["),  &CXmlReader::CXmlParser::XmlCDataHandler),
-#define XML_DOCTYPE_PARAM_POS          5
-	CXmlSearchParams(_T("<!DOCTYPE"),  &CXmlReader::CXmlParser::DocTypeHandler)
-};
+CXmlReader::CXmlSearchParams CXmlReader::CXmlParser::m_arrInitialXmlSearchParams[] = {
+#define XML_TEXT_PARAM_POS 0
+	CXmlSearchParams(_T(""), &CXmlReader::CXmlParser::XmlTextHandler),
+#define XML_ELEMENT_PARAM_POS 1
+	CXmlSearchParams(_T("<"), &CXmlReader::CXmlParser::XmlElementHandler),
+#define XML_PROCINSTR_PARAM_POS 2
+	CXmlSearchParams(_T("<?"), &CXmlReader::CXmlParser::ProcInstrHandler),
+#define XML_COMMENT_PARAM_POS 3
+	CXmlSearchParams(_T("<!--"), &CXmlReader::CXmlParser::CommentHandler),
+#define XML_CDATA_PARAM_POS 4
+	CXmlSearchParams(_T("<![CDATA["), &CXmlReader::CXmlParser::XmlCDataHandler),
+#define XML_DOCTYPE_PARAM_POS 5
+	CXmlSearchParams(_T("<!DOCTYPE"), &CXmlReader::CXmlParser::DocTypeHandler)};
 
 /// DTD search table.
-CXmlReader::CXmlSearchParams CXmlReader::CXmlParser::m_arrInitialDtdSearchParams[] =
-{
-#define DTD_TEXT_PARAM_POS             0
-	CXmlSearchParams(_T(""),           &CXmlReader::CXmlParser::DtdTextHandler),
-#define DTD_END_PARAM_POS              1
-	CXmlSearchParams(_T("]"),          &CXmlReader::CXmlParser::DtdEndHandler),
-#define DTD_INVALID_TOKEN_PARAM_POS    2
-	CXmlSearchParams(_T("<"),          &CXmlReader::CXmlParser::InvalidTokenHandler),
-#define DTD_PROCINSTR_PARAM_POS        3
-	CXmlSearchParams(_T("<?"),         &CXmlReader::CXmlParser::ProcInstrHandler),
-#define DTD_COND_END_PARAM_POS         4
-	CXmlSearchParams(_T("]]>"),        &CXmlReader::CXmlParser::DtdCondtionEndHandler),
-#define DTD_COND_PARAM_POS             5
-	CXmlSearchParams(_T("<!["),        &CXmlReader::CXmlParser::DtdCondtionHandler),
-#define DTD_COMMENT_PARAM_POS          6
-	CXmlSearchParams(_T("<!--"),       &CXmlReader::CXmlParser::CommentHandler),
-#define DTD_ENTITY_PARAM_POS           7
-	CXmlSearchParams(_T("<!ENTITY"),   &CXmlReader::CXmlParser::DtdEntityHandler),
-#define DTD_ATTLIST_PARAM_POS          8
-	CXmlSearchParams(_T("<!ATTLIST"),  &CXmlReader::CXmlParser::DtdDeclarationHandler),
-#define DTD_ELEMENT_PARAM_POS          9
-	CXmlSearchParams(_T("<!ELEMENT"),  &CXmlReader::CXmlParser::DtdDeclarationHandler),
-#define DTD_NOTATION_PARAM_POS         10
-	CXmlSearchParams(_T("<!NOTATION"), &CXmlReader::CXmlParser::DtdDeclarationHandler)
-};
+CXmlReader::CXmlSearchParams CXmlReader::CXmlParser::m_arrInitialDtdSearchParams[] = {
+#define DTD_TEXT_PARAM_POS 0
+	CXmlSearchParams(_T(""), &CXmlReader::CXmlParser::DtdTextHandler),
+#define DTD_END_PARAM_POS 1
+	CXmlSearchParams(_T("]"), &CXmlReader::CXmlParser::DtdEndHandler),
+#define DTD_INVALID_TOKEN_PARAM_POS 2
+	CXmlSearchParams(_T("<"), &CXmlReader::CXmlParser::InvalidTokenHandler),
+#define DTD_PROCINSTR_PARAM_POS 3
+	CXmlSearchParams(_T("<?"), &CXmlReader::CXmlParser::ProcInstrHandler),
+#define DTD_COND_END_PARAM_POS 4
+	CXmlSearchParams(_T("]]>"), &CXmlReader::CXmlParser::DtdCondtionEndHandler),
+#define DTD_COND_PARAM_POS 5
+	CXmlSearchParams(_T("<!["), &CXmlReader::CXmlParser::DtdCondtionHandler),
+#define DTD_COMMENT_PARAM_POS 6
+	CXmlSearchParams(_T("<!--"), &CXmlReader::CXmlParser::CommentHandler),
+#define DTD_ENTITY_PARAM_POS 7
+	CXmlSearchParams(_T("<!ENTITY"), &CXmlReader::CXmlParser::DtdEntityHandler),
+#define DTD_ATTLIST_PARAM_POS 8
+	CXmlSearchParams(_T("<!ATTLIST"), &CXmlReader::CXmlParser::DtdDeclarationHandler),
+#define DTD_ELEMENT_PARAM_POS 9
+	CXmlSearchParams(_T("<!ELEMENT"), &CXmlReader::CXmlParser::DtdDeclarationHandler),
+#define DTD_NOTATION_PARAM_POS 10
+	CXmlSearchParams(_T("<!NOTATION"), &CXmlReader::CXmlParser::DtdDeclarationHandler)};
 
 /**
  * @param eParserType - parser type.
  * @param rReader - parent XML reader.
  * @param rXmlInputStream - XML input stream.
  */
-CXmlReader::CXmlParser::CXmlParser(PARSER_TYPE eParserType, CXmlReader& rReader, CXmlInputStream& rXmlInputStream) :
-	m_rReader(rReader), m_rXmlInputStream(rXmlInputStream)
+CXmlReader::CXmlParser::CXmlParser(PARSER_TYPE eParserType, CXmlReader& rReader, CXmlInputStream& rXmlInputStream)
+	: m_rReader(rReader), m_rXmlInputStream(rXmlInputStream)
 {
 	m_pszErrorMessage = NULL;
 	if (eParserType == PT_DTD_DOCUMENT)
@@ -167,8 +163,7 @@ void CXmlReader::CXmlNode::Reset(void)
 #pragma warning(push)
 #pragma warning(disable : 4355) // 'this' : used in base member initializer list
 
-CXmlReader::CXmlReader(void) :
-	m_XmlParser(CXmlParser::PT_XML_DOCUMENT, *this, m_XmlInputStream)
+CXmlReader::CXmlReader(void) : m_XmlParser(CXmlParser::PT_XML_DOCUMENT, *this, m_XmlInputStream)
 {
 	Init();
 }
@@ -176,8 +171,7 @@ CXmlReader::CXmlReader(void) :
 /**
  * @param pInputStream - input stream.
  */
-CXmlReader::CXmlReader(CInputStream* pInputStream) :
-	m_XmlParser(CXmlParser::PT_XML_DOCUMENT, *this, m_XmlInputStream)
+CXmlReader::CXmlReader(CInputStream* pInputStream) : m_XmlParser(CXmlParser::PT_XML_DOCUMENT, *this, m_XmlInputStream)
 {
 	Init();
 	SetInputStream(pInputStream);
@@ -186,8 +180,7 @@ CXmlReader::CXmlReader(CInputStream* pInputStream) :
 /**
  * @param pszUrl - URL.
  */
-CXmlReader::CXmlReader(PCTSTR pszUrl) :
-	m_XmlParser(CXmlParser::PT_XML_DOCUMENT, *this, m_XmlInputStream)
+CXmlReader::CXmlReader(PCTSTR pszUrl) : m_XmlParser(CXmlParser::PT_XML_DOCUMENT, *this, m_XmlInputStream)
 {
 	Init();
 	Open(pszUrl);
@@ -281,7 +274,6 @@ void CXmlReader::SetInputStream(CInputStream* pInputStream)
 	}
 }
 
-
 /**
  * @param pInputStream - input stream.
  */
@@ -298,7 +290,8 @@ void CXmlReader::CXmlInputStream::SetInputStream(CCharInputStream* pInputStream)
  * @param pParam - custom defined parameter.
  * @return XML result code.
  */
-CXmlReader::XML_RESULT CXmlReader::CXmlParser::ProcessNode(CXmlNode& rXmlNode, CXmlSearchTable& rSearchTable, PVOID pParam)
+CXmlReader::XML_RESULT CXmlReader::CXmlParser::ProcessNode(CXmlNode& rXmlNode, CXmlSearchTable& rSearchTable,
+														   PVOID pParam)
 {
 	if (rSearchTable.m_pfnPrefetchedHandler != NULL)
 	{
@@ -311,10 +304,7 @@ CXmlReader::XML_RESULT CXmlReader::CXmlParser::ProcessNode(CXmlNode& rXmlNode, C
 	int nNumParams = rSearchTable.m_nNumParams;
 	for (int nParamNum = 0; nParamNum < nNumParams; ++nParamNum)
 		arrSearchParams[nParamNum].m_bActive = true;
-	int nSequencePos = 0,
-		nDefaultParamNum = -1,
-		nDefaultSequenceLength = 0,
-		nLongestParamNum = -1,
+	int nSequencePos = 0, nDefaultParamNum = -1, nDefaultSequenceLength = 0, nLongestParamNum = -1,
 		nLongestSequenceLength = 0;
 	for (;;)
 	{
@@ -353,7 +343,7 @@ CXmlReader::XML_RESULT CXmlReader::CXmlParser::ProcessNode(CXmlNode& rXmlNode, C
 				}
 			}
 		}
-		if (! bNotEmptyCriteria)
+		if (!bNotEmptyCriteria)
 		{
 			if (nLongestParamNum >= 0)
 			{
@@ -492,7 +482,7 @@ int CXmlReader::CXmlInputStream::ReadChar(TCHAR arrChar[2])
 		if (IsDBCSLeadByte(*arrChar))
 #endif
 		{
-			if (! ReadCharFromBackBuffer(arrChar[1]))
+			if (!ReadCharFromBackBuffer(arrChar[1]))
 			{
 				_ASSERT(FALSE);
 				nCharSize = -1;
@@ -560,9 +550,7 @@ void CXmlReader::CXmlInputStream::PrepareBackBuffer(int nNumChars)
  */
 CXmlReader::XML_RESULT CXmlReader::CXmlParser::XmlTextHandler(CXmlNode& rXmlNode, PVOID /*pParam*/)
 {
-	_ASSERTE(
-		rXmlNode.m_eNodeType == CXmlNode::XNT_UNDEFINED ||
-		rXmlNode.m_eNodeType == CXmlNode::XNT_TEXT);
+	_ASSERTE(rXmlNode.m_eNodeType == CXmlNode::XNT_UNDEFINED || rXmlNode.m_eNodeType == CXmlNode::XNT_TEXT);
 	if (m_eParserState == PS_XML_DOCUMENT)
 		rXmlNode.m_eNodeType = CXmlNode::XNT_TEXT;
 	return ReadText(rXmlNode.m_strNodeValue, _T("<"), false);
@@ -647,10 +635,11 @@ CHash<CStrStream, CStrStream>* CXmlReader::CXmlParser::GetEntities(void)
  * @param bInAttribute - true when reading attribute value.
  * @return XML result code.
  */
-CXmlReader::XML_RESULT CXmlReader::CXmlParser::ReadTextEx(CStrStream* pOutputStream, PCTSTR pszTerminators, bool bInAttribute)
+CXmlReader::XML_RESULT CXmlReader::CXmlParser::ReadTextEx(CStrStream* pOutputStream, PCTSTR pszTerminators,
+														  bool bInAttribute)
 {
 	bool bEndOfDocument, bIgnoreText;
-	if (! bInAttribute)
+	if (!bInAttribute)
 	{
 		if (m_eParserState == PS_XML_UNDEFINED)
 			m_eParserState = PS_XML_PROLOGUE;
@@ -675,7 +664,7 @@ CXmlReader::XML_RESULT CXmlReader::CXmlParser::ReadTextEx(CStrStream* pOutputStr
 		int nCharSize = ReadChar(arrChar, false);
 		if (nCharSize == 0)
 		{
-			if (! bEndOfDocument)
+			if (!bEndOfDocument)
 			{
 				m_pszErrorMessage = g_pszXmlErrorUnexpectedEndOfStream;
 				return XMLR_ERROR;
@@ -708,7 +697,7 @@ CXmlReader::XML_RESULT CXmlReader::CXmlParser::ReadTextEx(CStrStream* pOutputStr
 #endif
 		if (*arrCharType & C1_SPACE)
 		{
-			if (pOutputStream != NULL && ! bIgnoreText)
+			if (pOutputStream != NULL && !bIgnoreText)
 			{
 				if (*arrChar == _T('\r') || *arrChar == _T('\n'))
 				{
@@ -782,7 +771,8 @@ CXmlReader::XML_RESULT CXmlReader::CXmlParser::ReadNumericEntity(int& nValueLeng
 	if (dwUnicodeChar >= 0x10000)
 	{
 		dwUnicodeChar -= 0x10000;
-		arrCharW[0] = (WCHAR)(HIGH_SURROGATE_START + ((dwUnicodeChar >> 10) & (HIGH_SURROGATE_END - HIGH_SURROGATE_START)));
+		arrCharW[0] =
+			(WCHAR)(HIGH_SURROGATE_START + ((dwUnicodeChar >> 10) & (HIGH_SURROGATE_END - HIGH_SURROGATE_START)));
 		arrCharW[1] = (WCHAR)(LOW_SURROGATE_START + (dwUnicodeChar & (LOW_SURROGATE_END - LOW_SURROGATE_START)));
 		nCharSize = 2;
 	}
@@ -942,8 +932,7 @@ CXmlReader::XML_RESULT CXmlReader::CXmlParser::ReadUntilEx(CStrStream* pOutputSt
 		if (nCharSize <= 0)
 			return XMLR_ERROR;
 		_ASSERTE(nCharSize <= 2);
-		if (arrChar[0] == pszTemp[0] &&
-			(nCharSize == 1 || arrChar[1] == pszTemp[1]))
+		if (arrChar[0] == pszTemp[0] && (nCharSize == 1 || arrChar[1] == pszTemp[1]))
 		{
 			pszTemp += nCharSize;
 			continue;
@@ -979,10 +968,9 @@ CXmlReader::XML_RESULT CXmlReader::CXmlParser::ReadNameEx(CStrStream* pOutputStr
 #else
 		GetStringTypeA(LOCALE_USER_DEFAULT, CT_CTYPE1, arrChar, nCharSize, arrCharType);
 #endif
-		if (nCharPos == 0 ?
-				(*arrCharType & C1_ALPHA) || *arrChar == _T('_') || *arrChar == _T(':') :
-				(*arrCharType & (C1_ALPHA | C1_DIGIT)) || *arrChar == _T('.') || *arrChar == _T('-') || *arrChar == _T('_') || *arrChar == _T(':')
-			)
+		if (nCharPos == 0 ? (*arrCharType & C1_ALPHA) || *arrChar == _T('_') || *arrChar == _T(':')
+						  : (*arrCharType & (C1_ALPHA | C1_DIGIT)) || *arrChar == _T('.') || *arrChar == _T('-') ||
+								*arrChar == _T('_') || *arrChar == _T(':'))
 		{
 			if (pOutputStream != NULL)
 				PutCharToStream(*pOutputStream, arrChar, nCharSize);
@@ -1049,8 +1037,7 @@ CXmlReader::XML_RESULT CXmlReader::CXmlParser::TagHandler(CXmlNode& rXmlNode, TA
 		switch (eTagType)
 		{
 		case TT_ELEMENT:
-			if (m_eParserState != PS_XML_UNDEFINED &&
-				m_eParserState != PS_XML_PROLOGUE &&
+			if (m_eParserState != PS_XML_UNDEFINED && m_eParserState != PS_XML_PROLOGUE &&
 				m_eParserState != PS_XML_DOCUMENT)
 			{
 				m_pszErrorMessage = g_pszXmlErrorUnexpectedToken;
@@ -1059,12 +1046,9 @@ CXmlReader::XML_RESULT CXmlReader::CXmlParser::TagHandler(CXmlNode& rXmlNode, TA
 			rXmlNode.m_eNodeType = CXmlNode::XNT_ELEMENT_BEGIN;
 			break;
 		case TT_PROCINSTR:
-			if (m_eParserState != PS_XML_UNDEFINED &&
-				m_eParserState != PS_XML_PROLOGUE &&
-				m_eParserState != PS_XML_DOCUMENT &&
-				m_eParserState != PS_XML_EPILOGUE &&
-				m_eParserState != PS_DTD_UNDEFINED &&
-				m_eParserState != PS_DTD_DOCUMENT &&
+			if (m_eParserState != PS_XML_UNDEFINED && m_eParserState != PS_XML_PROLOGUE &&
+				m_eParserState != PS_XML_DOCUMENT && m_eParserState != PS_XML_EPILOGUE &&
+				m_eParserState != PS_DTD_UNDEFINED && m_eParserState != PS_DTD_DOCUMENT &&
 				m_eParserState != PS_EMBEDDED_DTD)
 			{
 				m_pszErrorMessage = g_pszXmlErrorUnexpectedToken;
@@ -1118,8 +1102,7 @@ CXmlReader::XML_RESULT CXmlReader::CXmlParser::TagHandler(CXmlNode& rXmlNode, TA
 				if (rXmlNode.m_eNodeType == CXmlNode::XNT_ELEMENT_END)
 				{
 					int nLastElement = arrOpenElements.GetCount() - 1;
-					if (nLastElement < 0 ||
-						_tcscmp(arrOpenElements.GetAt(nLastElement), rXmlNode.m_strNodeName) != 0)
+					if (nLastElement < 0 || _tcscmp(arrOpenElements.GetAt(nLastElement), rXmlNode.m_strNodeName) != 0)
 					{
 						m_pszErrorMessage = g_pszXmlErrorInvalidClosingElement;
 						return XMLR_ERROR;
@@ -1165,7 +1148,8 @@ CXmlReader::XML_RESULT CXmlReader::CXmlParser::TagHandler(CXmlNode& rXmlNode, TA
 					}
 					CAttributesList& rAttributes = rXmlNode.m_mapAttributes;
 					PCTSTR pszEncoding = rAttributes.CaselessGetAt(_T("encoding"));
-					CBaseDecoder* pDecoder = pszEncoding != NULL ? CBaseDecoder::GetDecoder(pszEncoding) : &CUTF8Decoder::GetInstance();
+					CBaseDecoder* pDecoder =
+						pszEncoding != NULL ? CBaseDecoder::GetDecoder(pszEncoding) : &CUTF8Decoder::GetInstance();
 					m_rXmlInputStream.SetDecoder(pDecoder);
 				}
 				if ((m_rReader.m_dwContentFilter & XCF_PROCINSTR) != 0)
@@ -1218,7 +1202,7 @@ CXmlReader::XML_RESULT CXmlReader::CXmlParser::ReadStringEx(CStrStream* pOutputS
 	int nCharSize = ReadNonSpaceChar(arrChar);
 	if (nCharSize <= 0)
 		return XMLR_ERROR;
-	TCHAR szQuote[2] = { *arrChar, _T('\0') };
+	TCHAR szQuote[2] = {*arrChar, _T('\0')};
 	if (*szQuote != _T('\"') && *szQuote != _T('\''))
 	{
 		m_pszErrorMessage = g_pszXmlErrorUnexpectedChars;
@@ -1258,7 +1242,7 @@ CXmlReader::XML_RESULT CXmlReader::CXmlParser::CommentHandler(CXmlNode& rXmlNode
 	_ASSERTE(rXmlNode.m_eNodeType == CXmlNode::XNT_UNDEFINED);
 	CStrStream* pOutputStream;
 	bool bSkipComments = (m_rReader.m_dwContentFilter & XCF_COMMENT) != 0;
-	if (! bSkipComments)
+	if (!bSkipComments)
 	{
 		rXmlNode.m_eNodeType = CXmlNode::XNT_COMMENT;
 		pOutputStream = &rXmlNode.m_strNodeValue;
@@ -1295,9 +1279,7 @@ CXmlReader::XML_RESULT CXmlReader::CXmlParser::XmlCDataHandler(CXmlNode& rXmlNod
 	XML_RESULT eResult;
 	if ((m_rReader.m_dwContentFilter & XCF_CDATA) != 0)
 	{
-		_ASSERTE(
-			rXmlNode.m_eNodeType == CXmlNode::XNT_UNDEFINED ||
-			rXmlNode.m_eNodeType == CXmlNode::XNT_TEXT);
+		_ASSERTE(rXmlNode.m_eNodeType == CXmlNode::XNT_UNDEFINED || rXmlNode.m_eNodeType == CXmlNode::XNT_TEXT);
 		rXmlNode.m_eNodeType = CXmlNode::XNT_TEXT;
 		eResult = ReadUntil(rXmlNode.m_strNodeValue, _T("]]>"));
 		return (eResult == XMLR_CONTINUE ? XMLR_CONTINUE : XMLR_ERROR);
@@ -1341,8 +1323,7 @@ CInputStream* CXmlReader::CXmlParser::CreateInputStream(PCTSTR pszUrl)
 		}
 	}
 	TCHAR szFileName[MAX_PATH];
-	if (PathIsRelative(pszUrl) &&
-		m_rXmlInputStream.GetName(szFileName, countof(szFileName)))
+	if (PathIsRelative(pszUrl) && m_rXmlInputStream.GetName(szFileName, countof(szFileName)))
 	{
 		PathRemoveFileSpec(szFileName);
 		PathAppend(szFileName, pszUrl);
@@ -1354,7 +1335,7 @@ CInputStream* CXmlReader::CXmlParser::CreateInputStream(PCTSTR pszUrl)
 		m_pszErrorMessage = g_pszXmlErrorOutOfMemory;
 		return NULL;
 	}
-	if (! pFileStream->Open(pszUrl, OPEN_EXISTING, GENERIC_READ, FILE_SHARE_READ))
+	if (!pFileStream->Open(pszUrl, OPEN_EXISTING, GENERIC_READ, FILE_SHARE_READ))
 	{
 		m_pszErrorMessage = g_pszXmlErrorCantOpenExternalResource;
 		delete pFileStream;
@@ -1522,7 +1503,8 @@ CXmlReader::XML_RESULT CXmlReader::CXmlParser::DtdEntityHandler(CXmlNode& /*rXml
 			return XMLR_ERROR;
 		if (bProcessingEnabled)
 		{
-			CHash<CStrStream, CStrStream>& rMapEntities = bDtdEntity ? m_rReader.m_mapDtdEntities : m_rReader.m_mapXmlEntities;
+			CHash<CStrStream, CStrStream>& rMapEntities =
+				bDtdEntity ? m_rReader.m_mapDtdEntities : m_rReader.m_mapXmlEntities;
 			rMapEntities.SetAt(strEntityName, strEntityValue);
 		}
 		nCharSize = ReadNonSpaceChar(arrChar);
@@ -1588,7 +1570,8 @@ CXmlReader::XML_RESULT CXmlReader::CXmlParser::DtdEntityHandler(CXmlNode& /*rXml
 			decInputStream.SetInputStream(NULL);
 			delete pInputStream;
 			pInputStream = NULL;
-			CHash<CStrStream, CStrStream>& rMapEntities = bDtdEntity ? m_rReader.m_mapDtdEntities : m_rReader.m_mapXmlEntities;
+			CHash<CStrStream, CStrStream>& rMapEntities =
+				bDtdEntity ? m_rReader.m_mapDtdEntities : m_rReader.m_mapXmlEntities;
 			rMapEntities.SetAt(strEntityName, strEntityValue);
 		}
 		return XMLR_CONTINUE;
@@ -1724,7 +1707,8 @@ CXmlReader::XML_RESULT CXmlReader::CXmlParser::DtdDeclarationHandler(CXmlNode& /
  * @param pParam - custom defined parameter.
  * @return XML result code.
  */
-CXmlReader::XML_RESULT CXmlReader::CXmlParser::ReadNextNode(CXmlNode& rXmlNode, CXmlSearchTable& rSearchTable, PVOID pParam)
+CXmlReader::XML_RESULT CXmlReader::CXmlParser::ReadNextNode(CXmlNode& rXmlNode, CXmlSearchTable& rSearchTable,
+															PVOID pParam)
 {
 	for (;;)
 	{
@@ -1769,11 +1753,8 @@ CXmlReader::XML_RESULT CXmlReader::CXmlParser::ReadNextNode(CXmlNode& rXmlNode, 
  */
 CXmlReader::XML_RESULT CXmlReader::CXmlParser::ReadDtdNodes(bool bProcessingEnabled)
 {
-	_ASSERTE(
-		m_eParserState == PS_DTD_UNDEFINED ||
-		m_eParserState == PS_DTD_DOCUMENT ||
-		m_eParserState == PS_EMBEDDED_DTD ||
-		m_eParserState == PS_XML_PROLOGUE);
+	_ASSERTE(m_eParserState == PS_DTD_UNDEFINED || m_eParserState == PS_DTD_DOCUMENT ||
+			 m_eParserState == PS_EMBEDDED_DTD || m_eParserState == PS_XML_PROLOGUE);
 	if (m_eParserState == PS_XML_PROLOGUE)
 		m_eParserState = PS_EMBEDDED_DTD;
 	XML_RESULT eResult;
@@ -1805,8 +1786,7 @@ int CXmlReader::GotoNextElement(CXmlNode& rXmlNode, DWORD dwGotoFlags)
 		{
 			return XMLR_ERROR;
 		}
-		if (rXmlNode.m_eNodeType == CXmlNode::XNT_ELEMENT ||
-			rXmlNode.m_eNodeType == CXmlNode::XNT_ELEMENT_BEGIN)
+		if (rXmlNode.m_eNodeType == CXmlNode::XNT_ELEMENT || rXmlNode.m_eNodeType == CXmlNode::XNT_ELEMENT_BEGIN)
 		{
 			return XMLR_EOS;
 		}
@@ -1958,8 +1938,7 @@ int CXmlReader::GotoText(CXmlNode& rXmlNode, DWORD dwGotoFlags)
 		{
 			return XMLR_ERROR;
 		}
-		else if (rXmlNode.m_eNodeType == CXmlNode::XNT_ELEMENT ||
-			rXmlNode.m_eNodeType == CXmlNode::XNT_ELEMENT_BEGIN)
+		else if (rXmlNode.m_eNodeType == CXmlNode::XNT_ELEMENT || rXmlNode.m_eNodeType == CXmlNode::XNT_ELEMENT_BEGIN)
 		{
 			m_pszErrorMessage = g_pszXmlErrorUnexpectedElement;
 			return XMLR_ERROR;

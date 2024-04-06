@@ -29,7 +29,7 @@
  * @{
  */
 
-#define IDC_DIALOG_PANE   100
+#define IDC_DIALOG_PANE 100
 
 /// Transfer thread handle.
 static HANDLE g_hTransferThread = NULL;
@@ -94,7 +94,8 @@ static BOOL TransferStatusPane_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM /*
  */
 static void TransferStatusPane_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
 {
-	codeNotify; hwndCtl;
+	codeNotify;
+	hwndCtl;
 	switch (id)
 	{
 	case IDCANCEL:
@@ -116,8 +117,8 @@ static INT_PTR CALLBACK TransferStatusPaneProc(HWND hwndDlg, UINT uMsg, WPARAM w
 {
 	switch (uMsg)
 	{
-	HANDLE_MSG(hwndDlg, WM_INITDIALOG, TransferStatusPane_OnInitDialog);
-	HANDLE_MSG(hwndDlg, WM_COMMAND, TransferStatusPane_OnCommand);
+		HANDLE_MSG(hwndDlg, WM_INITDIALOG, TransferStatusPane_OnInitDialog);
+		HANDLE_MSG(hwndDlg, WM_COMMAND, TransferStatusPane_OnCommand);
 	default:
 		return FALSE;
 	}
@@ -154,7 +155,8 @@ static void StopProgressAnimation(HWND hwnd)
  */
 static BOOL TransferProgressPane_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 {
-	lParam; hwndFocus;
+	lParam;
+	hwndFocus;
 	HWND hwndCtl;
 
 	StartProgressAnimation(hwnd);
@@ -186,7 +188,9 @@ static inline void TransferProgressPane_OnDestroy(HWND hwnd)
  */
 static void TransferProgressPane_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
 {
-	hwnd; hwndCtl; codeNotify;
+	hwnd;
+	hwndCtl;
+	codeNotify;
 	switch (id)
 	{
 	case IDCANCEL:
@@ -210,9 +214,9 @@ static INT_PTR CALLBACK TransferProgressPaneProc(HWND hwndDlg, UINT uMsg, WPARAM
 	HWND hwndCtl;
 	switch (uMsg)
 	{
-	HANDLE_MSG(hwndDlg, WM_INITDIALOG, TransferProgressPane_OnInitDialog);
-	HANDLE_MSG(hwndDlg, WM_COMMAND, TransferProgressPane_OnCommand);
-	HANDLE_MSG(hwndDlg, WM_DESTROY, TransferProgressPane_OnDestroy);
+		HANDLE_MSG(hwndDlg, WM_INITDIALOG, TransferProgressPane_OnInitDialog);
+		HANDLE_MSG(hwndDlg, WM_COMMAND, TransferProgressPane_OnCommand);
+		HANDLE_MSG(hwndDlg, WM_DESTROY, TransferProgressPane_OnDestroy);
 	case UM_CONNECTINGTOSERVER:
 		hwndCtl = GetDlgItem(hwndDlg, IDC_CONNECTINGTOSERVER_CMARK);
 		ShowWindow(hwndCtl, SW_SHOW);
@@ -253,7 +257,8 @@ static HWND CreateDialogPane(HWND hwndParent, UINT uDialogID, DLGPROC pfnDlgProc
 		ScreenToClient(hwndParent, (PPOINT)&rcPane + 1);
 		int x = (rcClient.right - (rcPane.right - rcPane.left)) / 2;
 		int y = (rcClient.bottom - (rcPane.bottom - rcPane.top)) / 2;
-		SetWindowPos(hwndPane, NULL, x, y, 0, 0, SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOSIZE | SWP_SHOWWINDOW | SWP_FRAMECHANGED);
+		SetWindowPos(hwndPane, NULL, x, y, 0, 0,
+					 SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOSIZE | SWP_SHOWWINDOW | SWP_FRAMECHANGED);
 	}
 	return hwndPane;
 }
@@ -267,7 +272,8 @@ static HWND CreateDialogPane(HWND hwndParent, UINT uDialogID, DLGPROC pfnDlgProc
  */
 static BOOL TransferProgressDlg_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 {
-	lParam; hwndFocus;
+	lParam;
+	hwndFocus;
 
 	CenterWindow(hwnd, GetParent(hwnd));
 
@@ -322,8 +328,8 @@ INT_PTR CALLBACK TransferProgressDlgProc(HWND hwndDlg, UINT uMsg, WPARAM wParam,
 	HWND hwndPane;
 	switch (uMsg)
 	{
-	HANDLE_MSG(hwndDlg, WM_INITDIALOG, TransferProgressDlg_OnInitDialog);
-	HANDLE_MSG(hwndDlg, WM_DESTROY, TransferProgressDlg_OnDestroy);
+		HANDLE_MSG(hwndDlg, WM_INITDIALOG, TransferProgressDlg_OnInitDialog);
+		HANDLE_MSG(hwndDlg, WM_DESTROY, TransferProgressDlg_OnDestroy);
 	case WM_COMMAND:
 	case UM_CONNECTINGTOSERVER:
 	case UM_SENDINGREPORT:
@@ -338,7 +344,7 @@ INT_PTR CALLBACK TransferProgressDlgProc(HWND hwndDlg, UINT uMsg, WPARAM wParam,
 		{
 			// on Windows 98 this causes an access violation in user32.dll
 			// why does it crash? - because this is Windows 98
-			//DestroyWindow(hwndPane);
+			// DestroyWindow(hwndPane);
 			// rather then destroy the window, let's hide it
 			ShowWindow(hwndPane, SW_HIDE);
 			// stop progress animation

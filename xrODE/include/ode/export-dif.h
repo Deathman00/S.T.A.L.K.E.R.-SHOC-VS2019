@@ -25,8 +25,6 @@
 
 #include "common.h"
 
-
-void dWorldExportDIF (dWorldID w, FILE *file, const char *world_name);
-
+void dWorldExportDIF(dWorldID w, FILE* file, const char* world_name);
 
 #endif

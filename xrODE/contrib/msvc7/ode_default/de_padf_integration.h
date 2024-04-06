@@ -3,7 +3,7 @@
 
 struct dxJoint;
 
-void emptyAddForces(dxJoint *joint);
-void contactAddForces(dxJoint *joint);
+void emptyAddForces(dxJoint* joint);
+void contactAddForces(dxJoint* joint);
 
 #endif

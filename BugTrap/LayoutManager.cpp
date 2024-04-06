@@ -73,14 +73,17 @@ void CLayoutManager::InitLayout(HWND hwndParent, LAYOUT_INFO arrLayout[], int nI
 		ScreenToClient(hwndParent, (PPOINT)&rcOriginal + 1);
 	}
 
-	m_hwndSizeBox = bAddSizeBox ?
-			CreateWindow(WC_SCROLLBAR, NULL, WS_CHILD | WS_VISIBLE | WS_GROUP | SBS_SIZEGRIP | SBS_SIZEBOXBOTTOMRIGHTALIGN | WS_CLIPSIBLINGS,
-			             rcClient.left, rcClient.top, rcClient.right, rcClient.bottom, hwndParent, NULL, g_hInstance, NULL) : NULL;
+	m_hwndSizeBox = bAddSizeBox ? CreateWindow(WC_SCROLLBAR, NULL,
+											   WS_CHILD | WS_VISIBLE | WS_GROUP | SBS_SIZEGRIP |
+												   SBS_SIZEBOXBOTTOMRIGHTALIGN | WS_CLIPSIBLINGS,
+											   rcClient.left, rcClient.top, rcClient.right, rcClient.bottom, hwndParent,
+											   NULL, g_hInstance, NULL)
+								: NULL;
 }
 
 void CLayoutManager::ApplyLayout(void)
 {
-	if (! m_arrLayout)
+	if (!m_arrLayout)
 		return;
 
 	RECT rcClient;
@@ -101,40 +104,35 @@ void CLayoutManager::ApplyLayout(void)
 
 		if (nWindowDeltaX > 0)
 		{
-			rcCtl.left   = rcOriginal.left   + nWindowDeltaX * rLayoutInfo.m_nRatioX1 / ALIGN_RANGE;
-			rcCtl.right  = rcOriginal.right  + nWindowDeltaX * rLayoutInfo.m_nRatioX2 / ALIGN_RANGE;
+			rcCtl.left = rcOriginal.left + nWindowDeltaX * rLayoutInfo.m_nRatioX1 / ALIGN_RANGE;
+			rcCtl.right = rcOriginal.right + nWindowDeltaX * rLayoutInfo.m_nRatioX2 / ALIGN_RANGE;
 		}
 		else
 		{
-			rcCtl.left   = rcOriginal.left;
-			rcCtl.right  = rcOriginal.right;
+			rcCtl.left = rcOriginal.left;
+			rcCtl.right = rcOriginal.right;
 		}
 
 		if (nWindowDeltaY > 0)
 		{
-			rcCtl.top    = rcOriginal.top    + nWindowDeltaY * rLayoutInfo.m_nRatioY1 / ALIGN_RANGE;
+			rcCtl.top = rcOriginal.top + nWindowDeltaY * rLayoutInfo.m_nRatioY1 / ALIGN_RANGE;
 			rcCtl.bottom = rcOriginal.bottom + nWindowDeltaY * rLayoutInfo.m_nRatioY2 / ALIGN_RANGE;
 		}
 		else
 		{
-			rcCtl.top    = rcOriginal.top;
+			rcCtl.top = rcOriginal.top;
 			rcCtl.bottom = rcOriginal.bottom;
 		}
 
 		int nHorScrollVal = GetScrollPos(m_hwndParent, SB_HORZ);
-		rcCtl.left   -= nHorScrollVal;
-		rcCtl.right  -= nHorScrollVal;
+		rcCtl.left -= nHorScrollVal;
+		rcCtl.right -= nHorScrollVal;
 		int nVertScrollVal = GetScrollPos(m_hwndParent, SB_VERT);
-		rcCtl.top    -= nVertScrollVal;
+		rcCtl.top -= nVertScrollVal;
 		rcCtl.bottom -= nVertScrollVal;
 
 		HWND hwndCtl = GetDlgItem(m_hwndParent, rLayoutInfo.m_nCtlID);
-		SetWindowPos(hwndCtl,
-					 NULL,
-					 rcCtl.left,
-					 rcCtl.top,
-					 rcCtl.right - rcCtl.left,
-					 rcCtl.bottom - rcCtl.top,
+		SetWindowPos(hwndCtl, NULL, rcCtl.left, rcCtl.top, rcCtl.right - rcCtl.left, rcCtl.bottom - rcCtl.top,
 					 SWP_NOACTIVATE | SWP_NOOWNERZORDER | SWP_NOZORDER | SWP_NOREDRAW);
 	}
 
@@ -142,12 +140,8 @@ void CLayoutManager::ApplyLayout(void)
 	{
 		RECT rcCtl;
 		GetWindowRect(m_hwndSizeBox, &rcCtl);
-		SetWindowPos(m_hwndSizeBox,
-					 NULL,
-					 rcClient.right - (rcCtl.right - rcCtl.left),
-					 rcClient.bottom - (rcCtl.bottom - rcCtl.top),
-					 0,
-					 0,
+		SetWindowPos(m_hwndSizeBox, NULL, rcClient.right - (rcCtl.right - rcCtl.left),
+					 rcClient.bottom - (rcCtl.bottom - rcCtl.top), 0, 0,
 					 SWP_NOACTIVATE | SWP_NOOWNERZORDER | SWP_NOZORDER | SWP_NOREDRAW | SWP_NOSIZE);
 		ShowWindow(m_hwndSizeBox, IsMaximized(m_hwndParent) ? SW_HIDE : SW_SHOW);
 	}

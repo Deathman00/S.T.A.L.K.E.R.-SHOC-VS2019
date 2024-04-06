@@ -39,7 +39,7 @@ void CenterWindow(HWND hwnd, HWND hwndCenter)
 	DWORD dwStyle = GetWindowLong(hwnd, GWL_STYLE);
 	if (hwndCenter == NULL)
 	{
-		if(dwStyle & WS_CHILD)
+		if (dwStyle & WS_CHILD)
 			hwndCenter = GetParent(hwnd);
 		else
 			hwndCenter = GetWindow(hwnd, GW_OWNER);
@@ -57,13 +57,13 @@ void CenterWindow(HWND hwnd, HWND hwndCenter)
 		if (hwndCenter != NULL)
 		{
 			DWORD dwStyleCenter = GetWindowLong(hwndCenter, GWL_STYLE);
-			if (! (dwStyleCenter & WS_VISIBLE) || (dwStyleCenter & WS_MINIMIZE))
+			if (!(dwStyleCenter & WS_VISIBLE) || (dwStyleCenter & WS_MINIMIZE))
 				hwndCenter = NULL;
 		}
 
 		// Center within screen coordinates.
 		SystemParametersInfo(SPI_GETWORKAREA, NULL, &rcArea, NULL);
-		if(hwndCenter == NULL)
+		if (hwndCenter == NULL)
 			rcCenter = rcArea;
 		else
 			GetWindowRect(hwndCenter, &rcCenter);
@@ -164,14 +164,14 @@ BOOL DeleteFolder(PCTSTR pszFolder)
 				if (_tcscmp(FindData.cFileName, _T(".")) != 0 && _tcscmp(FindData.cFileName, _T("..")) != 0)
 				{
 					PathCombine(szFileName, pszFolder, FindData.cFileName);
-					if (! DeleteFolder(szFileName))
+					if (!DeleteFolder(szFileName))
 						break;
 				}
 			}
 			else
 			{
 				PathCombine(szFileName, pszFolder, FindData.cFileName);
-				if (! DeleteFile(szFileName))
+				if (!DeleteFile(szFileName))
 					break;
 			}
 			bMore = FindNextFile(hFindFile, &FindData);
@@ -198,7 +198,7 @@ BOOL CreateFolder(PCTSTR pszFolder)
 	{
 		PCTSTR pszSegment = PathFindNextComponent(pszOldSegment);
 		_tcsncat_s(szFolderPath, countof(szFolderPath), pszOldSegment, pszSegment - pszOldSegment);
-		if (! CreateDirectory(szFolderPath, NULL) && GetLastError() != ERROR_ALREADY_EXISTS)
+		if (!CreateDirectory(szFolderPath, NULL) && GetLastError() != ERROR_ALREADY_EXISTS)
 			return FALSE;
 		pszOldSegment = pszSegment;
 	}
@@ -291,7 +291,7 @@ DWORD GetCanonicalAppName(PTSTR pszAppName, DWORD dwBufferSize, BOOL bAllowSpace
 	else
 	{
 		TCHAR szAppFileName[MAX_PATH];
-		if (! GetModuleFileName(NULL, szAppFileName, countof(szAppFileName)))
+		if (!GetModuleFileName(NULL, szAppFileName, countof(szAppFileName)))
 			return FALSE;
 		PTSTR pszFileName = PathFindFileName(szAppFileName);
 		PathRemoveExtension(pszFileName);
@@ -315,13 +315,13 @@ BOOL GetCompleteLogFileName(PTSTR pszCompleteLogFileName, PCTSTR pszLogFileName,
 		return TRUE;
 	}
 	TCHAR szAppDataPath[MAX_PATH];
-	if (! SHGetSpecialFolderPath(NULL, szAppDataPath, CSIDL_APPDATA, TRUE))
+	if (!SHGetSpecialFolderPath(NULL, szAppDataPath, CSIDL_APPDATA, TRUE))
 		return FALSE;
 	TCHAR szAppName[MAX_PATH];
-	if (! GetCanonicalAppName(szAppName, countof(szAppName), TRUE))
+	if (!GetCanonicalAppName(szAppName, countof(szAppName), TRUE))
 		return FALSE;
 	TCHAR szAppFileName[MAX_PATH];
-	if (! GetModuleFileName(NULL, szAppFileName, countof(szAppFileName)))
+	if (!GetModuleFileName(NULL, szAppFileName, countof(szAppFileName)))
 		return FALSE;
 	PTSTR pszFileName = PathFindFileName(szAppFileName);
 	PathRemoveExtension(pszFileName);
@@ -395,8 +395,7 @@ void CListViewOrder::ClearSortParams(HWND hwndList)
  */
 void CListViewOrder::SetSortParams(HWND hwndList, int iColumnNumber, BOOL bAscending)
 {
-	if (m_iColumnNumber != iColumnNumber &&
-		m_iColumnNumber >= 0)
+	if (m_iColumnNumber != iColumnNumber && m_iColumnNumber >= 0)
 	{
 		SetSortImage(hwndList, -1);
 	}
@@ -405,7 +404,6 @@ void CListViewOrder::SetSortParams(HWND hwndList, int iColumnNumber, BOOL bAscen
 	m_bAscending = bAscending;
 	SetSortImage(hwndList, bAscending ? 0 : 1);
 }
-
 
 /**
  * @param hwndList - list view control.
@@ -416,7 +414,7 @@ void CListViewOrder::ToggleSortParams(HWND hwndList, int iColumnNumber)
 	_ASSERTE(iColumnNumber >= 0);
 	if (m_iColumnNumber == iColumnNumber)
 	{
-		m_bAscending = ! m_bAscending;
+		m_bAscending = !m_bAscending;
 		SetSortImage(hwndList, m_bAscending ? 0 : 1);
 	}
 	else
@@ -434,29 +432,29 @@ int CALLBACK ListViewCompareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSo
 {
 	LISTVIEW_SORT_PARAMS* pLVSortParams = (LISTVIEW_SORT_PARAMS*)lParamSort;
 	TCHAR szItem1Text[256];
-	ListView_GetItemText(pLVSortParams->hwndList, lParam1, pLVSortParams->iColumnNumber, szItem1Text, countof(szItem1Text));
+	ListView_GetItemText(pLVSortParams->hwndList, lParam1, pLVSortParams->iColumnNumber, szItem1Text,
+						 countof(szItem1Text));
 	TCHAR szItem2Text[256];
-	ListView_GetItemText(pLVSortParams->hwndList, lParam2, pLVSortParams->iColumnNumber, szItem2Text, countof(szItem2Text));
+	ListView_GetItemText(pLVSortParams->hwndList, lParam2, pLVSortParams->iColumnNumber, szItem2Text,
+						 countof(szItem2Text));
 	int iResult;
 	switch (pLVSortParams->eCompareType)
 	{
 	case LISTVIEW_SORT_PARAMS::ICT_STRING:
 		iResult = _tcscmp(szItem1Text, szItem2Text);
 		break;
-	case LISTVIEW_SORT_PARAMS::ICT_INTEGER:
-		{
-			int iItemValue1 = _ttoi(szItem1Text);
-			int iItemValue2 = _ttoi(szItem2Text);
-			iResult = Comparator(iItemValue1, iItemValue2);
-		}
-		break;
-	case LISTVIEW_SORT_PARAMS::ICT_HEXADECIMAL:
-		{
-			unsigned uItemValue1 = _tcstoul(szItem1Text, NULL, 16);
-			unsigned uItemValue2 = _tcstoul(szItem2Text, NULL, 16);
-			iResult = Comparator(uItemValue1, uItemValue2);
-		}
-		break;
+	case LISTVIEW_SORT_PARAMS::ICT_INTEGER: {
+		int iItemValue1 = _ttoi(szItem1Text);
+		int iItemValue2 = _ttoi(szItem2Text);
+		iResult = Comparator(iItemValue1, iItemValue2);
+	}
+	break;
+	case LISTVIEW_SORT_PARAMS::ICT_HEXADECIMAL: {
+		unsigned uItemValue1 = _tcstoul(szItem1Text, NULL, 16);
+		unsigned uItemValue2 = _tcstoul(szItem2Text, NULL, 16);
+		iResult = Comparator(uItemValue1, uItemValue2);
+	}
+	break;
 	default:
 		iResult = 0;
 		break;

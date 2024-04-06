@@ -15,17 +15,17 @@
 #pragma once
 
 /// Left-side alignment.
-const int ALIGN_LEFT    = 0;
+const int ALIGN_LEFT = 0;
 /// Top-side alignment.
-const int ALIGN_TOP     = 0;
+const int ALIGN_TOP = 0;
 /// Center-side alignment.
-const int ALIGN_CENTER  = 1;
+const int ALIGN_CENTER = 1;
 /// Right-side alignment.
-const int ALIGN_RIGHT   = 2;
+const int ALIGN_RIGHT = 2;
 /// Bottom-side alignment.
-const int ALIGN_BOTTOM  = 2;
+const int ALIGN_BOTTOM = 2;
 /// Alignment range.
-const int ALIGN_RANGE   = 2;
+const int ALIGN_RANGE = 2;
 
 /// Layout info block.
 struct LAYOUT_INFO
@@ -53,7 +53,7 @@ struct LAYOUT_INFO
 /// Window layout manager class.
 class CLayoutManager
 {
-private:
+  private:
 	/// Minimal acceptable window size.
 	POINT m_ptMinWindowSize;
 	/// Minimal window client size.
@@ -72,7 +72,7 @@ private:
 	/// Protect the class from being accidentally copied.
 	CLayoutManager& operator=(const CLayoutManager& rLayoutManager);
 
-public:
+  public:
 	/// Initialize the object.
 	CLayoutManager(void);
 	/// Get minimal window size.

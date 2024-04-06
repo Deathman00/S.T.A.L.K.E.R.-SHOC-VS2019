@@ -19,7 +19,7 @@
 /// In-memory stream.
 class CMemStream : public CStream
 {
-public:
+  public:
 	/// Initialize the object.
 	CMemStream(void);
 	/// Initialize the object.
@@ -59,7 +59,7 @@ public:
 	/// Read array of bytes from the stream.
 	virtual int ReadBytes(unsigned char* arrBytes, int nNumBytes);
 
-private:
+  private:
 	/// Initialize member variables.
 	void InitBuffer(void);
 	/// Initialize member variables.

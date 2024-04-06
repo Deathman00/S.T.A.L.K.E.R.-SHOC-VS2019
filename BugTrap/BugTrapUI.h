@@ -20,30 +20,29 @@
 /// Transfer thread parameters.
 class CTransferThreadParams
 {
-public:
+  public:
 	/// Current context.
 	enum INTERNET_CONTEXT
 	{
 		/// Unexpected error.
-		IC_ERROR              = -1,
+		IC_ERROR = -1,
 		/// Undefined context.
-		IC_UNDEFINED          = 0,
+		IC_UNDEFINED = 0,
 		/// InternetConnect() call.
-		IC_INTERNETCONNECT    = +1,
+		IC_INTERNETCONNECT = +1,
 		/// HttpOpenRequest() call.
-		IC_OPENREQUEST        = +2,
+		IC_OPENREQUEST = +2,
 		/// HttpSendRequestEx() call.
-		IC_SENDREQUEST        = +3,
+		IC_SENDREQUEST = +3,
 		/// InternetWriteFile() call.
-		IC_WRITEFILE          = +4,
+		IC_WRITEFILE = +4,
 		/// HttpEndRequest() call.
-		IC_ENDREQUEST         = +5,
+		IC_ENDREQUEST = +5,
 		/// Receiving response.
-		IC_RECEIVINGRESPONSE  = +6,
+		IC_RECEIVINGRESPONSE = +6,
 		/// InternetCloseHandle() call.
-		IC_CLOSEHANDLE        = +7
+		IC_CLOSEHANDLE = +7
 	};
-
 
 	/// Initialize the object.
 	CTransferThreadParams(HWND hwndSink = NULL);
@@ -76,7 +75,7 @@ public:
 	/// Post completion message to the sink window.
 	void PostCompletionMessage(void);
 
-private:
+  private:
 	/// Protect the class from being accidentally copied.
 	CTransferThreadParams(const CTransferThreadParams& rParams);
 	/// Protect the class from being accidentally copied.
@@ -96,7 +95,6 @@ private:
 	INTERNET_CONTEXT m_eContext;
 	/// Callback result.
 	DWORD m_dwCallbackResult;
-
 };
 
 /**

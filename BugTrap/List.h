@@ -17,22 +17,18 @@
 #include "ColHelper.h"
 
 /// Doubly-linked list
-template
-<
-	typename DATA_TYPE,
-	class INSTANCE_TRAITS = CObjectTraits<DATA_TYPE>,
-	class COMPARE_TRAITS = CCompareTraits<DATA_TYPE>
->
+template <typename DATA_TYPE, class INSTANCE_TRAITS = CObjectTraits<DATA_TYPE>,
+		  class COMPARE_TRAITS = CCompareTraits<DATA_TYPE>>
 class CList
 {
-private:
+  private:
 	/// List item.
 	class CListItem
 	{
 		/// Doubly-linked list.
 		friend class CList;
 
-	private:
+	  private:
 		/// Contains data value.
 		DATA_TYPE m_Data;
 		/// Pointer to the previous item.
@@ -57,7 +53,7 @@ private:
 	/// Allocate new list item.
 	CListItem* AllocListItem(void);
 
-public:
+  public:
 	/// Synonym of list iterator type.
 	typedef CListItem* POSITION;
 
@@ -131,7 +127,7 @@ template <typename DATA_TYPE, class INSTANCE_TRAITS, class COMPARE_TRAITS>
 inline void CList<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::ValidateItem(const CListItem* pItem)
 {
 	_ASSERTE(pItem);
-	if (! pItem)
+	if (!pItem)
 		RaiseException(STATUS_ARRAY_BOUNDS_EXCEEDED, 0, 0, NULL);
 }
 
@@ -162,7 +158,8 @@ CList<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::CList(const CList& rList)
  * @return reference to itself.
  */
 template <typename DATA_TYPE, class INSTANCE_TRAITS, class COMPARE_TRAITS>
-const CList<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>& CList<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::operator=(const CList& rList)
+const CList<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>& CList<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::operator=(
+	const CList& rList)
 {
 	if (this != &rList)
 	{
@@ -212,7 +209,8 @@ inline CList<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::~CList(void)
  * @return newly allocated list item.
  */
 template <typename DATA_TYPE, class INSTANCE_TRAITS, class COMPARE_TRAITS>
-typename CList<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::CListItem* CList<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::AllocListItem(void)
+typename CList<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::CListItem* CList<DATA_TYPE, INSTANCE_TRAITS,
+																			 COMPARE_TRAITS>::AllocListItem(void)
 {
 	CListItem* pItem;
 	if (m_pGarbage)
@@ -223,19 +221,19 @@ typename CList<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::CListItem* CList<DAT
 	else
 	{
 		pItem = (CListItem*)new BYTE[sizeof(CListItem)];
-		if (! pItem)
+		if (!pItem)
 			RaiseException(STATUS_NO_MEMORY, 0, 0, NULL);
 	}
 	return pItem;
 }
-
 
 /**
  * @param rData - the new element.
  * @return the position of newly inserted value.
  */
 template <typename DATA_TYPE, class INSTANCE_TRAITS, class COMPARE_TRAITS>
-typename CList<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::POSITION CList<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::AddToHead(const DATA_TYPE& rData)
+typename CList<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::POSITION CList<
+	DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::AddToHead(const DATA_TYPE& rData)
 {
 	CListItem* pFirst = AllocListItem();
 	pFirst->m_pPrev = NULL;
@@ -256,7 +254,8 @@ typename CList<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::POSITION CList<DATA_
  * @return the position of newly inserted value.
  */
 template <typename DATA_TYPE, class INSTANCE_TRAITS, class COMPARE_TRAITS>
-typename CList<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::POSITION CList<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::AddToTail(const DATA_TYPE& rData)
+typename CList<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::POSITION CList<
+	DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::AddToTail(const DATA_TYPE& rData)
 {
 	CListItem* pLast = AllocListItem();
 	pLast->m_pPrev = m_pLast;
@@ -316,7 +315,8 @@ inline const DATA_TYPE& CList<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::GetTa
  * @return a @a POSITION value that can be used for iteration or object pointer retrieval; NULL if the list is empty.
  */
 template <typename DATA_TYPE, class INSTANCE_TRAITS, class COMPARE_TRAITS>
-inline typename CList<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::POSITION CList<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::GetHeadPosition(void) const
+inline typename CList<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::POSITION CList<
+	DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::GetHeadPosition(void) const
 {
 	return m_pFirst;
 }
@@ -325,28 +325,33 @@ inline typename CList<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::POSITION CLis
  * @return a @a POSITION value that can be used for iteration or object pointer retrieval; NULL if the list is empty.
  */
 template <typename DATA_TYPE, class INSTANCE_TRAITS, class COMPARE_TRAITS>
-inline typename CList<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::POSITION CList<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::GetTailPosition(void) const
+inline typename CList<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::POSITION CList<
+	DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::GetTailPosition(void) const
 {
 	return m_pLast;
 }
 
 /**
- * @param pos - a @a POSITION value returned by a previous GetPrevPosition(), GetTailPosition(), or other member function call.
+ * @param pos - a @a POSITION value returned by a previous GetPrevPosition(), GetTailPosition(), or other member
+ * function call.
  * @return the position of next element is the list or NULL.
  */
 template <typename DATA_TYPE, class INSTANCE_TRAITS, class COMPARE_TRAITS>
-inline typename CList<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::POSITION CList<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::GetNextPosition(typename CList::POSITION pos)
+inline typename CList<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::POSITION CList<
+	DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::GetNextPosition(typename CList::POSITION pos)
 {
 	ValidateItem(pos);
 	return pos->m_pNext;
 }
 
 /**
- * @param pos - a @a POSITION value returned by a previous GetPrevPosition(), GetTailPosition(), or other member function call.
+ * @param pos - a @a POSITION value returned by a previous GetPrevPosition(), GetTailPosition(), or other member
+ * function call.
  * @return the position of next element is the list or NULL.
  */
 template <typename DATA_TYPE, class INSTANCE_TRAITS, class COMPARE_TRAITS>
-inline typename CList<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::POSITION CList<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::GetPrevPosition(typename CList::POSITION pos)
+inline typename CList<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::POSITION CList<
+	DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::GetPrevPosition(typename CList::POSITION pos)
 {
 	ValidateItem(pos);
 	return pos->m_pPrev;
@@ -371,7 +376,8 @@ inline int CList<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::GetCount(void) con
 }
 
 /**
- * @param pos - a @a POSITION value returned by a previous GetPrevPosition(), GetTailPosition(), or other member function call.
+ * @param pos - a @a POSITION value returned by a previous GetPrevPosition(), GetTailPosition(), or other member
+ * function call.
  * @return a reference to an element of the list.
  */
 template <typename DATA_TYPE, class INSTANCE_TRAITS, class COMPARE_TRAITS>
@@ -386,7 +392,8 @@ inline DATA_TYPE& CList<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::GetAt(typen
  * @param rData - the element to be added to the list.
  */
 template <typename DATA_TYPE, class INSTANCE_TRAITS, class COMPARE_TRAITS>
-inline void CList<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::SetAt(typename CList::POSITION pos, const DATA_TYPE& rData)
+inline void CList<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::SetAt(typename CList::POSITION pos,
+																	 const DATA_TYPE& rData)
 {
 	ValidateItem(pos);
 	INSTANCE_TRAITS::Assignment(pos->m_Data, rData);
@@ -416,12 +423,14 @@ void CList<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::DeleteAt(typename CList:
 }
 
 /**
- * @param pos - a @a POSITION value returned by a previous GetPrevPosition(), GetTailPosition(), or other member function call.
+ * @param pos - a @a POSITION value returned by a previous GetPrevPosition(), GetTailPosition(), or other member
+ * function call.
  * @param rData - the element to be added to this list.
  * @return the position of newly inserted value.
  */
 template <typename DATA_TYPE, class INSTANCE_TRAITS, class COMPARE_TRAITS>
-typename CList<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::POSITION CList<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::InsertBefore(typename CList::POSITION pos, const DATA_TYPE& rData)
+typename CList<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::POSITION CList<
+	DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::InsertBefore(typename CList::POSITION pos, const DATA_TYPE& rData)
 {
 	ValidateItem(pos);
 	CListItem* pItem = AllocListItem();
@@ -440,12 +449,14 @@ typename CList<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::POSITION CList<DATA_
 }
 
 /**
- * @param pos - a @a POSITION value returned by a previous GetPrevPosition(), GetTailPosition(), or other member function call.
+ * @param pos - a @a POSITION value returned by a previous GetPrevPosition(), GetTailPosition(), or other member
+ * function call.
  * @param rData - the element to be added to this list.
  * @return the position of newly inserted value.
  */
 template <typename DATA_TYPE, class INSTANCE_TRAITS, class COMPARE_TRAITS>
-typename CList<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::POSITION CList<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::InsertAfter(typename CList::POSITION pos, const DATA_TYPE& rData)
+typename CList<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::POSITION CList<
+	DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::InsertAfter(typename CList::POSITION pos, const DATA_TYPE& rData)
 {
 	ValidateItem(pos);
 	CListItem* pItem = AllocListItem();
@@ -507,14 +518,14 @@ void CList<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::DeleteAll(bool bFree)
 		while (m_pGarbage)
 		{
 			pNext = m_pGarbage->m_pNext;
-			delete[] (PBYTE)m_pGarbage;
+			delete[](PBYTE) m_pGarbage;
 			m_pGarbage = pNext;
 		}
 		while (m_pFirst)
 		{
 			pNext = m_pFirst->m_pNext;
 			INSTANCE_TRAITS::Destructor(m_pFirst->m_Data);
-			delete[] (PBYTE)m_pFirst;
+			delete[](PBYTE) m_pFirst;
 			m_pFirst = pNext;
 		}
 	}
@@ -536,24 +547,29 @@ void CList<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::DeleteAll(bool bFree)
 /**
  * @param rSearchValue - the value to be found in the list.
  * @param startAfter - the start position for the search.
- * @return a @a POSITION value that can be used for iteration or object pointer retrieval; NULL if the object is not found.
+ * @return a @a POSITION value that can be used for iteration or object pointer retrieval; NULL if the object is not
+ * found.
  */
 template <typename DATA_TYPE, class INSTANCE_TRAITS, class COMPARE_TRAITS>
-typename CList<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::POSITION CList<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::Find(const DATA_TYPE& rSearchValue, typename CList::POSITION startAfter) const
+typename CList<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::POSITION CList<
+	DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::Find(const DATA_TYPE& rSearchValue,
+													  typename CList::POSITION startAfter) const
 {
 	if (startAfter == NULL)
 		startAfter = m_pFirst;
-	while (startAfter != NULL && ! COMPARE_TRAITS::Compare(startAfter->m_Data, rSearchValue))
+	while (startAfter != NULL && !COMPARE_TRAITS::Compare(startAfter->m_Data, rSearchValue))
 		startAfter = startAfter->m_pNext;
 	return startAfter;
 }
 
 /**
  * @param nIndex - the zero-based index of the list element to be found.
- * @return a @a POSITION value that can be used for iteration or object pointer retrieval; NULL if nIndex is negative or too large.
+ * @return a @a POSITION value that can be used for iteration or object pointer retrieval; NULL if nIndex is negative or
+ * too large.
  */
 template <typename DATA_TYPE, class INSTANCE_TRAITS, class COMPARE_TRAITS>
-typename CList<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::POSITION CList<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::GetByIndex(int nIndex) const
+typename CList<DATA_TYPE, INSTANCE_TRAITS, COMPARE_TRAITS>::POSITION CList<DATA_TYPE, INSTANCE_TRAITS,
+																		   COMPARE_TRAITS>::GetByIndex(int nIndex) const
 {
 	if (nIndex < 0)
 		return NULL;

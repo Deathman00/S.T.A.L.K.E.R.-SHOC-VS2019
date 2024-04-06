@@ -90,15 +90,19 @@ void CImageView::DrawImageView(HDC hdc, RECT* prcPaint)
 		HBITMAP hbmpSafe2 = SelectBitmap(hdcTemp, m_hAdjustedBitmap);
 		int nHorPos = GetScrollPos(m_hwnd, SB_HORZ);
 		int nVertPos = GetScrollPos(m_hwnd, SB_VERT);
-		int nImageLeft = rcClient.right > m_szAjustedBitmapSize.cx ? (rcClient.right - m_szAjustedBitmapSize.cx) / 2 : -nHorPos;
-		int nImageTop = rcClient.bottom > m_szAjustedBitmapSize.cy ? (rcClient.bottom - m_szAjustedBitmapSize.cy) / 2 : -nVertPos;
-		BitBlt(hdcMem, nImageLeft, nImageTop, m_szAjustedBitmapSize.cx, m_szAjustedBitmapSize.cy, hdcTemp, 0, 0, SRCCOPY);
+		int nImageLeft =
+			rcClient.right > m_szAjustedBitmapSize.cx ? (rcClient.right - m_szAjustedBitmapSize.cx) / 2 : -nHorPos;
+		int nImageTop =
+			rcClient.bottom > m_szAjustedBitmapSize.cy ? (rcClient.bottom - m_szAjustedBitmapSize.cy) / 2 : -nVertPos;
+		BitBlt(hdcMem, nImageLeft, nImageTop, m_szAjustedBitmapSize.cx, m_szAjustedBitmapSize.cy, hdcTemp, 0, 0,
+			   SRCCOPY);
 		SelectBitmap(hdcTemp, hbmpSafe2);
 		DeleteDC(hdcTemp);
 	}
 
 #ifdef USE_MEM_DC
-	BitBlt(hdc, prcPaint->left, prcPaint->top, nClientWidth, nClientHeight, hdcMem, prcPaint->left, prcPaint->top, SRCCOPY);
+	BitBlt(hdc, prcPaint->left, prcPaint->top, nClientWidth, nClientHeight, hdcMem, prcPaint->left, prcPaint->top,
+		   SRCCOPY);
 	SelectBitmap(hdcMem, hbmpSafe);
 	DeleteDC(hdcMem);
 	DeleteBitmap(hbmpMem);
@@ -116,7 +120,7 @@ void CImageView::ResizeImageView(BOOL bIgnoreScrollPos)
 	GetClientRect(m_hwnd, &rcClient);
 	ZeroMemory(&sinfo, sizeof(sinfo));
 	sinfo.cbSize = sizeof(sinfo);
-	if (! bIgnoreScrollPos)
+	if (!bIgnoreScrollPos)
 	{
 		sinfo.fMask = SIF_POS;
 		GetScrollInfo(m_hwnd, SB_HORZ, &sinfo);
@@ -133,7 +137,7 @@ void CImageView::ResizeImageView(BOOL bIgnoreScrollPos)
 	GetClientRect(m_hwnd, &rcClient);
 	ZeroMemory(&sinfo, sizeof(sinfo));
 	sinfo.cbSize = sizeof(sinfo);
-	if (! bIgnoreScrollPos)
+	if (!bIgnoreScrollPos)
 	{
 		sinfo.fMask = SIF_POS;
 		GetScrollInfo(m_hwnd, SB_VERT, &sinfo);
@@ -172,30 +176,30 @@ void CImageView::ScrollImageView(int nScrollBarType, int nScrollCode)
 	switch (nScrollCode)
 	{
 	case SB_LINEUP:
-	//case SB_LINELEFT:
+		// case SB_LINELEFT:
 		sinfo.nPos -= nLineOffset;
 		break;
 	case SB_LINEDOWN:
-	//case SB_LINERIGHT:
+		// case SB_LINERIGHT:
 		sinfo.nPos += nLineOffset;
 		break;
 	case SB_PAGEUP:
-	//case SB_PAGELEFT:
+		// case SB_PAGELEFT:
 		sinfo.nPos -= sinfo.nPage;
 		break;
 	case SB_PAGEDOWN:
-	//case SB_PAGERIGHT:
+		// case SB_PAGERIGHT:
 		sinfo.nPos += sinfo.nPage;
 		break;
 	case SB_THUMBTRACK:
 		sinfo.nPos = sinfo.nTrackPos;
 		break;
 	case SB_TOP:
-	//case SB_LEFT:
+		// case SB_LEFT:
 		sinfo.nPos = 0;
 		break;
 	case SB_BOTTOM:
-	//case SB_RIGHT:
+		// case SB_RIGHT:
 		sinfo.nPos = sinfo.nMax;
 		break;
 	default:
@@ -240,9 +244,9 @@ LRESULT CALLBACK CImageView::ImageViewWndProc(HWND hwnd, UINT uMsg, WPARAM wPara
 	int zDelta, zTotal, nScrollCode, nScrollBarType;
 	LONG lWindowStyle;
 
-	CImageView* _this  = (CImageView*)GetWindowLongPtr(hwnd, GWL_USERDATA);
+	CImageView* _this = (CImageView*)GetWindowLongPtr(hwnd, GWL_USERDATA);
 	_ASSERTE(_this != NULL);
-	switch(uMsg)
+	switch (uMsg)
 	{
 	case WM_LBUTTONDOWN:
 		SetFocus(hwnd);
@@ -251,7 +255,7 @@ LRESULT CALLBACK CImageView::ImageViewWndProc(HWND hwnd, UINT uMsg, WPARAM wPara
 		return TRUE;
 	case WM_PAINT:
 		hdc = (HDC)wParam;
-		if (! hdc)
+		if (!hdc)
 		{
 			hdc = BeginPaint(hwnd, &ps);
 			if (hdc)
@@ -348,7 +352,7 @@ LRESULT CALLBACK CImageView::ImageViewWndProc(HWND hwnd, UINT uMsg, WPARAM wPara
 	case WM_SETTINGCHANGE:
 		if (wParam == SPI_SETWHEELSCROLLLINES)
 		{
-			if (! SystemParametersInfo(SPI_GETWHEELSCROLLLINES, 0, &_this->m_nWheelLines, 0))
+			if (!SystemParametersInfo(SPI_GETWHEELSCROLLLINES, 0, &_this->m_nWheelLines, 0))
 				_this->m_nWheelLines = g_dwDefaultNumWheels;
 		}
 		return 0;
@@ -368,7 +372,7 @@ void CImageView::Attach(HWND hwnd)
 	_ASSERTE(m_hwnd == NULL);
 	_ASSERTE(g_pResManager != NULL);
 
-	if (! SystemParametersInfo(SPI_GETWHEELSCROLLLINES, 0, &m_nWheelLines, 0))
+	if (!SystemParametersInfo(SPI_GETWHEELSCROLLLINES, 0, &m_nWheelLines, 0))
 		m_nWheelLines = g_dwDefaultNumWheels;
 
 	m_hwnd = hwnd;
@@ -505,7 +509,8 @@ void CImageView::ResizeImage(void)
 				if (hdcDest)
 				{
 					HBITMAP hbmpSafe2 = SelectBitmap(hdcDest, m_hAdjustedBitmap);
-					StretchBlt(hdcDest, 0, 0, m_szAjustedBitmapSize.cx, m_szAjustedBitmapSize.cy, hdcSrc, 0, 0, m_szBitmapSize.cx, m_szBitmapSize.cy, SRCCOPY);
+					StretchBlt(hdcDest, 0, 0, m_szAjustedBitmapSize.cx, m_szAjustedBitmapSize.cy, hdcSrc, 0, 0,
+							   m_szBitmapSize.cx, m_szBitmapSize.cy, SRCCOPY);
 					SelectBitmap(hdcDest, hbmpSafe2);
 					DeleteDC(hdcDest);
 				}

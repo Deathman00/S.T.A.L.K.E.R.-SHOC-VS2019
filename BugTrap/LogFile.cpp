@@ -104,7 +104,7 @@ void CLogFile::DeleteHead(void)
 		m_pLastEntry = NULL;
 	m_dwNumBytes -= pLogEntry->m_dwSize;
 	--m_dwNumEntries;
-	delete[] (PBYTE)pLogEntry;
+	delete[](PBYTE) pLogEntry;
 }
 
 void CLogFile::DeleteTail(void)
@@ -118,7 +118,7 @@ void CLogFile::DeleteTail(void)
 		m_pFirstEntry = NULL;
 	m_dwNumBytes -= pLogEntry->m_dwSize;
 	--m_dwNumEntries;
-	delete[] (PBYTE)pLogEntry;
+	delete[](PBYTE) pLogEntry;
 }
 
 void CLogFile::FreeHead(void)
@@ -154,7 +154,7 @@ void CLogFile::FreeEntries(void)
 	while (m_pFirstEntry)
 	{
 		CLogEntry* pNextEntry = m_pFirstEntry->m_pNextEntry;
-		delete[] (PBYTE)m_pFirstEntry;
+		delete[](PBYTE) m_pFirstEntry;
 		m_pFirstEntry = pNextEntry;
 	}
 	m_pLastEntry = NULL;
@@ -180,10 +180,14 @@ PCTSTR CLogFile::GetLogLevelPrefix(BUGTRAP_LOGLEVEL eLogLevel)
 {
 	switch (eLogLevel)
 	{
-	case BTLL_ERROR:   return _T("ERROR");
-	case BTLL_WARNING: return _T("WARNING");
-	case BTLL_INFO:    return _T("INFO");
-	default:           return NULL;
+	case BTLL_ERROR:
+		return _T("ERROR");
+	case BTLL_WARNING:
+		return _T("WARNING");
+	case BTLL_INFO:
+		return _T("INFO");
+	default:
+		return NULL;
 	}
 }
 
@@ -240,7 +244,8 @@ void CLogFile::WriteTextToConsole(HANDLE hConsole)
 			}
 			m_dwConsoleBufferSizeA = dwTextSizeA;
 		}
-		dwTextLength = WideCharToMultiByte(uConsoleCP, 0, m_pchConsoleBufferW, -1, m_pchConsoleBufferA, dwTextSizeA, NULL, NULL);
+		dwTextLength =
+			WideCharToMultiByte(uConsoleCP, 0, m_pchConsoleBufferW, -1, m_pchConsoleBufferA, dwTextSizeA, NULL, NULL);
 		WriteConsoleA(hConsole, m_pchConsoleBufferA, dwTextLength - 1, &dwWritten, NULL);
 	}
 	else
@@ -261,9 +266,8 @@ void CLogFile::WriteTextToConsole(HANDLE hConsole)
  */
 void CLogFile::GetTimeStatistics(const SYSTEMTIME* pSystemTime, PTSTR pszTimeStatistics, DWORD dwTimeStatisticsSize)
 {
-	_stprintf_s(pszTimeStatistics, dwTimeStatisticsSize,
-	            _T("%04d/%02d/%02d %02d:%02d:%02d"),
-	            pSystemTime->wYear, pSystemTime->wMonth, pSystemTime->wDay, pSystemTime->wHour, pSystemTime->wMinute, pSystemTime->wSecond);
+	_stprintf_s(pszTimeStatistics, dwTimeStatisticsSize, _T("%04d/%02d/%02d %02d:%02d:%02d"), pSystemTime->wYear,
+				pSystemTime->wMonth, pSystemTime->wDay, pSystemTime->wHour, pSystemTime->wMinute, pSystemTime->wSecond);
 }
 
 /**
@@ -360,7 +364,8 @@ PTSTR CLogFile::FormatBufferF(PCTSTR pszFormat, ...)
  * @param rcsConsoleAccess - provides synchronous access to the console.
  * @param pszFormat - format string.
  */
-void CLogFile::WriteLogEntryF(BUGTRAP_LOGLEVEL eLogLevel, ENTRY_MODE eEntryMode, CRITICAL_SECTION& rcsConsoleAccess, PCTSTR pszFormat, ...)
+void CLogFile::WriteLogEntryF(BUGTRAP_LOGLEVEL eLogLevel, ENTRY_MODE eEntryMode, CRITICAL_SECTION& rcsConsoleAccess,
+							  PCTSTR pszFormat, ...)
 {
 	va_list argList;
 	va_start(argList, pszFormat);
@@ -375,7 +380,8 @@ void CLogFile::WriteLogEntryF(BUGTRAP_LOGLEVEL eLogLevel, ENTRY_MODE eEntryMode,
  * @param pszFormat - format string.
  * @param argList - variable argument list.
  */
-void CLogFile::WriteLogEntryV(BUGTRAP_LOGLEVEL eLogLevel, ENTRY_MODE eEntryMode, CRITICAL_SECTION& rcsConsoleAccess, PCTSTR pszFormat, va_list argList)
+void CLogFile::WriteLogEntryV(BUGTRAP_LOGLEVEL eLogLevel, ENTRY_MODE eEntryMode, CRITICAL_SECTION& rcsConsoleAccess,
+							  PCTSTR pszFormat, va_list argList)
 {
 	PTSTR pszFormatBuffer = FormatBufferV(pszFormat, argList);
 	_ASSERTE(pszFormatBuffer != NULL);

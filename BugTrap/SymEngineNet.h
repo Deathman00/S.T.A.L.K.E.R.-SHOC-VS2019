@@ -29,70 +29,72 @@ using namespace System::Reflection;
 
 namespace IntelleSoft
 {
-	namespace BugTrap
-	{
-		private ref class StackFrameEnumerator
-		{
-		public:
-			StackFrameEnumerator(Thread^ thread);
-			StackFrameEnumerator(Exception^ exception);
-			void InitStackTrace(void);
-			StackFrame^ GetFirstStackTraceEntry(void);
-			StackFrame^ GetNextStackTraceEntry(void);
+namespace BugTrap
+{
+private
+ref class StackFrameEnumerator
+{
+  public:
+	StackFrameEnumerator(Thread ^ thread);
+	StackFrameEnumerator(Exception ^ exception);
+	void InitStackTrace(void);
+	StackFrame ^ GetFirstStackTraceEntry(void);
+	StackFrame ^ GetNextStackTraceEntry(void);
 
-		private:
-			initonly StackTrace^ stackTrace;
-			int frameIndex;
-		};
+  private:
+	initonly StackTrace ^ stackTrace;
+	int frameIndex;
+};
 
-		inline StackFrameEnumerator::StackFrameEnumerator(Thread^ thread)
-		{
-			this->stackTrace = gcnew StackTrace(thread, true);
-			this->frameIndex = int::MaxValue;
-		}
-
-		inline StackFrameEnumerator::StackFrameEnumerator(Exception^ exception)
-		{
-			this->stackTrace = gcnew StackTrace(exception, true);
-			this->frameIndex = int::MaxValue;
-		}
-
-		inline void StackFrameEnumerator::InitStackTrace(void)
-		{
-			this->frameIndex = 0;
-		}
-
-		inline StackFrame^ StackFrameEnumerator::GetFirstStackTraceEntry(void)
-		{
-			this->InitStackTrace();
-			return this->GetNextStackTraceEntry();
-		}
-
-		private ref class AssemblyEnumerator
-		{
-		public:
-			AssemblyEnumerator(void);
-			void InitAssemblies(void);
-			Assembly^ GetFirstAssembly(void);
-			Assembly^ GetNextAssembly(void);
-
-		private:
-			initonly array<Assembly^>^ assemblies;
-			IEnumerator^ assemblyEnumerator;
-		};
-
-		inline void AssemblyEnumerator::InitAssemblies(void)
-		{
-			this->assemblyEnumerator->Reset();
-		}
-
-		inline Assembly^ AssemblyEnumerator::GetFirstAssembly(void)
-		{
-			this->InitAssemblies();
-			return this->GetNextAssembly();
-		}
-	}
+inline StackFrameEnumerator::StackFrameEnumerator(Thread ^ thread)
+{
+	this->stackTrace = gcnew StackTrace(thread, true);
+	this->frameIndex = int ::MaxValue;
 }
+
+inline StackFrameEnumerator::StackFrameEnumerator(Exception ^ exception)
+{
+	this->stackTrace = gcnew StackTrace(exception, true);
+	this->frameIndex = int ::MaxValue;
+}
+
+inline void StackFrameEnumerator::InitStackTrace(void)
+{
+	this->frameIndex = 0;
+}
+
+inline StackFrame ^ StackFrameEnumerator::GetFirstStackTraceEntry(void)
+{
+	this->InitStackTrace();
+	return this->GetNextStackTraceEntry();
+}
+
+private
+ref class AssemblyEnumerator
+{
+  public:
+	AssemblyEnumerator(void);
+	void InitAssemblies(void);
+	Assembly ^ GetFirstAssembly(void);
+	Assembly ^ GetNextAssembly(void);
+
+  private:
+	initonly array<Assembly ^> ^ assemblies;
+	IEnumerator ^ assemblyEnumerator;
+};
+
+inline void AssemblyEnumerator::InitAssemblies(void)
+{
+	this->assemblyEnumerator->Reset();
+}
+
+inline Assembly ^ AssemblyEnumerator::GetFirstAssembly(void)
+{
+	this->InitAssemblies();
+	return this->GetNextAssembly();
+}
+} // namespace BugTrap
+} // namespace IntelleSoft
 
 #pragma unmanaged
 

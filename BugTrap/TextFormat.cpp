@@ -33,7 +33,7 @@ DWORD DetectFileFormat(PCTSTR pszFileName, HANDLE hFile, BOOL& bTextFile, TEXT_E
 	_ASSERTE(hFile != INVALID_HANDLE_VALUE);
 	BYTE arrBuffer[100];
 	DWORD dwNumRead = 0;
-	if (! ReadFile(hFile, arrBuffer, sizeof(arrBuffer), &dwNumRead, NULL))
+	if (!ReadFile(hFile, arrBuffer, sizeof(arrBuffer), &dwNumRead, NULL))
 	{
 		bTextFile = FALSE;
 		eEncoding = TXTENC_ANSI;
@@ -43,24 +43,28 @@ DWORD DetectFileFormat(PCTSTR pszFileName, HANDLE hFile, BOOL& bTextFile, TEXT_E
 	static const TCHAR szXmlFileExt[] = _T(".xml");
 	const DWORD dwXmlFileExtLength = countof(szXmlFileExt) - 1;
 	DWORD dwFileNameLength = _tcslen(pszFileName);
-	BOOL bIsXmlFile = dwFileNameLength >= dwXmlFileExtLength && _tcsicmp(pszFileName + dwFileNameLength - dwXmlFileExtLength, szXmlFileExt) == 0;
+	BOOL bIsXmlFile = dwFileNameLength >= dwXmlFileExtLength &&
+					  _tcsicmp(pszFileName + dwFileNameLength - dwXmlFileExtLength, szXmlFileExt) == 0;
 	bTextFile = TRUE;
 	DWORD dwStartPos, dwCharSize, dwOffsetFromStart;
-	if (dwNumRead >= sizeof(g_arrUTF16LEPreamble) && memcmp(arrBuffer, g_arrUTF16LEPreamble, sizeof(g_arrUTF16LEPreamble)) == 0)
+	if (dwNumRead >= sizeof(g_arrUTF16LEPreamble) &&
+		memcmp(arrBuffer, g_arrUTF16LEPreamble, sizeof(g_arrUTF16LEPreamble)) == 0)
 	{
 		eEncoding = TXTENC_UTF16LE;
 		dwStartPos = sizeof(g_arrUTF16LEPreamble);
 		dwCharSize = sizeof(WCHAR);
 		dwOffsetFromStart = 0;
 	}
-	else if (dwNumRead >= sizeof(g_arrUTF16BEPreamble) && memcmp(arrBuffer, g_arrUTF16BEPreamble, sizeof(g_arrUTF16BEPreamble)) == 0)
+	else if (dwNumRead >= sizeof(g_arrUTF16BEPreamble) &&
+			 memcmp(arrBuffer, g_arrUTF16BEPreamble, sizeof(g_arrUTF16BEPreamble)) == 0)
 	{
 		eEncoding = TXTENC_UTF16BE;
 		dwStartPos = sizeof(g_arrUTF16BEPreamble);
 		dwCharSize = sizeof(WCHAR);
 		dwOffsetFromStart = 1;
 	}
-	else if (dwNumRead >= sizeof(g_arrUTF8Preamble) && memcmp(arrBuffer, g_arrUTF8Preamble, sizeof(g_arrUTF8Preamble)) == 0)
+	else if (dwNumRead >= sizeof(g_arrUTF8Preamble) &&
+			 memcmp(arrBuffer, g_arrUTF8Preamble, sizeof(g_arrUTF8Preamble)) == 0)
 	{
 		eEncoding = TXTENC_UTF8;
 		dwStartPos = sizeof(g_arrUTF8Preamble);
@@ -79,7 +83,8 @@ DWORD DetectFileFormat(PCTSTR pszFileName, HANDLE hFile, BOOL& bTextFile, TEXT_E
 		eEncoding = TXTENC_UTF8; // default XML encoding
 		dwStartPos = dwOffsetFromStart = 0;
 		dwCharSize = sizeof(CHAR);
-		if (dwNumRead >= dwXmlProcessingInstructionLength && _memicmp(arrBuffer, szXmlProcessingInstruction, dwXmlProcessingInstructionLength) == 0)
+		if (dwNumRead >= dwXmlProcessingInstructionLength &&
+			_memicmp(arrBuffer, szXmlProcessingInstruction, dwXmlProcessingInstructionLength) == 0)
 		{
 			DWORD dwBytePos = dwXmlProcessingInstructionLength;
 			while (dwBytePos < dwNumRead)
@@ -109,14 +114,16 @@ DWORD DetectFileFormat(PCTSTR pszFileName, HANDLE hFile, BOOL& bTextFile, TEXT_E
 				if (dwBytePos < dwNumRead)
 				{
 					DWORD dwValueStart = dwBytePos;
-					while (dwBytePos < dwNumRead && ! IsQuotation(arrBuffer[dwBytePos]))
+					while (dwBytePos < dwNumRead && !IsQuotation(arrBuffer[dwBytePos]))
 						++dwBytePos;
 					DWORD dwValueLength = dwBytePos - dwValueStart;
 					if (dwBytePos < dwNumRead)
 						++dwBytePos;
-					if (dwWordLength == dwEncodingAttributeLength && _memicmp(arrBuffer + dwWordStart, szEncodingAttribute, dwWordLength) == 0)
+					if (dwWordLength == dwEncodingAttributeLength &&
+						_memicmp(arrBuffer + dwWordStart, szEncodingAttribute, dwWordLength) == 0)
 					{
-						if (dwValueLength != dwUTF8EncodingLength || _memicmp(arrBuffer + dwValueStart, szUTF8Encoding, dwUTF8EncodingLength) != 0)
+						if (dwValueLength != dwUTF8EncodingLength ||
+							_memicmp(arrBuffer + dwValueStart, szUTF8Encoding, dwUTF8EncodingLength) != 0)
 							eEncoding = TXTENC_ANSI;
 						break;
 					}

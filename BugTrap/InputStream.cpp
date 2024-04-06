@@ -29,7 +29,7 @@ int CInputStream::ReadBytes(unsigned char* arrBytes, int nCount)
 	int nNumRead = 0;
 	while (nNumRead < nCount)
 	{
-		if (! ReadByte(arrBytes[nNumRead]))
+		if (!ReadByte(arrBytes[nNumRead]))
 			break;
 		++nNumRead;
 	}

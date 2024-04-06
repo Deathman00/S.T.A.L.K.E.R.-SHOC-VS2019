@@ -94,7 +94,7 @@ void CMemStream::EnsureSize(int nSize, bool bAdaptiveGrowth)
 		if (bAdaptiveGrowth)
 			nSize *= 2;
 		unsigned char* pBuffer = new unsigned char[nSize];
-		if (! pBuffer)
+		if (!pBuffer)
 			RaiseException(STATUS_NO_MEMORY, 0, 0, NULL);
 		if (m_pBuffer)
 		{

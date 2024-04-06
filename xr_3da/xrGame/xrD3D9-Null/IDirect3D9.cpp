@@ -13,19 +13,19 @@ const GUID DECLSPEC_SELECTANY IID_IDirect3D9;
 xrIDirect3D9::xrIDirect3D9() : m_refCount(0)
 {
 	APIDEBUG("xrIDirect3D9::xrIDirect3D9");
-//#ifdef D3D_DEBUG_INFO
+	//#ifdef D3D_DEBUG_INFO
 	Version = NULL;
-//#endif
+	//#endif
 };
 
-ULONG	xrIDirect3D9::AddRef(void)
+ULONG xrIDirect3D9::AddRef(void)
 {
 	APIDEBUG("xrIDirect3D9::AddRef");
 	m_refCount++;
 	return ULONG_Proc(m_refCount);
 }
 
-ULONG	xrIDirect3D9::Release(void)
+ULONG xrIDirect3D9::Release(void)
 {
 	APIDEBUG("xrIDirect3D9::Release");
 	m_refCount--;
@@ -37,7 +37,7 @@ ULONG	xrIDirect3D9::Release(void)
 	return ULONG_Proc(m_refCount);
 }
 
-HRESULT xrIDirect3D9::QueryInterface(const IID &iid, void FAR* FAR* ppvObj)
+HRESULT xrIDirect3D9::QueryInterface(const IID& iid, void FAR* FAR* ppvObj)
 {
 	APIDEBUG("xrIDirect3D9::QueryInterface");
 	if (iid == IID_IUnknown || iid == IID_IDirect3D9)
@@ -60,7 +60,7 @@ UINT xrIDirect3D9::GetAdapterCount()
 	return ULONG_Proc(1);
 };
 
-HRESULT xrIDirect3D9::GetAdapterIdentifier(UINT Adapter,DWORD Flags,D3DADAPTER_IDENTIFIER9* pIdentifier)
+HRESULT xrIDirect3D9::GetAdapterIdentifier(UINT Adapter, DWORD Flags, D3DADAPTER_IDENTIFIER9* pIdentifier)
 {
 	APIDEBUG("xrIDirect3D9::GetAdapterIdentifier");
 	sprintf(pIdentifier->Driver, "Default Driver");
@@ -68,60 +68,68 @@ HRESULT xrIDirect3D9::GetAdapterIdentifier(UINT Adapter,DWORD Flags,D3DADAPTER_I
 	sprintf(pIdentifier->DeviceName, "Dedicated");
 	return HRESULT_Proc(S_OK);
 };
-UINT xrIDirect3D9::GetAdapterModeCount( UINT Adapter,D3DFORMAT Format)
+UINT xrIDirect3D9::GetAdapterModeCount(UINT Adapter, D3DFORMAT Format)
 {
 	APIDEBUG("xrIDirect3D9::GetAdapterModeCount");
 	return ULONG_Proc(1);
 };
 
-HRESULT xrIDirect3D9::EnumAdapterModes(UINT Adapter,D3DFORMAT Format,UINT Mode,D3DDISPLAYMODE* pMode)
+HRESULT xrIDirect3D9::EnumAdapterModes(UINT Adapter, D3DFORMAT Format, UINT Mode, D3DDISPLAYMODE* pMode)
 {
 	APIDEBUG("xrIDirect3D9::EnumAdapterModes");
 	return HRESULT_Proc(S_OK);
 };
-HRESULT xrIDirect3D9::GetAdapterDisplayMode( UINT Adapter,D3DDISPLAYMODE* pMode)
+HRESULT xrIDirect3D9::GetAdapterDisplayMode(UINT Adapter, D3DDISPLAYMODE* pMode)
 {
 	APIDEBUG("xrIDirect3D9::GetAdapterDisplayMode");
 	pMode->Format = D3DFMT_A8R8G8B8;
 	return HRESULT_Proc(S_OK);
 };
-HRESULT xrIDirect3D9::CheckDeviceType( UINT Adapter,D3DDEVTYPE DevType,D3DFORMAT AdapterFormat,D3DFORMAT BackBufferFormat,BOOL bWindowed)
+HRESULT xrIDirect3D9::CheckDeviceType(UINT Adapter, D3DDEVTYPE DevType, D3DFORMAT AdapterFormat,
+									  D3DFORMAT BackBufferFormat, BOOL bWindowed)
 {
 	APIDEBUG("xrIDirect3D9::CheckDeviceType");
 	return HRESULT_Proc(S_OK);
 };
-HRESULT xrIDirect3D9::CheckDeviceFormat( UINT Adapter,D3DDEVTYPE DeviceType,D3DFORMAT AdapterFormat,DWORD Usage,D3DRESOURCETYPE RType,D3DFORMAT CheckFormat)
+HRESULT xrIDirect3D9::CheckDeviceFormat(UINT Adapter, D3DDEVTYPE DeviceType, D3DFORMAT AdapterFormat, DWORD Usage,
+										D3DRESOURCETYPE RType, D3DFORMAT CheckFormat)
 {
 	APIDEBUG("xrIDirect3D9::CheckDeviceFormat");
 	return HRESULT_Proc(S_OK);
 };
-HRESULT xrIDirect3D9::CheckDeviceMultiSampleType( UINT Adapter,D3DDEVTYPE DeviceType,D3DFORMAT SurfaceFormat,BOOL Windowed,D3DMULTISAMPLE_TYPE MultiSampleType,DWORD* pQualityLevels)
+HRESULT xrIDirect3D9::CheckDeviceMultiSampleType(UINT Adapter, D3DDEVTYPE DeviceType, D3DFORMAT SurfaceFormat,
+												 BOOL Windowed, D3DMULTISAMPLE_TYPE MultiSampleType,
+												 DWORD* pQualityLevels)
 {
 	APIDEBUG("xrIDirect3D9::CheckDeviceMultiSampleType");
 	return HRESULT_Proc(S_OK);
 };
-HRESULT xrIDirect3D9::CheckDepthStencilMatch( UINT Adapter,D3DDEVTYPE DeviceType,D3DFORMAT AdapterFormat,D3DFORMAT RenderTargetFormat,D3DFORMAT DepthStencilFormat)
+HRESULT xrIDirect3D9::CheckDepthStencilMatch(UINT Adapter, D3DDEVTYPE DeviceType, D3DFORMAT AdapterFormat,
+											 D3DFORMAT RenderTargetFormat, D3DFORMAT DepthStencilFormat)
 {
 	APIDEBUG("xrIDirect3D9::CheckDepthStencilMatch");
 	return HRESULT_Proc(S_OK);
 };
-HRESULT xrIDirect3D9::CheckDeviceFormatConversion( UINT Adapter,D3DDEVTYPE DeviceType,D3DFORMAT SourceFormat,D3DFORMAT TargetFormat)
+HRESULT xrIDirect3D9::CheckDeviceFormatConversion(UINT Adapter, D3DDEVTYPE DeviceType, D3DFORMAT SourceFormat,
+												  D3DFORMAT TargetFormat)
 {
 	APIDEBUG("xrIDirect3D9::CheckDeviceFormatConversion");
 	return HRESULT_Proc(S_OK);
 };
-HRESULT xrIDirect3D9::GetDeviceCaps( UINT Adapter,D3DDEVTYPE DeviceType,D3DCAPS9* pCaps)
+HRESULT xrIDirect3D9::GetDeviceCaps(UINT Adapter, D3DDEVTYPE DeviceType, D3DCAPS9* pCaps)
 {
 	APIDEBUG("xrIDirect3D9::GetDeviceCaps");
 	return HRESULT_Proc(S_OK);
 };
-HMONITOR xrIDirect3D9::GetAdapterMonitor( UINT Adapter)
+HMONITOR xrIDirect3D9::GetAdapterMonitor(UINT Adapter)
 {
 	APIDEBUG("xrIDirect3D9::GetAdapterMonitor");
 	return NULL;
 };
 
-HRESULT xrIDirect3D9::CreateDevice	(UINT Adapter,D3DDEVTYPE DeviceType,HWND hFocusWindow,DWORD BehaviorFlags,D3DPRESENT_PARAMETERS* pPresentationParameters,IDirect3DDevice9** ppReturnedDeviceInterface)
+HRESULT xrIDirect3D9::CreateDevice(UINT Adapter, D3DDEVTYPE DeviceType, HWND hFocusWindow, DWORD BehaviorFlags,
+								   D3DPRESENT_PARAMETERS* pPresentationParameters,
+								   IDirect3DDevice9** ppReturnedDeviceInterface)
 {
 	APIDEBUG("xrIDirect3D9::CreateDevice");
 	*ppReturnedDeviceInterface = NULL;
@@ -141,5 +149,3 @@ ULONG		xrIDirect3D9::ULONG_Proc(ULONG ret)
 	return ret;
 }
 */
-
-
